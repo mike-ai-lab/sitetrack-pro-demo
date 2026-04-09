@@ -1,0 +1,12 @@
+{
+  "name": "sitetrack-pro-demo",
+  "version": "1.0.0",
+  "description": "SiteTrack Pro - Construction Intelligence Demo",
+  "main": "index.html",
+  "scripts": {
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["construction", "tracking", "demo"],
+  "author": "",
+  "license": "MIT"
+}
