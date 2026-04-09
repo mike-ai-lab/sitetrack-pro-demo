@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteTrack CRM - Construction Prospecting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        #map-container {
+            position: absolute;
+            inset: 0;
+            background: #1e293b;
+            background-image: 
+                radial-gradient(#334155 1px, transparent 1px),
+                linear-gradient(to right, #1e293b 0.5px, transparent 0.5px),
+                linear-gradient(to bottom, #1e293b 0.5px, transparent 0.5px);
+            background-size: 40px 40px;
+        }
+
+        .map-grid {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            border: 1px solid #334155;
+            top: -50%;
+            left: -50%;
+            z-index: 1;
+        }
+
+        .project-pin {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: #f59e0b;
+            border: 3px solid white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pin-drop 0.5s ease-out;
+        }
+
+        @keyframes pin-drop {
+            from { transform: rotate(-45deg) translateY(-20px); opacity: 0; }
+            to { transform: rotate(-45deg) translateY(0); opacity: 1; }
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+        }
+
+        #demo-status {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+
+    <header class="h-16 glass-panel flex items-center justify-between px-6 z-50">
+        <div class="flex items-center gap-2">
+            <div class="p-2 bg-blue-600 rounded-lg">
+                <i data-lucide="map-pin" class="text-white w-5 h-5"></i>
+            </div>
+            <h1 class="font-bold text-xl tracking-tight">SiteTrack <span class="text-blue-400">Pro</span></h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <div id="demo-indicator" class="hidden items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-500/50 rounded-full">
+                <div class="w-2 h-2 bg-red-500 rounded-full pulse"></div>
+                <span class="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live Demo</span>
+            </div>
+            <button onclick="toggleView('dashboard')" class="p-2 hover:bg-slate-800 rounded-full transition">
+                <i data-lucide="layout-dashboard" class="w-6 h-6 text-slate-400"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 relative overflow-hidden">
+        <div id="map-view" class="absolute inset-0 block">
+            <div id="map-container">
+                <div class="map-grid"></div>
+                <svg id="route-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                    <polyline id="route-line" points="" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+                </svg>
+                <div id="pins-layer" class="relative w-full h-full"></div>
+                
+                <div id="user-marker" class="absolute w-7 h-7 bg-blue-500 border-4 border-white rounded-full z-30 transition-all duration-300 ease-linear shadow-2xl pulse" style="top: 50%; left: 50%;"></div>
+            </div>
+
+            <!-- Dashboard Overlay -->
+            <div class="absolute top-6 left-6 flex flex-col gap-3 z-40 pointer-events-none">
+                <div class="glass-panel px-5 py-3 rounded-2xl flex items-center gap-4">
+                    <div class="text-blue-400 bg-blue-500/10 p-2 rounded-lg"><i data-lucide="navigation" class="w-5 h-5"></i></div>
+                    <div>
+                        <div class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Coverage</div>
+                        <div class="text-xl font-bold"><span id="dist-val">0.0</span> <span class="text-xs font-normal text-slate-400 italic">km</span></div>
+                    </div>
+                </div>
+                <div class="glass-panel px-5 py-3 rounded-2xl flex items-center gap-4">
+                    <div class="text-amber-400 bg-amber-500/10 p-2 rounded-lg"><i data-lucide="home" class="w-5 h-5"></i></div>
+                    <div>
+                        <div class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Site Leads</div>
+                        <div class="text-xl font-bold" id="leads-count">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Actions -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-40 w-full max-w-sm px-6">
+                <div id="demo-notification" class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-2xl transition-all duration-500 opacity-0 translate-y-4">
+                    New Site Detected! Recording...
+                </div>
+                
+                <div class="flex gap-4 w-full">
+                    <button id="demo-btn" onclick="startAutomatedDemo()" class="flex-1 bg-white text-slate-900 h-16 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-2xl hover:bg-slate-100 transition active:scale-95">
+                        <i data-lucide="play-circle" class="w-6 h-6"></i>
+                        <span>AUTO DEMO</span>
+                    </button>
+                    <button id="track-btn" onclick="toggleTracking()" class="flex-1 btn-primary text-white h-16 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-2xl">
+                        <i data-lucide="navigation-2" class="w-6 h-6"></i>
+                        <span>MANUAL</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="absolute inset-0 bg-slate-950 overflow-y-auto hidden z-50 p-6">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold">Field Summary</h2>
+                    <p class="text-slate-500">Al-Olaya District • Today</p>
+                </div>
+                <button onclick="toggleView('map')" class="bg-slate-800 p-3 rounded-xl">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800">
+                    <div class="text-slate-400 text-xs font-bold uppercase mb-2">Distance</div>
+                    <div class="text-3xl font-bold" id="dash-dist">0.0 km</div>
+                </div>
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800">
+                    <div class="text-slate-400 text-xs font-bold uppercase mb-2">Total Pins</div>
+                    <div class="text-3xl font-bold text-amber-500" id="dash-leads">0</div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="list" class="w-5 h-5 text-blue-400"></i>
+                Recent Captures
+            </h3>
+            <div class="space-y-3" id="dashboard-list">
+                <div class="text-center py-10 text-slate-600 italic">No leads captured yet. Start the demo!</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let isDemoRunning = false;
+        let isTracking = false;
+        let leads = [];
+        let routePoints = [];
+        let distance = 0;
+        let userPos = { x: 20, y: 80 };
+        let demoInterval;
+
+        const userMarker = document.getElementById('user-marker');
+        const routeLine = document.getElementById('route-line');
+        const mapContainer = document.getElementById('map-container');
+        const demoIndicator = document.getElementById('demo-indicator');
+        const demoNotification = document.getElementById('demo-notification');
+
+        // Path coordinates for a "car movement" simulation
+        const demoPath = [
+            { x: 20, y: 80 }, { x: 20, y: 60 }, { x: 20, y: 40, lead: true }, 
+            { x: 40, y: 40 }, { x: 60, y: 40 }, { x: 60, y: 60, lead: true },
+            { x: 60, y: 80 }, { x: 80, y: 80, lead: true }, { x: 80, y: 50 },
+            { x: 80, y: 20, lead: true }
+        ];
+
+        const mockLeadsData = [
+            { name: "Al-Rajhi Tower Site", contact: "Eng. Faisal", type: "Commercial", stage: "Excavation" },
+            { name: "Luxury Villa #14", contact: "Ahmed (Foreman)", type: "Residential", stage: "Plastering" },
+            { name: "King Fahd Road Plaza", contact: "Guard Office", type: "Commercial", stage: "Finishing" },
+            { name: "Private Palace", contact: "Architect Khalid", type: "Residential", stage: "Gypsum Work" }
+        ];
+
+        function startAutomatedDemo() {
+            if (isDemoRunning) return;
+            
+            isDemoRunning = true;
+            isTracking = true;
+            routePoints = [];
+            distance = 0;
+            leads = [];
+            document.getElementById('pins-layer').innerHTML = '';
+            document.getElementById('demo-indicator').classList.replace('hidden', 'flex');
+            document.getElementById('demo-btn').innerHTML = `<span id="demo-status">RUNNING...</span>`;
+            document.getElementById('demo-btn').classList.add('opacity-50', 'pointer-events-none');
+
+            let step = 0;
+            let subStep = 0;
+            const substepsPerPoint = 15;
+
+            demoInterval = setInterval(() => {
+                if (step >= demoPath.length - 1) {
+                    stopDemo();
+                    return;
+                }
+
+                const start = demoPath[step];
+                const end = demoPath[step + 1];
+
+                // Interpolate movement
+                userPos.x = start.x + (end.x - start.x) * (subStep / substepsPerPoint);
+                userPos.y = start.y + (end.y - start.y) * (subStep / substepsPerPoint);
+                
+                updateUI();
+                
+                subStep++;
+                if (subStep > substepsPerPoint) {
+                    subStep = 0;
+                    step++;
+                    
+                    // Trigger lead capture if the point is marked
+                    if (demoPath[step].lead) {
+                        captureAutoLead(mockLeadsData[leads.length % mockLeadsData.length]);
+                    }
+                }
+            }, 100);
+        }
+
+        function stopDemo() {
+            clearInterval(demoInterval);
+            isDemoRunning = false;
+            isTracking = false;
+            document.getElementById('demo-indicator').classList.replace('flex', 'hidden');
+            document.getElementById('demo-btn').innerHTML = `<i data-lucide="play-circle" class="w-6 h-6"></i><span>AUTO DEMO</span>`;
+            document.getElementById('demo-btn').classList.remove('opacity-50', 'pointer-events-none');
+            lucide.createIcons();
+            
+            // Show summary
+            setTimeout(() => {
+                showToast("Route Completed. 4 Leads Captured.");
+                toggleView('dashboard');
+            }, 1000);
+        }
+
+        function updateUI() {
+            // Update Marker
+            userMarker.style.left = userPos.x + '%';
+            userMarker.style.top = userPos.y + '%';
+
+            // Draw Route
+            const w = mapContainer.clientWidth;
+            const h = mapContainer.clientHeight;
+            const pxX = (userPos.x / 100) * w;
+            const pxY = (userPos.y / 100) * h;
+            
+            routePoints.push(`${pxX},${pxY}`);
+            routeLine.setAttribute('points', routePoints.join(' '));
+
+            // Update Dist
+            distance += 0.05;
+            document.getElementById('dist-val').innerText = distance.toFixed(1);
+            document.getElementById('dash-dist').innerText = distance.toFixed(1) + " km";
+        }
+
+        function captureAutoLead(data) {
+            const lead = {
+                id: Date.now(),
+                ...data,
+                x: userPos.x,
+                y: userPos.y,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+
+            leads.push(lead);
+            
+            // Notification
+            demoNotification.innerText = `Captured: ${lead.name}`;
+            demoNotification.classList.replace('opacity-0', 'opacity-100');
+            demoNotification.classList.replace('translate-y-4', 'translate-y-0');
+            
+            setTimeout(() => {
+                demoNotification.classList.replace('opacity-100', 'opacity-0');
+                demoNotification.classList.replace('translate-y-0', 'translate-y-4');
+            }, 2000);
+
+            // Add Pin
+            const pin = document.createElement('div');
+            pin.className = 'project-pin';
+            pin.style.left = `calc(${lead.x}% - 14px)`;
+            pin.style.top = `calc(${lead.y}% - 14px)`;
+            document.getElementById('pins-layer').appendChild(pin);
+            
+            document.getElementById('leads-count').innerText = leads.length;
+            document.getElementById('dash-leads').innerText = leads.length;
+            updateDashboardList();
+        }
+
+        function updateDashboardList() {
+            const list = document.getElementById('dashboard-list');
+            list.innerHTML = leads.map(l => `
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-3xl flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-500/10 p-3 rounded-2xl text-blue-400">
+                            <i data-lucide="hard-hat" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-lg">${l.name}</div>
+                            <div class="text-sm text-slate-500">${l.contact} • ${l.type}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-black text-blue-500 uppercase">${l.stage}</div>
+                        <div class="text-[10px] text-slate-600">${l.time}</div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function toggleView(view) {
+            document.getElementById('map-view').classList.toggle('hidden', view === 'dashboard');
+            document.getElementById('dashboard-view').classList.toggle('hidden', view === 'map');
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-white text-slate-900 px-6 py-3 rounded-2xl font-bold shadow-2xl z-[200] animate-bounce';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Manual tracking toggle (non-demo)
+        function toggleTracking() {
+            if (isDemoRunning) return;
+            isTracking = !isTracking;
+            const btn = document.getElementById('track-btn');
+            if (isTracking) {
+                btn.innerHTML = `<i data-lucide="pause" class="w-6 h-6"></i><span>PAUSE</span>`;
+                btn.classList.replace('btn-primary', 'bg-red-600');
+            } else {
+                btn.innerHTML = `<i data-lucide="navigation-2" class="w-6 h-6"></i><span>MANUAL</span>`;
+                btn.classList.replace('bg-red-600', 'btn-primary');
+            }
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

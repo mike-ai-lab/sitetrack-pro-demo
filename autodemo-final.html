@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiteTrack Pro | Construction Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -27,7 +24,6 @@
             background-color: var(--bg-main);
             color: #0F172A;
             overflow: hidden;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         #map {
@@ -151,19 +147,18 @@
 
         .playback-controls-container {
             position: fixed;
-            top: calc(16px + env(safe-area-inset-top));
+            top: 80px;
             right: 16px;
-            z-index: 9999;
+            z-index: 1000;
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
         @media (max-width: 768px) {
             .playback-controls-container {
-                top: calc(12px + env(safe-area-inset-top));
+                top: 70px;
                 right: 12px;
-                left: 12px;
-                justify-content: center;
             }
         }
 
@@ -190,7 +185,7 @@
 <body class="flex flex-col h-screen overflow-hidden">
 
     <!-- Header -->
-    <header class="h-14 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between z-50 relative" style="padding-top: env(safe-area-inset-top);">
+    <header class="h-14 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between z-50 relative">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
                 <i data-lucide="compass" class="text-white w-5 h-5"></i>
@@ -214,7 +209,7 @@
         <div id="map"></div>
 
         <!-- Floating Stats Panel -->
-        <div class="absolute left-4 flex flex-col md:flex-row gap-2 z-[1000]" style="top: calc(16px + env(safe-area-inset-top));">
+        <div class="absolute top-4 left-4 flex flex-col md:flex-row gap-2 z-[1000]">
             <div class="glass-panel px-3 md:px-4 py-2 md:py-2.5 rounded-xl flex items-center gap-2 md:gap-3">
                 <i data-lucide="navigation" class="w-4 h-4 text-blue-600"></i>
                 <span class="text-xs md:text-sm font-bold text-slate-700"><span id="km-count">0.0</span> km</span>
@@ -229,7 +224,14 @@
             </div>
         </div>
 
-        <!-- Playback Controls (Always on Top) -->
+        <!-- Locate Me Button -->
+        <div class="absolute top-4 right-4 z-[1000]">
+            <button id="locate-btn" class="locate-btn" onclick="locateUser()" title="Find My Location">
+                <i data-lucide="crosshair" class="w-5 h-5 text-slate-600"></i>
+            </button>
+        </div>
+
+        <!-- Playback Controls (Top Right) -->
         <div id="playback-controls-container" class="playback-controls-container hidden">
             <button id="pause-btn" onclick="pausePresentation()" class="playback-btn" title="Pause">
                 <i data-lucide="pause" class="w-5 h-5 text-slate-600"></i>
@@ -242,22 +244,8 @@
             </button>
         </div>
 
-        <!-- Locate Me Button -->
-        <div class="absolute right-4 z-[1000]" style="bottom: calc(96px + env(safe-area-inset-bottom));">
-            <button id="locate-btn" class="locate-btn" onclick="locateUser()" title="Find My Location">
-                <i data-lucide="crosshair" class="w-5 h-5 text-slate-600"></i>
-            </button>
-        </div>
-
-        <!-- Manual Mode Button -->
-        <div class="absolute left-4 z-[1000]" style="bottom: calc(96px + env(safe-area-inset-bottom));">
-            <button id="manual-mode-btn" class="locate-btn" onclick="enableManualMode()" title="Manual Mode">
-                <i data-lucide="hand" class="w-5 h-5 text-slate-600"></i>
-            </button>
-        </div>
-
         <!-- Presentation Controls -->
-        <div class="absolute left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-4 w-full max-w-sm px-4" style="bottom: calc(32px + env(safe-area-inset-bottom));">
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-4 w-full max-w-sm px-4">
             <div id="pres-label" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 opacity-0 transition-opacity text-center">
                 Simulating Field Work...
             </div>
@@ -273,7 +261,7 @@
         </div>
 
         <!-- Form Overlay -->
-        <div id="form-overlay" class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-4">
+        <div id="form-overlay" class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-[2000] hidden flex items-center justify-center p-4">
             <div class="bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-slate-200 transform scale-95 transition-transform duration-300" id="form-card">
                 <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-blue-50 sticky top-0 z-10">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-600">New Site Entry</span>
@@ -328,11 +316,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="pt-2 flex gap-3">
-                        <button onclick="closeForm()" class="flex-1 bg-slate-200 text-slate-700 py-3.5 rounded-xl font-bold text-sm hover:bg-slate-300 transition transform active:scale-95">
-                            CANCEL
-                        </button>
-                        <button onclick="saveManualLead()" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:bg-blue-700 transition transform active:scale-95" id="save-btn">
+                    <div class="pt-2">
+                        <button class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:bg-blue-700 transition transform active:scale-95" id="save-btn">
                             SAVE PROJECT
                         </button>
                     </div>
@@ -341,7 +326,7 @@
         </div>
 
         <!-- Leads Panel -->
-        <div id="leads-panel" class="leads-panel absolute top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-[6000] overflow-y-auto">
+        <div id="leads-panel" class="leads-panel absolute top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-[3000] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b border-slate-200 p-4 md:p-5 flex justify-between items-center z-10">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900">Today's Leads</h2>
@@ -410,8 +395,6 @@
         let isPaused = false;
         let isStopped = false;
         let animationIndex = 0;
-        let isManualMode = false;
-        let manualMarker = null;
 
         const formOverlay = document.getElementById('form-overlay');
         const formCard = document.getElementById('form-card');
@@ -848,127 +831,6 @@
         }
 
         function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
-
-        function enableManualMode() {
-            isManualMode = true;
-            document.getElementById('manual-mode-btn').classList.add('active');
-            document.getElementById('start-pres-btn').style.display = 'none';
-            document.getElementById('pres-label').innerText = "Click on map to add lead";
-            document.getElementById('pres-label').style.opacity = '1';
-            
-            map.on('click', function(e) {
-                if (isManualMode) {
-                    openManualForm(e.latlng);
-                }
-            });
-        }
-
-        function openManualForm(latlng) {
-            if (manualMarker) {
-                map.removeLayer(manualMarker);
-            }
-            
-            const tempIcon = L.divIcon({
-                className: 'user-marker',
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-            manualMarker = L.marker(latlng, { icon: tempIcon }).addTo(map);
-            
-            document.getElementById('input-location').innerText = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
-            formOverlay.classList.remove('hidden');
-            setTimeout(() => formCard.classList.remove('scale-95'), 10);
-        }
-
-        function closeForm() {
-            formCard.classList.add('scale-95');
-            setTimeout(() => {
-                formOverlay.classList.add('hidden');
-                resetForm();
-                if (manualMarker) {
-                    map.removeLayer(manualMarker);
-                    manualMarker = null;
-                }
-            }, 300);
-        }
-
-        function saveManualLead() {
-            const name = document.getElementById('input-name').innerText.trim();
-            const contact = document.getElementById('input-contact').innerText.trim();
-            const type = document.getElementById('input-type').innerText.trim();
-            const phone = document.getElementById('input-phone').innerText.trim();
-            const status = document.getElementById('input-status').innerText.trim();
-            const budget = document.getElementById('input-budget').innerText.trim();
-            const notes = document.getElementById('input-notes').innerText.trim();
-            
-            if (!name || name === '' || type === 'Select Type...' || type === '') {
-                alert('Please fill in at least Project Name and Type');
-                return;
-            }
-            
-            const saveBtn = document.getElementById('save-btn');
-            saveBtn.classList.add('scale-95');
-            setTimeout(() => saveBtn.classList.remove('scale-95'), 100);
-            saveBtn.classList.replace('bg-blue-600', 'bg-emerald-500');
-            saveBtn.classList.replace('shadow-blue-200', 'shadow-emerald-200');
-            saveBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i> SAVED';
-            lucide.createIcons();
-            
-            setTimeout(() => {
-                const pos = manualMarker.getLatLng();
-                dropPin(pos.lat, pos.lng, name);
-                
-                leads.push({
-                    name, contact, type, phone, status, budget, notes,
-                    location: pos,
-                    timestamp: new Date()
-                });
-                
-                document.getElementById('lead-count').innerText = leads.length;
-                updateLeadsPanel();
-                
-                closeForm();
-            }, 800);
-        }
-
-        // Make form fields editable in manual mode
-        document.addEventListener('DOMContentLoaded', function() {
-            const editableFields = ['input-name', 'input-contact', 'input-phone', 'input-budget', 'input-notes'];
-            editableFields.forEach(id => {
-                const el = document.getElementById(id);
-                el.contentEditable = true;
-                el.addEventListener('focus', function() {
-                    if (this.innerText === '') {
-                        this.classList.add('typing');
-                    }
-                });
-                el.addEventListener('blur', function() {
-                    this.classList.remove('typing');
-                });
-            });
-            
-            // Type selector
-            document.getElementById('input-type').addEventListener('click', function() {
-                const types = ['Residential', 'Commercial', 'Hospitality', 'Industrial', 'Infrastructure'];
-                const selected = prompt('Select Type:\n' + types.map((t, i) => `${i+1}. ${t}`).join('\n'));
-                if (selected && types[selected-1]) {
-                    this.innerText = types[selected-1];
-                    this.classList.remove('italic', 'text-slate-400');
-                    this.classList.add('text-slate-700', 'font-medium');
-                }
-            });
-            
-            // Status selector
-            document.getElementById('input-status').addEventListener('click', function() {
-                const statuses = ['Planning Phase', 'Foundation Stage', 'Early Construction', 'Mid Construction', 'Finishing Stage'];
-                const selected = prompt('Select Status:\n' + statuses.map((s, i) => `${i+1}. ${s}`).join('\n'));
-                if (selected && statuses[selected-1]) {
-                    this.innerText = statuses[selected-1];
-                    this.classList.remove('italic', 'text-slate-400');
-                    this.classList.add('text-slate-700', 'font-medium');
-                }
-            });
-        });
 
         setTimeout(() => lucide.createIcons(), 100);
     </script>

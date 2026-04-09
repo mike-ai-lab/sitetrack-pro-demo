@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteTrack Pro | Construction Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --brand-blue: #0066FF;
+            --bg-main: #F8FAFC;
+            --border-subtle: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: #0F172A;
+            overflow: hidden;
+        }
+
+        #map-container {
+            position: absolute;
+            inset: 0;
+            background: #FFFFFF;
+            background-image: 
+                radial-gradient(#CBD5E1 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+        }
+
+        .map-grid-line {
+            position: absolute;
+            background: #F1F5F9;
+        }
+
+        .project-pin {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--brand-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+            z-index: 10;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .user-marker {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--brand-blue);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+            z-index: 50;
+            transition: all 0.8s linear;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+        }
+
+        .input-focus:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.05);
+        }
+
+        /* Typing Animation */
+        .typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Presentation Mode Progress Bar */
+        #pres-progress {
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-14 border-b border-slate-200 bg-white px-6 flex items-center justify-between z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                <i data-lucide="compass" class="text-white w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-slate-900 tracking-tight">SITETRACK <span class="text-blue-600">PRO</span></span>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div id="status-tag" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                Standby
+            </div>
+            <div class="h-8 w-[1px] bg-slate-200"></div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-[10px] font-bold text-slate-400 leading-none">DISTRICT</div>
+                    <div class="text-xs font-semibold">Al-Olaya, Riyadh</div>
+                </div>
+                <div class="w-8 h-8 bg-slate-100 rounded-full border border-slate-200 flex items-center justify-center">
+                    <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 relative bg-slate-50">
+        <!-- Map Canvas -->
+        <div id="map-container" class="overflow-hidden">
+            <!-- Simulated Streets -->
+            <div class="absolute inset-0 opacity-40 pointer-events-none">
+                <div class="map-grid-line w-full h-[1px] top-1/4"></div>
+                <div class="map-grid-line w-full h-[1px] top-2/4"></div>
+                <div class="map-grid-line w-full h-[1px] top-3/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-1/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-2/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-3/4"></div>
+            </div>
+
+            <svg id="route-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                <path id="route-path" d="" fill="none" stroke="#0066FF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0" opacity="0.6" />
+            </svg>
+            
+            <div id="pins-layer" class="relative w-full h-full z-20"></div>
+            <div id="user-marker" class="user-marker" style="top: 80%; left: 15%;"></div>
+        </div>
+
+        <!-- Floating Stats Panel -->
+        <div class="absolute top-4 left-4 flex gap-2 z-40">
+            <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3">
+                <i data-lucide="navigation" class="w-4 h-4 text-blue-600"></i>
+                <span class="text-sm font-bold text-slate-700"><span id="km-count">0.0</span> km</span>
+            </div>
+            <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3">
+                <i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>
+                <span class="text-sm font-bold text-slate-700"><span id="lead-count">0</span> Leads</span>
+            </div>
+        </div>
+
+        <!-- Presentation Controls -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-sm">
+            <div id="pres-label" class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 opacity-0 transition-opacity">
+                Simulating Interaction...
+            </div>
+            <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden opacity-0" id="pres-progress-container">
+                <div id="pres-progress" class="h-full bg-blue-600 w-0"></div>
+            </div>
+            <button id="start-pres-btn" onclick="startPresentation()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-2xl hover:bg-black transition active:scale-95">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                START PRESENTATION
+            </button>
+        </div>
+
+        <!-- Form Overlay (The "Modal") -->
+        <div id="form-overlay" class="absolute inset-0 bg-slate-900/10 backdrop-blur-[2px] z-[100] hidden flex items-center justify-center">
+            <div class="bg-white w-[340px] rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform scale-95 transition-transform duration-300" id="form-card">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">New Site Entry</span>
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Project Name</label>
+                        <div id="input-name" class="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg min-h-[40px] flex items-center"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Foreman</label>
+                            <div id="input-contact" class="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg min-h-[40px] flex items-center"></div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Type</label>
+                            <div id="input-type" class="w-full p-2.5 text-sm bg-slate-50 border border-slate-200 rounded-lg min-h-[40px] flex items-center text-slate-500 italic"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-200" id="save-btn">
+                            SAVE PROJECT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // State & Data
+        let leads = [];
+        let points = [];
+        let distance = 0;
+        
+        const userMarker = document.getElementById('user-marker');
+        const routePath = document.getElementById('route-path');
+        const mapContainer = document.getElementById('map-container');
+        const formOverlay = document.getElementById('form-overlay');
+        const formCard = document.getElementById('form-card');
+
+        const simulationScript = [
+            { move: { x: 15, y: 70 }, duration: 1500 },
+            { 
+                capture: {
+                    name: "Villa Al-Mansour",
+                    contact: "Eng. Ahmed",
+                    type: "Residential"
+                } 
+            },
+            { move: { x: 45, y: 70 }, duration: 2000 },
+            { move: { x: 45, y: 40 }, duration: 1500 },
+            { 
+                capture: {
+                    name: "Central Plaza Mall",
+                    contact: "Saleh (Security)",
+                    type: "Commercial"
+                } 
+            },
+            { move: { x: 75, y: 40 }, duration: 2000 },
+            { move: { x: 75, y: 15 }, duration: 1500 },
+            { 
+                capture: {
+                    name: "Luxury Heights Tower",
+                    contact: "Khalid (Manager)",
+                    type: "Hospitality"
+                } 
+            }
+        ];
+
+        async function startPresentation() {
+            // UI Reset
+            document.getElementById('start-pres-btn').style.display = 'none';
+            document.getElementById('pres-label').style.opacity = '1';
+            document.getElementById('pres-progress-container').style.opacity = '1';
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 pulse"></div>Recording';
+            
+            // Execute Script
+            for (let step of simulationScript) {
+                if (step.move) {
+                    await moveTo(step.move.x, step.move.y, step.duration);
+                } else if (step.capture) {
+                    await performCapture(step.capture);
+                }
+            }
+
+            // End Presentation
+            document.getElementById('pres-label').innerText = "Presentation Finished";
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>Standby';
+            setTimeout(() => location.reload(), 4000);
+        }
+
+        function moveTo(targetX, targetY, duration) {
+            return new Promise(resolve => {
+                const startX = parseFloat(userMarker.style.left);
+                const startY = parseFloat(userMarker.style.top);
+                const startTime = performance.now();
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    const curX = startX + (targetX - startX) * progress;
+                    const curY = startY + (targetY - startY) * progress;
+
+                    userMarker.style.left = curX + '%';
+                    userMarker.style.top = curY + '%';
+                    
+                    updatePath(curX, curY);
+                    
+                    // Increment distance slightly
+                    distance += 0.005;
+                    document.getElementById('km-count').innerText = distance.toFixed(1);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        resolve();
+                    }
+                }
+                requestAnimationFrame(update);
+            });
+        }
+
+        function updatePath(x, y) {
+            const w = mapContainer.clientWidth;
+            const h = mapContainer.clientHeight;
+            const pxX = (x / 100) * w;
+            const pxY = (y / 100) * h;
+            
+            points.push(`${pxX},${pxY}`);
+            if (points.length === 1) {
+                routePath.setAttribute('d', `M ${pxX} ${pxY}`);
+            } else {
+                const last = points[points.length - 2];
+                routePath.setAttribute('d', routePath.getAttribute('d') + ` L ${pxX} ${pxY}`);
+            }
+        }
+
+        async function performCapture(data) {
+            // 1. "Park" and open form
+            await delay(400);
+            formOverlay.classList.remove('hidden');
+            setTimeout(() => formCard.classList.remove('scale-95'), 10);
+            
+            // 2. Simulate typing Project Name
+            await typeInto('input-name', data.name);
+            await delay(500);
+            
+            // 3. Simulate typing Contact
+            await typeInto('input-contact', data.contact);
+            await delay(400);
+
+            // 4. Set Type
+            document.getElementById('input-type').innerText = data.type;
+            document.getElementById('input-type').classList.remove('italic', 'text-slate-500');
+            await delay(600);
+
+            // 5. Save and Close
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.replace('bg-blue-600', 'bg-emerald-500');
+            saveBtn.innerText = "SAVED ✓";
+            
+            await delay(800);
+            
+            // Drop pin on map
+            dropPin(parseFloat(userMarker.style.left), parseFloat(userMarker.style.top));
+            
+            // Reset and close
+            formCard.classList.add('scale-95');
+            setTimeout(() => {
+                formOverlay.classList.add('hidden');
+                resetForm();
+                leads.length++;
+                document.getElementById('lead-count').innerText = leads.length;
+            }, 300);
+            
+            await delay(500);
+        }
+
+        function typeInto(elementId, text) {
+            return new Promise(resolve => {
+                const el = document.getElementById(elementId);
+                el.classList.add('typing');
+                let i = 0;
+                const timer = setInterval(() => {
+                    el.innerText += text[i];
+                    i++;
+                    if (i >= text.length) {
+                        clearInterval(timer);
+                        el.classList.remove('typing');
+                        resolve();
+                    }
+                }, 70);
+            });
+        }
+
+        function dropPin(x, y) {
+            const pin = document.createElement('div');
+            pin.className = 'project-pin';
+            pin.style.left = `calc(${x}% - 6px)`;
+            pin.style.top = `calc(${y}% - 6px)`;
+            document.getElementById('pins-layer').appendChild(pin);
+        }
+
+        function resetForm() {
+            document.getElementById('input-name').innerText = "";
+            document.getElementById('input-contact').innerText = "";
+            document.getElementById('input-type').innerText = "Select Type...";
+            document.getElementById('input-type').classList.add('italic', 'text-slate-500');
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.replace('bg-emerald-500', 'bg-blue-600');
+            saveBtn.innerText = "SAVE PROJECT";
+        }
+
+        function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+    </script>
+</body>
+</html>

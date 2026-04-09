@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteTrack Pro | Construction Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --brand-blue: #0066FF;
+            --bg-main: #F8FAFC;
+            --border-subtle: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: #0F172A;
+            overflow: hidden;
+        }
+
+        #map {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .leaflet-control-attribution {
+            font-size: 9px !important;
+            opacity: 0.6;
+        }
+
+        .leaflet-routing-container {
+            display: none !important;
+        }
+
+        .locate-btn {
+            background: white;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .locate-btn:hover {
+            background: #f8fafc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .locate-btn:active {
+            transform: scale(0.95);
+        }
+
+        .locate-btn.active {
+            background: #0066FF;
+        }
+
+        .locate-btn.active i {
+            color: white !important;
+        }
+
+        .user-marker {
+            width: 20px;
+            height: 20px;
+            background: var(--brand-blue);
+            border: 4px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 16px rgba(0, 102, 255, 0.4);
+            transform: translate(-50%, -50%);
+        }
+
+        .user-marker-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 16px rgba(0, 102, 255, 0.4), 0 0 0 0 rgba(0, 102, 255, 0.4); }
+            50% { box-shadow: 0 4px 16px rgba(0, 102, 255, 0.4), 0 0 0 12px rgba(0, 102, 255, 0); }
+        }
+
+        .project-pin-marker {
+            width: 14px;
+            height: 14px;
+            background: var(--brand-blue);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
+            transform: translate(-50%, -50%);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.1);
+        }
+
+        .typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .route-line {
+            stroke: var(--brand-blue);
+            stroke-width: 4;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 0.7;
+        }
+
+        .status-pulse {
+            animation: statusPulse 2s infinite;
+        }
+        @keyframes statusPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Header -->
+    <header class="h-14 border-b border-slate-200 bg-white px-6 flex items-center justify-between z-50 relative">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                <i data-lucide="compass" class="text-white w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-slate-900 tracking-tight">SITETRACK <span class="text-blue-600">PRO</span></span>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div id="status-tag" class="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                Standby
+            </div>
+            <div class="h-8 w-[1px] bg-slate-200"></div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-[10px] font-bold text-slate-400 leading-none">DISTRICT</div>
+                    <div class="text-xs font-semibold">Al-Olaya, Riyadh</div>
+                </div>
+                <div class="w-8 h-8 bg-slate-100 rounded-full border border-slate-200 flex items-center justify-center">
+                    <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 relative bg-slate-50">
+        <!-- Real Map -->
+        <div id="map"></div>
+
+        <!-- Floating Stats Panel -->
+        <div class="absolute top-4 left-4 flex gap-2 z-[1000]">
+            <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3">
+                <i data-lucide="navigation" class="w-4 h-4 text-blue-600"></i>
+                <span class="text-sm font-bold text-slate-700"><span id="km-count">0.0</span> km</span>
+            </div>
+            <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3">
+                <i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>
+                <span class="text-sm font-bold text-slate-700"><span id="lead-count">0</span> Leads</span>
+            </div>
+            <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center gap-3">
+                <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+                <span class="text-sm font-bold text-slate-700"><span id="time-count">0:00</span></span>
+            </div>
+        </div>
+
+        <!-- Locate Me Button -->
+        <div class="absolute top-4 right-4 z-[1000]">
+            <button id="locate-btn" class="locate-btn" onclick="locateUser()" title="Find My Location">
+                <i data-lucide="crosshair" class="w-5 h-5 text-slate-600"></i>
+            </button>
+        </div>
+
+        <!-- Presentation Controls -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000] flex flex-col items-center gap-4 w-full max-w-sm">
+            <div id="pres-label" class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 opacity-0 transition-opacity">
+                Simulating Field Work...
+            </div>
+            <div class="w-full h-1.5 bg-white/80 rounded-full overflow-hidden opacity-0 shadow-sm" id="pres-progress-container">
+                <div id="pres-progress" class="h-full bg-blue-600 w-0 transition-all duration-100"></div>
+            </div>
+            <button id="start-pres-btn" onclick="startPresentation()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-2xl hover:bg-black transition active:scale-95">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                START PRESENTATION
+            </button>
+        </div>
+
+        <!-- Form Overlay -->
+        <div id="form-overlay" class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-[2000] hidden flex items-center justify-center">
+            <div class="bg-white w-[380px] rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform scale-95 transition-transform duration-300" id="form-card">
+                <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-blue-50">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-600">New Site Entry</span>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
+                        <div class="w-2 h-2 rounded-full bg-blue-500 status-pulse"></div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Project Name</label>
+                        <div id="input-name" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center font-medium"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Foreman</label>
+                            <div id="input-contact" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center"></div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Type</label>
+                            <div id="input-type" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center text-slate-400 italic"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Location</label>
+                        <div id="input-location" class="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center text-slate-500"></div>
+                    </div>
+                    <div class="pt-2">
+                        <button class="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:bg-blue-700 transition transform active:scale-95" id="save-btn">
+                            SAVE PROJECT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Initialize Map
+        const map = L.map('map', {
+            zoomControl: false,
+            attributionControl: true
+        }).setView([24.7136, 46.6753], 15);
+
+        // Use Carto Light tile layer (cleaner, no referer issues)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO',
+            maxZoom: 19,
+            subdomains: 'abcd'
+        }).addTo(map);
+
+        // Add zoom control to bottom right
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Auto-locate on page load
+        let initialLocationAttempted = false;
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 15);
+                    
+                    const userIcon = L.divIcon({
+                        className: 'user-marker user-marker-pulse',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+                    initialLocationAttempted = true;
+                },
+                (error) => {
+                    console.log('Initial location failed:', error.message);
+                    initialLocationAttempted = true;
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 300000
+                }
+            );
+        }
+
+        // State
+        let leads = [];
+        let totalDistance = 0;
+        let routeCoordinates = [];
+        let routePolyline = null;
+        let userMarker = null;
+        let startTime = null;
+        let timerInterval = null;
+
+        const formOverlay = document.getElementById('form-overlay');
+        const formCard = document.getElementById('form-card');
+
+        // Simulation waypoints with real Riyadh coordinates
+        const waypoints = [
+            { lat: 24.7136, lng: 46.6753 },
+            { lat: 24.7180, lng: 46.6820, capture: { name: "Villa Al-Mansour", contact: "Eng. Ahmed", type: "Residential" } },
+            { lat: 24.7220, lng: 46.6850 },
+            { lat: 24.7260, lng: 46.6900, capture: { name: "Central Plaza Mall", contact: "Saleh (Security)", type: "Commercial" } },
+            { lat: 24.7300, lng: 46.6950 },
+            { lat: 24.7340, lng: 46.7000, capture: { name: "Luxury Heights Tower", contact: "Khalid (Manager)", type: "Hospitality" } }
+        ];
+
+        let routingControl = null;
+        let routePoints = [];
+        let currentRouteIndex = 0;
+
+        async function startPresentation() {
+            document.getElementById('start-pres-btn').style.display = 'none';
+            document.getElementById('pres-label').style.opacity = '1';
+            document.getElementById('pres-progress-container').style.opacity = '1';
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 status-pulse"></div>Recording';
+            
+            // Start timer
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // Create user marker
+            const userIcon = L.divIcon({
+                className: 'user-marker user-marker-pulse',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+            userMarker = L.marker(waypoints[0], { icon: userIcon }).addTo(map);
+
+            // Calculate full route using OSRM
+            await calculateRoute();
+            
+            // Animate along the route
+            await animateAlongRoute();
+
+            updateProgress(100);
+            clearInterval(timerInterval);
+            
+            document.getElementById('pres-label').innerText = "Presentation Complete";
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>Complete';
+            
+            await delay(3000);
+            location.reload();
+        }
+
+        async function calculateRoute() {
+            return new Promise((resolve, reject) => {
+                const waypointCoords = waypoints.map(w => L.latLng(w.lat, w.lng));
+                
+                routingControl = L.Routing.control({
+                    waypoints: waypointCoords,
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    draggableWaypoints: false,
+                    fitSelectedRoutes: true,
+                    show: false,
+                    router: L.Routing.osrmv1({
+                        serviceUrl: 'https://router.project-osrm.org/route/v1'
+                    }),
+                    lineOptions: {
+                        styles: [{ color: 'transparent', opacity: 0, weight: 0 }]
+                    }
+                }).addTo(map);
+
+                routingControl.on('routesfound', function(e) {
+                    const route = e.routes[0];
+                    routePoints = route.coordinates;
+                    totalDistance = route.summary.totalDistance;
+                    document.getElementById('km-count').innerText = (totalDistance / 1000).toFixed(2);
+                    
+                    // Remove the default route line (we'll draw our own)
+                    map.eachLayer(function(layer) {
+                        if (layer instanceof L.Polyline && layer !== routePolyline) {
+                            map.removeLayer(layer);
+                        }
+                    });
+                    
+                    resolve();
+                });
+
+                routingControl.on('routingerror', function(e) {
+                    console.error('Routing error:', e);
+                    routePoints = waypoints.map(w => L.latLng(w.lat, w.lng));
+                    resolve();
+                });
+            });
+        }
+
+        async function animateAlongRoute() {
+            if (routePoints.length === 0) return;
+
+            const totalPoints = routePoints.length;
+            const speed = 15; // Slower, more realistic driving speed (15 points per second)
+            const interval = 1000 / speed;
+
+            // Draw the route line as we go
+            const drawnCoordinates = [];
+            
+            for (let i = 0; i < totalPoints; i++) {
+                const point = routePoints[i];
+                userMarker.setLatLng(point);
+                
+                // Draw territory trace (blue line following the path)
+                drawnCoordinates.push(point);
+                if (!routePolyline) {
+                    routePolyline = L.polyline(drawnCoordinates, {
+                        color: '#0066FF',
+                        weight: 5,
+                        opacity: 0.6,
+                        smoothFactor: 1
+                    }).addTo(map);
+                } else {
+                    routePolyline.setLatLngs(drawnCoordinates);
+                }
+                
+                // Keep map centered on moving marker
+                map.panTo(point, { animate: true, duration: 0.5 });
+                
+                // Update progress
+                updateProgress((i / totalPoints) * 100);
+
+                // Check if we're near a capture waypoint
+                for (let j = 0; j < waypoints.length; j++) {
+                    const wp = waypoints[j];
+                    if (wp.capture && !wp.captured) {
+                        const dist = map.distance(point, [wp.lat, wp.lng]);
+                        if (dist < 50) { // Within 50 meters
+                            wp.captured = true;
+                            
+                            // Stop at the site
+                            await delay(800);
+                            await performCapture(wp.capture);
+                            await delay(500);
+                        }
+                    }
+                }
+
+                await delay(interval);
+            }
+        }
+
+        function locateUser() {
+            const btn = document.getElementById('locate-btn');
+            btn.classList.add('active');
+            
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                btn.classList.remove('active');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    map.setView([lat, lng], 16);
+                    
+                    const userIcon = L.divIcon({
+                        className: 'user-marker user-marker-pulse',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    
+                    if (userMarker) {
+                        userMarker.setLatLng([lat, lng]);
+                    } else {
+                        userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(map);
+                    }
+                    
+                    setTimeout(() => btn.classList.remove('active'), 1000);
+                },
+                (error) => {
+                    alert('Unable to retrieve your location: ' + error.message);
+                    btn.classList.remove('active');
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 15000,
+                    maximumAge: 300000
+                }
+            );
+        }
+
+        async function performCapture(data) {
+            // Stop and show form
+            await delay(600);
+            formOverlay.classList.remove('hidden');
+            await delay(50);
+            formCard.classList.remove('scale-95');
+            
+            // Simulate human typing - Project Name
+            await delay(400);
+            await typeInto('input-name', data.name);
+            await delay(700);
+            
+            // Simulate human typing - Contact
+            await typeInto('input-contact', data.contact);
+            await delay(600);
+
+            // Select Type
+            document.getElementById('input-type').innerText = data.type;
+            document.getElementById('input-type').classList.remove('italic', 'text-slate-400');
+            document.getElementById('input-type').classList.add('text-slate-700', 'font-medium');
+            await delay(500);
+
+            // Add location
+            const pos = userMarker.getLatLng();
+            document.getElementById('input-location').innerText = `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`;
+            await delay(800);
+
+            // Save button animation
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.add('scale-95');
+            await delay(100);
+            saveBtn.classList.remove('scale-95');
+            saveBtn.classList.replace('bg-blue-600', 'bg-emerald-500');
+            saveBtn.classList.replace('shadow-blue-200', 'shadow-emerald-200');
+            saveBtn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i> SAVED';
+            lucide.createIcons();
+            
+            await delay(1200);
+            
+            // Drop pin on map
+            dropPin(pos.lat, pos.lng, data.name);
+            
+            // Close form with animation
+            formCard.classList.add('scale-95');
+            await delay(300);
+            formOverlay.classList.add('hidden');
+            resetForm();
+            
+            leads.push(data);
+            document.getElementById('lead-count').innerText = leads.length;
+            
+            await delay(400);
+        }
+
+        function typeInto(elementId, text) {
+            return new Promise(resolve => {
+                const el = document.getElementById(elementId);
+                el.classList.add('typing');
+                let i = 0;
+                const baseSpeed = 80;
+                
+                function typeChar() {
+                    if (i < text.length) {
+                        el.innerText += text[i];
+                        i++;
+                        // Variable typing speed for more human feel
+                        const variance = Math.random() * 40 - 20;
+                        setTimeout(typeChar, baseSpeed + variance);
+                    } else {
+                        el.classList.remove('typing');
+                        resolve();
+                    }
+                }
+                typeChar();
+            });
+        }
+
+        function dropPin(lat, lng, name) {
+            const pinIcon = L.divIcon({
+                className: 'project-pin-marker',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7]
+            });
+            const marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map);
+            marker.bindPopup(`<strong>${name}</strong>`);
+        }
+
+        function resetForm() {
+            document.getElementById('input-name').innerText = "";
+            document.getElementById('input-contact').innerText = "";
+            document.getElementById('input-type').innerText = "Select Type...";
+            document.getElementById('input-type').classList.add('italic', 'text-slate-400');
+            document.getElementById('input-type').classList.remove('text-slate-700', 'font-medium');
+            document.getElementById('input-location').innerText = "";
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.replace('bg-emerald-500', 'bg-blue-600');
+            saveBtn.classList.replace('shadow-emerald-200', 'shadow-blue-200');
+            saveBtn.classList.remove('scale-95');
+            saveBtn.innerText = "SAVE PROJECT";
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('pres-progress').style.width = percent + '%';
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('time-count').innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+        // Re-initialize Lucide icons after dynamic content
+        setTimeout(() => lucide.createIcons(), 100);
+    </script>
+</body>
+</html>
