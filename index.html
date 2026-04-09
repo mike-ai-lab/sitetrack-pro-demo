@@ -109,6 +109,34 @@
             transition: all 0.2s;
         }
 
+        .add-pin-btn {
+            background: white;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(239, 68, 68, 0.2);
+            transition: all 0.2s;
+            color: #ef4444;
+        }
+
+        .add-pin-btn:hover {
+            background: #fef2f2;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+            transform: scale(1.05);
+        }
+
+        .add-pin-btn.active {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
         .control-btn:hover, .locate-btn:hover {
             background: #f8fafc;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -177,6 +205,56 @@
 
         .leads-panel.open {
             transform: translateX(0);
+        }
+
+        .custom-select {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .custom-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #0066FF;
+            border-radius: 12px;
+            margin-top: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .custom-select-dropdown.open {
+            display: block;
+        }
+
+        .custom-select-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+            font-size: 14px;
+        }
+
+        .custom-select-option:hover {
+            background: #f1f5f9;
+        }
+
+        .custom-select-option:active {
+            background: #e2e8f0;
+        }
+
+        .center-pin-marker {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 8000;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 12px rgba(239, 68, 68, 0.4));
         }
 
         @media (max-width: 768px) {
@@ -252,10 +330,13 @@
             </button>
         </div>
 
-        <!-- Manual Mode Button (Desktop Only) -->
-        <div class="hidden md:block absolute left-4 z-[1000]" style="bottom: calc(96px + env(safe-area-inset-bottom));">
-            <button id="manual-mode-btn" class="locate-btn" onclick="toggleManualMode()" title="Manual Mode - Click map to add leads">
-                <i data-lucide="hand" class="w-5 h-5 text-slate-600"></i>
+        <!-- Add Project Pin Button -->
+        <div class="absolute right-4 z-[1000]" style="bottom: calc(160px + env(safe-area-inset-bottom));">
+            <button id="add-pin-btn" class="add-pin-btn" onclick="toggleAddPin()" title="Add Project Pin">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
             </button>
         </div>
 
@@ -277,15 +358,15 @@
 
         <!-- Form Overlay -->
         <div id="form-overlay" class="absolute inset-0 bg-slate-900/20 backdrop-blur-sm z-[5000] hidden flex items-center justify-center p-4">
-            <div class="bg-white w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl border border-slate-200 transform scale-95 transition-transform duration-300" id="form-card">
-                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-blue-50 sticky top-0 z-10">
+            <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 transform scale-95 transition-transform duration-300 flex flex-col" id="form-card" style="max-height: calc(100vh - 100px);">
+                <div class="p-4 md:p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-blue-50 flex-shrink-0">
                     <span class="text-xs font-bold uppercase tracking-wider text-slate-600">New Site Entry</span>
                     <div class="flex items-center gap-2">
                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-blue-500"></i>
                         <div class="w-2 h-2 rounded-full bg-blue-500 status-pulse"></div>
                     </div>
                 </div>
-                <div class="p-4 md:p-6 space-y-4">
+                <div class="p-4 md:p-6 space-y-4 overflow-y-auto flex-1">
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Project Name</label>
                         <div id="input-name" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center font-medium"></div>
@@ -297,7 +378,19 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Type</label>
-                            <div id="input-type" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center text-slate-400 italic"></div>
+                            <div class="custom-select">
+                                <div id="input-type" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center justify-between text-slate-400 italic">
+                                    <span>Select Type...</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </div>
+                                <div id="type-dropdown" class="custom-select-dropdown">
+                                    <div class="custom-select-option" onclick="selectType('Residential')">Residential</div>
+                                    <div class="custom-select-option" onclick="selectType('Commercial')">Commercial</div>
+                                    <div class="custom-select-option" onclick="selectType('Hospitality')">Hospitality</div>
+                                    <div class="custom-select-option" onclick="selectType('Industrial')">Industrial</div>
+                                    <div class="custom-select-option" onclick="selectType('Infrastructure')">Infrastructure</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -307,7 +400,19 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-slate-400 uppercase mb-1.5 block">Status</label>
-                            <div id="input-status" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center text-slate-400 italic"></div>
+                            <div class="custom-select">
+                                <div id="input-status" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center justify-between text-slate-400 italic">
+                                    <span>Select Status...</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                </div>
+                                <div id="status-dropdown" class="custom-select-dropdown">
+                                    <div class="custom-select-option" onclick="selectStatus('Planning Phase')">Planning Phase</div>
+                                    <div class="custom-select-option" onclick="selectStatus('Foundation Stage')">Foundation Stage</div>
+                                    <div class="custom-select-option" onclick="selectStatus('Early Construction')">Early Construction</div>
+                                    <div class="custom-select-option" onclick="selectStatus('Mid Construction')">Mid Construction</div>
+                                    <div class="custom-select-option" onclick="selectStatus('Finishing Stage')">Finishing Stage</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -331,7 +436,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="pt-2 flex gap-3">
+                    <div class="pt-2 flex gap-3 flex-shrink-0">
                         <button onclick="closeForm()" class="flex-1 bg-slate-200 text-slate-700 py-3.5 rounded-xl font-bold text-sm hover:bg-slate-300 transition transform active:scale-95">
                             CANCEL
                         </button>
@@ -403,9 +508,81 @@
 
         // Enable manual mode by default on mobile
         if (window.innerWidth <= 768) {
-            isManualMode = true;
-            map.on('click', handleMapClick);
+            // Mobile: use add pin button instead of tap-to-add
         }
+
+        function toggleAddPin() {
+            isAddPinMode = !isAddPinMode;
+            const btn = document.getElementById('add-pin-btn');
+            
+            if (isAddPinMode) {
+                btn.classList.add('active');
+                document.getElementById('start-pres-btn').style.display = 'none';
+                document.getElementById('pres-label').innerText = "Move map to position pin, then tap button again";
+                document.getElementById('pres-label').style.opacity = '1';
+                
+                // Create center pin
+                if (!centerPinElement) {
+                    centerPinElement = document.createElement('div');
+                    centerPinElement.className = 'center-pin-marker';
+                    centerPinElement.innerHTML = `
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#ef4444" stroke="white" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3" fill="white"></circle>
+                        </svg>
+                    `;
+                    document.body.appendChild(centerPinElement);
+                }
+            } else {
+                if (centerPinElement) {
+                    // Get center of map
+                    const center = map.getCenter();
+                    openManualForm(center);
+                    
+                    // Remove center pin
+                    document.body.removeChild(centerPinElement);
+                    centerPinElement = null;
+                }
+                btn.classList.remove('active');
+                document.getElementById('pres-label').style.opacity = '0';
+            }
+        }
+
+        function selectType(type) {
+            const el = document.getElementById('input-type');
+            el.querySelector('span').innerText = type;
+            el.classList.remove('italic', 'text-slate-400');
+            el.classList.add('text-slate-700', 'font-medium');
+            document.getElementById('type-dropdown').classList.remove('open');
+        }
+
+        function selectStatus(status) {
+            const el = document.getElementById('input-status');
+            el.querySelector('span').innerText = status;
+            el.classList.remove('italic', 'text-slate-400');
+            el.classList.add('text-slate-700', 'font-medium');
+            document.getElementById('status-dropdown').classList.remove('open');
+        }
+
+        // Toggle dropdowns
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('input-type').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('type-dropdown').classList.toggle('open');
+                document.getElementById('status-dropdown').classList.remove('open');
+            });
+            
+            document.getElementById('input-status').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('status-dropdown').classList.toggle('open');
+                document.getElementById('type-dropdown').classList.remove('open');
+            });
+            
+            document.addEventListener('click', function() {
+                document.getElementById('type-dropdown').classList.remove('open');
+                document.getElementById('status-dropdown').classList.remove('open');
+            });
+        });
 
         // State
         let leads = [];
@@ -419,8 +596,9 @@
         let isPaused = false;
         let isStopped = false;
         let animationIndex = 0;
-        let isManualMode = false;
-        let manualMarker = null;
+        let isAddPinMode = false;
+        let centerPinMarker = null;
+        let centerPinElement = null;
 
         const formOverlay = document.getElementById('form-overlay');
         const formCard = document.getElementById('form-card');
@@ -725,11 +903,13 @@
         function resetForm() {
             document.getElementById('input-name').innerText = "";
             document.getElementById('input-contact').innerText = "";
-            document.getElementById('input-type').innerText = "Select Type...";
+            const typeEl = document.getElementById('input-type').querySelector('span');
+            if (typeEl) typeEl.innerText = "Select Type...";
             document.getElementById('input-type').classList.add('italic', 'text-slate-400');
             document.getElementById('input-type').classList.remove('text-slate-700', 'font-medium');
             document.getElementById('input-phone').innerText = "";
-            document.getElementById('input-status').innerText = "Select Status...";
+            const statusEl = document.getElementById('input-status').querySelector('span');
+            if (statusEl) statusEl.innerText = "Select Status...";
             document.getElementById('input-status').classList.add('italic', 'text-slate-400');
             document.getElementById('input-status').classList.remove('text-slate-700', 'font-medium');
             document.getElementById('input-budget').innerText = "";
@@ -889,8 +1069,8 @@
         }
 
         function openManualForm(latlng) {
-            if (manualMarker) {
-                map.removeLayer(manualMarker);
+            if (centerPinMarker) {
+                map.removeLayer(centerPinMarker);
             }
             
             const tempIcon = L.divIcon({
@@ -898,7 +1078,7 @@
                 iconSize: [20, 20],
                 iconAnchor: [10, 10]
             });
-            manualMarker = L.marker(latlng, { icon: tempIcon }).addTo(map);
+            centerPinMarker = L.marker(latlng, { icon: tempIcon }).addTo(map);
             
             document.getElementById('input-location').innerText = `${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}`;
             formOverlay.classList.remove('hidden');
@@ -910,19 +1090,27 @@
             setTimeout(() => {
                 formOverlay.classList.add('hidden');
                 resetForm();
-                if (manualMarker) {
-                    map.removeLayer(manualMarker);
-                    manualMarker = null;
+                if (centerPinMarker) {
+                    map.removeLayer(centerPinMarker);
+                    centerPinMarker = null;
                 }
+                if (centerPinElement) {
+                    document.body.removeChild(centerPinElement);
+                    centerPinElement = null;
+                }
+                isAddPinMode = false;
+                document.getElementById('add-pin-btn').classList.remove('active');
             }, 300);
         }
 
         function saveManualLead() {
             const name = document.getElementById('input-name').innerText.trim();
             const contact = document.getElementById('input-contact').innerText.trim();
-            const type = document.getElementById('input-type').innerText.trim();
+            const typeEl = document.getElementById('input-type').querySelector('span');
+            const type = typeEl ? typeEl.innerText.trim() : '';
             const phone = document.getElementById('input-phone').innerText.trim();
-            const status = document.getElementById('input-status').innerText.trim();
+            const statusEl = document.getElementById('input-status').querySelector('span');
+            const status = statusEl ? statusEl.innerText.trim() : '';
             const budget = document.getElementById('input-budget').innerText.trim();
             const notes = document.getElementById('input-notes').innerText.trim();
             
@@ -940,7 +1128,7 @@
             lucide.createIcons();
             
             setTimeout(() => {
-                const pos = manualMarker.getLatLng();
+                const pos = centerPinMarker.getLatLng();
                 dropPin(pos.lat, pos.lng, name);
                 
                 leads.push({
@@ -990,4 +1178,12 @@
                 if (selected && statuses[selected-1]) {
                     this.innerText = statuses[selected-1];
                     this.classList.remove('italic', 'text-slate-400');
-                    this.c
+                    this.classList.add('text-slate-700', 'font-medium');
+                }
+            });
+        });
+
+        setTimeout(() => lucide.createIcons(), 100);
+    </script>
+</body>
+</html>
