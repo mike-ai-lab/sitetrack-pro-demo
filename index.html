@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SiteTrack Pro | Construction Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -24,6 +27,7 @@
             background-color: var(--bg-main);
             color: #0F172A;
             overflow: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         #map {
@@ -147,7 +151,7 @@
 
         .playback-controls-container {
             position: fixed;
-            top: 16px;
+            top: calc(16px + env(safe-area-inset-top));
             right: 16px;
             z-index: 9999;
             display: flex;
@@ -156,7 +160,7 @@
 
         @media (max-width: 768px) {
             .playback-controls-container {
-                top: 12px;
+                top: calc(12px + env(safe-area-inset-top));
                 right: 12px;
                 left: 12px;
                 justify-content: center;
@@ -186,7 +190,7 @@
 <body class="flex flex-col h-screen overflow-hidden">
 
     <!-- Header -->
-    <header class="h-14 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between z-50 relative">
+    <header class="h-14 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between z-50 relative" style="padding-top: env(safe-area-inset-top);">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
                 <i data-lucide="compass" class="text-white w-5 h-5"></i>
@@ -210,7 +214,7 @@
         <div id="map"></div>
 
         <!-- Floating Stats Panel -->
-        <div class="absolute top-4 left-4 flex flex-col md:flex-row gap-2 z-[1000]">
+        <div class="absolute left-4 flex flex-col md:flex-row gap-2 z-[1000]" style="top: calc(16px + env(safe-area-inset-top));">
             <div class="glass-panel px-3 md:px-4 py-2 md:py-2.5 rounded-xl flex items-center gap-2 md:gap-3">
                 <i data-lucide="navigation" class="w-4 h-4 text-blue-600"></i>
                 <span class="text-xs md:text-sm font-bold text-slate-700"><span id="km-count">0.0</span> km</span>
@@ -239,14 +243,14 @@
         </div>
 
         <!-- Locate Me Button -->
-        <div class="absolute bottom-24 right-4 z-[1000]">
+        <div class="absolute right-4 z-[1000]" style="bottom: calc(96px + env(safe-area-inset-bottom));">
             <button id="locate-btn" class="locate-btn" onclick="locateUser()" title="Find My Location">
                 <i data-lucide="crosshair" class="w-5 h-5 text-slate-600"></i>
             </button>
         </div>
 
         <!-- Manual Mode Button -->
-        <div class="absolute bottom-24 left-4 z-[1000]">
+        <div class="absolute left-4 z-[1000]" style="bottom: calc(96px + env(safe-area-inset-bottom));">
             <button id="manual-mode-btn" class="locate-btn" onclick="enableManualMode()" title="Manual Mode">
                 <i data-lucide="hand" class="w-5 h-5 text-slate-600"></i>
             </button>
