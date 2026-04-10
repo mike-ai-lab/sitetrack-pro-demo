@@ -674,6 +674,37 @@
             document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
             document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
             
+            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
+            
+            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
+            
+            expandPanel();
+        }
+
+        function switchMode(mode) {
+            if (isDriving || isRecording) return;
+            
+            currentMode = mode;
+            
+            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
+            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
+            
+            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
+            
+            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
+            
+            // Show correct content
+            expandPanel();
+        }
+
+        function switchMode(mode) {
+            if (isDriving || isRecording) return;
+            
+            currentMode = mode;
+            
+            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
+            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
+            
             document.getElementById('planner-content').classList.toggle('hidden', mode !== 'planner');
             document.getElementById('recorder-content').classList.toggle('hidden', mode !== 'recorder');
             
