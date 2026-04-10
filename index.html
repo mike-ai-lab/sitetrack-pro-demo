@@ -68,11 +68,17 @@
             #control-panel {
                 top: 10px;
                 left: 10px;
-                right: 10px;
+                right: auto;
+                max-width: calc(100vw - 80px);
             }
             #control-panel > div {
                 width: 100% !important;
                 max-width: 100%;
+            }
+            /* Ensure history button doesn't overlap */
+            #history-btn {
+                top: 10px !important;
+                right: 10px !important;
             }
         }
     </style>
@@ -149,6 +155,10 @@
                                 End
                             </button>
                         </div>
+                        
+                        <button id="reset-planner-btn" onclick="resetPlanner()" class="w-full bg-gray-200 text-gray-700 text-[10px] font-bold py-2 rounded-lg hover:bg-gray-300 transition-all uppercase">
+                            Reset
+                        </button>
                     </div>
 
                     <!-- RECORDER TAB -->
@@ -222,6 +232,10 @@
                         <button id="save-session-btn" disabled onclick="saveSession()" class="hidden w-full bg-green-500 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-green-600 transition-all uppercase">
                             Save Session
                         </button>
+                        
+                        <button id="reset-recorder-btn" onclick="resetRecorder()" class="w-full bg-gray-200 text-gray-700 text-[10px] font-bold py-2 rounded-lg hover:bg-gray-300 transition-all uppercase">
+                            Reset
+                        </button>
                     </div>
                 </div>
             </div>
@@ -267,7 +281,7 @@
     </div>
 
     <!-- History Toggle Button -->
-    <div class="absolute top-5 right-5 z-[1000] pointer-events-auto">
+    <div class="absolute top-5 right-5 z-[999] pointer-events-auto">
         <button id="history-btn" onclick="toggleHistory()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Trip History">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
@@ -354,7 +368,17 @@
             },
             
             switchTab(tab) {
-                if (isDriving || isRecording) return;
+                if (isDriving || isRecording) {
+                    alert('Please stop the current activity before switching tabs');
+                    return;
+                }
+                
+                // Clear the previous tab's state completely
+                if (this.currentTab === 'planner' && tab === 'recorder') {
+                    resetPlanner();
+                } else if (this.currentTab === 'recorder' && tab === 'planner') {
+                    resetRecorder();
+                }
                 
                 this.currentTab = tab;
                 currentMode = tab;
@@ -616,16 +640,139 @@
 
         function endTrip() {
             shouldEndTrip = true;
+            
+            // Complete the journey to destination instantly
+            if (routeCoords && routeCoords.length > 0) {
+                const destination = routeCoords[routeCoords.length - 1];
+                carMarker.setLatLng([destination.lat, destination.lng]);
+                if (document.getElementById('follow-toggle').checked) {
+                    map.panTo([destination.lat, destination.lng]);
+                }
+            }
+            
             isDriving = false;
             isPaused = false;
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('pause-btn').classList.add('hidden');
+            document.getElementById('end-btn').classList.add('hidden');
+            document.getElementById('analytics').style.opacity = "0";
+            document.getElementById('trip-badge').innerText = "Trip Completed";
+            document.getElementById('trip-badge').classList.remove('bg-blue-100', 'text-blue-700');
+            document.getElementById('trip-badge').classList.add('bg-green-100', 'text-green-700');
+            
+            setTimeout(() => {
+                if (!isDriving) {
+                    document.getElementById('trip-badge').innerText = "Ready";
+                    document.getElementById('trip-badge').classList.remove('bg-green-100', 'text-green-700');
+                    document.getElementById('trip-badge').classList.add('bg-blue-100', 'text-blue-700');
+                }
+            }, 2000);
+        }
+        
+        function resetPlanner() {
+            // Stop any ongoing trip
+            if (isDriving) {
+                shouldEndTrip = true;
+                isDriving = false;
+                isPaused = false;
+            }
+            
+            // Clear all waypoints and markers
+            waypoints = [];
+            editingPointIndex = null;
+            pickupMarker = null;
+            destMarker = null;
+            routeCoords = [];
+            currentSegmentIndex = 0;
+            
+            // Remove all markers and routes from map
+            map.eachLayer(layer => {
+                if (layer instanceof L.CircleMarker || layer instanceof L.Polyline) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            
+            // Hide car marker
+            carMarker.setOpacity(0);
+            
+            // Reset UI
+            document.getElementById('pickup-label').innerText = "Set pickup...";
+            document.getElementById('dest-label').innerText = "Set destination...";
+            document.getElementById('trip-badge').innerText = "Set Pickup";
+            document.getElementById('trip-badge').classList.remove('bg-green-100', 'text-green-700');
+            document.getElementById('trip-badge').classList.add('bg-blue-100', 'text-blue-700');
+            document.getElementById('start-btn').disabled = true;
             document.getElementById('start-btn').classList.remove('hidden');
             document.getElementById('pause-btn').classList.add('hidden');
             document.getElementById('end-btn').classList.add('hidden');
             document.getElementById('analytics').style.opacity = "0";
-            document.getElementById('trip-badge').innerText = "Trip Ended";
-            setTimeout(() => {
-                if (!isDriving) document.getElementById('trip-badge').innerText = "Ready";
-            }, 2000);
+            document.getElementById('stat-dist').innerText = "0.0 km";
+            document.getElementById('stat-head').innerText = "0°";
+            document.getElementById('speed-slider').value = 80;
+            document.getElementById('speed-display').innerText = "Normal";
+            
+            // Remove ring classes
+            document.getElementById('pickup-box').classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
+            document.getElementById('dest-box').classList.remove('ring-2', 'ring-offset-2', 'ring-red-500');
+        }
+        
+        function resetRecorder() {
+            // Stop any ongoing recording
+            if (isRecording) {
+                stopRecording();
+            }
+            
+            // Clear all recording data
+            recordedPath = [];
+            visitedSegments.clear();
+            totalDistance = 0;
+            streetsVisited = 0;
+            streetsRevisited = 0;
+            simulatedElapsedTime = 0;
+            isSimulationAnimating = false;
+            
+            // Remove all path polylines
+            pathPolylines.forEach(polyline => map.removeLayer(polyline));
+            pathPolylines = [];
+            
+            // Remove user location marker
+            if (userLocationMarker) {
+                map.removeLayer(userLocationMarker);
+                userLocationMarker = null;
+            }
+            
+            // Hide car marker
+            carMarker.setOpacity(0);
+            
+            // Reset UI
+            document.getElementById('rec-distance').innerText = "0.0 km";
+            document.getElementById('rec-duration').innerText = "00:00";
+            document.getElementById('rec-streets').innerText = "0";
+            document.getElementById('rec-revisited').innerText = "0";
+            document.getElementById('record-badge').innerText = "Ready";
+            document.getElementById('record-badge').classList.remove('bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
+            document.getElementById('record-badge').classList.add('bg-gray-100', 'text-gray-700');
+            document.getElementById('start-recording-btn').classList.remove('hidden');
+            document.getElementById('pause-recording-btn').classList.add('hidden');
+            document.getElementById('resume-recording-btn').classList.add('hidden');
+            document.getElementById('stop-recording-btn').classList.add('hidden');
+            document.getElementById('save-session-btn').classList.add('hidden');
+            document.getElementById('recording-indicator').classList.add('hidden');
+            document.getElementById('sim-mode-toggle').checked = false;
+            document.getElementById('sim-hint').classList.add('hidden');
+            
+            simulationMode = false;
+            isLocationFound = false;
+            
+            if (!simulationMode) {
+                document.getElementById('start-recording-btn').disabled = true;
+            }
         }
 
         async function startTrip() {
