@@ -40,7 +40,7 @@
     <div id="ui-overlay" class="absolute top-5 left-5 z-[1000] pointer-events-none">
         <div id="planner-card" class="glass p-4 rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 panel-transition max-h-[85vh] overflow-y-auto">
             <!-- Mode Switcher -->
-            <div class="flex gap-1 mb-3 p-0.5 bg-gray-100 rounded-lg">
+            <div class="flex gap-1 mb-3 p-0.5 bg-gray-100 rounded-lg" ondblclick="toggleMainPanel()">
                 <button onclick="switchMode('planner')" class="mode-tab active flex-1 text-[10px] font-bold py-1.5 rounded-md uppercase tracking-wider" id="tab-planner">
                     Planner
                 </button>
@@ -49,13 +49,8 @@
                 </button>
             </div>
 
-            <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center justify-between mb-3" ondblclick="toggleMainPanel()">
                 <h1 class="text-sm font-bold text-gray-900" id="panel-title">Trip Planner</h1>
-                <button onclick="toggleMainPanel()" class="p-1 hover:bg-gray-200 rounded-md transition">
-                    <svg id="min-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 15l-6-6-6 6"/>
-                    </svg>
-                </button>
             </div>
             
             <!-- TRIP PLANNER CONTENT -->
@@ -198,17 +193,6 @@
         </button>
     </div>
 
-    <!-- Main Panel Toggle Button -->
-    <div class="absolute top-5 left-5 z-[1000] pointer-events-auto hidden">
-        <button id="main-panel-btn" onclick="toggleMainPanel()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="3" y1="12" x2="21" y2="12"/>
-                <line x1="3" y1="6" x2="21" y2="6"/>
-                <line x1="3" y1="18" x2="21" y2="18"/>
-            </svg>
-        </button>
-    </div>
-
     <!-- History Panel -->
     <div id="history-panel" class="absolute top-5 right-5 z-[1000] pointer-events-none hidden">
         <div class="glass p-4 rounded-2xl shadow-xl border border-gray-100 pointer-events-auto w-64 max-h-[40vh] flex flex-col">
@@ -306,8 +290,8 @@
             );
 
             const carHtml = `
-                <div class="car-icon-inner" id="car-inner">
-                    <svg width="40" height="40" viewBox="0 0 100 100">
+                <div class="car-icon-inner" id="car-inner" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="40" height="40" viewBox="0 0 100 100" style="display: block;">
                         <rect x="25" y="10" width="50" height="80" rx="15" fill="#1a1a1a" />
                         <rect x="30" y="22" width="40" height="18" rx="4" fill="#444" />
                         <rect x="30" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
@@ -316,8 +300,13 @@
                 </div>
             `;
 
-            const icon = L.divIcon({ html: carHtml, className: '', iconSize: [40, 40], iconAnchor: [20, 20] });
-            carMarker = L.marker([0,0], { icon: icon, opacity: 0 }).addTo(map);
+            const icon = L.divIcon({ 
+                html: carHtml, 
+                className: 'car-marker-icon', 
+                iconSize: [40, 40], 
+                iconAnchor: [20, 20] 
+            });
+            carMarker = L.marker([24.7115, 46.6744], { icon: icon, opacity: 0 }).addTo(map);
 
             map.on('click', onMapClick);
 
@@ -385,23 +374,6 @@
                 // Expand panel after setting destination
                 expandPanel();
             }
-        }
-
-        function minimizePanel() {
-            document.getElementById('planner-content').style.display = 'none';
-            document.getElementById('recorder-content').style.display = 'none';
-            isMinimized = true;
-        }
-
-        function expandPanel() {
-            if (currentMode === 'planner') {
-                document.getElementById('planner-content').style.display = 'block';
-                document.getElementById('recorder-content').style.display = 'none';
-            } else {
-                document.getElementById('recorder-content').style.display = 'block';
-                document.getElementById('planner-content').style.display = 'none';
-            }
-            isMinimized = false;
         }
 
         function startEditingPoint(index) {
@@ -665,54 +637,23 @@
             } else {
                 minimizePanel();
             }
-            document.getElementById('min-icon').style.transform = isMinimized ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
-        function switchMode(mode) {
-            if (isDriving || isRecording) return;
-            
-            currentMode = mode;
-            
-            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
-            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
-            
-            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
-            
-            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
-            
-            expandPanel();
+        function minimizePanel() {
+            document.getElementById('planner-content').style.display = 'none';
+            document.getElementById('recorder-content').style.display = 'none';
+            isMinimized = true;
         }
 
-        function switchMode(mode) {
-            if (isDriving || isRecording) return;
-            
-            currentMode = mode;
-            
-            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
-            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
-            
-            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
-            
-            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
-            
-            // Show correct content
-            expandPanel();
-        }
-
-        function switchMode(mode) {
-            if (isDriving || isRecording) return;
-            
-            currentMode = mode;
-            
-            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
-            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
-            
-            document.getElementById('planner-content').classList.toggle('hidden', mode !== 'planner');
-            document.getElementById('recorder-content').classList.toggle('hidden', mode !== 'recorder');
-            
-            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
-            
-            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
+        function expandPanel() {
+            if (currentMode === 'planner') {
+                document.getElementById('planner-content').style.display = 'block';
+                document.getElementById('recorder-content').style.display = 'none';
+            } else {
+                document.getElementById('recorder-content').style.display = 'block';
+                document.getElementById('planner-content').style.display = 'none';
+            }
+            isMinimized = false;
         }
 
         // ============================================
