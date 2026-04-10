@@ -29,47 +29,6 @@
             z-index: 600 !important;
         }
         .leaflet-routing-container { display: none; }
-        input[type=range] { accent-color: #000; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); }
-        .recording-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        
-        /* Tab System */
-        .tab-btn {
-            background: transparent;
-            color: #6b7280;
-        }
-        .tab-btn.active {
-            background: #000;
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Custom Scrollbar */
-        #panel-body::-webkit-scrollbar,
-        .overflow-y-auto::-webkit-scrollbar {
-            width: 6px;
-        }
-        #panel-body::-webkit-scrollbar-track,
-        .overflow-y-auto::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-        #panel-body::-webkit-scrollbar-thumb,
-        .overflow-y-auto::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        #panel-body::-webkit-scrollbar-thumb:hover,
-        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
         
         /* Hide devtools inspector highlight */
         .element-inspector-highlight { display: none !important; }
@@ -85,16 +44,6 @@
                 width: 50px !important;
                 height: 50px !important;
             }
-            #control-panel {
-                top: 10px;
-                left: 10px;
-                right: auto;
-                max-width: calc(100vw - 80px);
-            }
-            #control-panel > div {
-                width: 100% !important;
-                max-width: 100%;
-            }
             /* Ensure history button doesn't overlap */
             #history-btn {
                 top: 10px !important;
@@ -105,180 +54,7 @@
 </head>
 <body class="bg-gray-100 overflow-hidden">
 
-    <!-- Main Control Panel -->
-    <div id="control-panel" class="absolute top-5 left-5 z-[1000] pointer-events-none">
-        <div class="glass rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 overflow-hidden transition-all duration-300 flex flex-col max-h-[calc(100vh-40px)] sm:max-h-[530px]">
-            <!-- Panel Header -->
-            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors flex-shrink-0" onclick="Panel.toggle()">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <h1 class="text-xs font-bold text-gray-900" id="panel-title">Trip Planner</h1>
-                </div>
-                <button class="p-1.5 hover:bg-gray-200 rounded-lg transition-colors" id="collapse-btn" title="Collapse">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="collapse-icon">
-                        <polyline points="18 15 12 9 6 15"/>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Panel Body -->
-            <div id="panel-body" class="transition-all duration-300 overflow-hidden flex-1 flex flex-col" style="max-height: 600px;">
-                <!-- Tab Switcher -->
-                <div class="flex gap-1 p-2 bg-gray-50 border-b border-gray-100 flex-shrink-0">
-                    <button onclick="Panel.switchTab('planner')" class="tab-btn active flex-1 text-[10px] font-bold py-2 rounded-lg uppercase tracking-wider transition-all" id="tab-planner">
-                        Planner
-                    </button>
-                    <button onclick="Panel.switchTab('recorder')" class="tab-btn flex-1 text-[10px] font-bold py-2 rounded-lg uppercase tracking-wider transition-all" id="tab-recorder">
-                        Recorder
-                    </button>
-                </div>
-
-                <!-- Tab Content Container with Auto Scroll -->
-                <div class="p-4 overflow-y-auto flex-1" style="overflow-y: auto;">
-                    <!-- PLANNER TAB -->
-                    <div id="planner-tab" class="tab-content space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span id="trip-badge" class="bg-blue-100 text-blue-700 text-[9px] px-2 py-0.5 rounded uppercase font-bold">Set Pickup</span>
-                            <div class="flex items-center gap-1.5">
-                                <label class="text-[9px] font-bold text-gray-400">FOLLOW</label>
-                                <input type="checkbox" id="follow-toggle" checked class="w-3.5 h-3.5 rounded">
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-2">
-                            <div id="pickup-box" class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:border-blue-500 transition-all" onclick="startEditingPoint(0)">
-                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                <span id="pickup-label" class="text-[11px] text-gray-500 truncate italic">Set pickup...</span>
-                            </div>
-                            <div id="dest-box" class="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200 cursor-pointer hover:border-red-500 transition-all" onclick="startEditingPoint(1)">
-                                <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                                <span id="dest-label" class="text-[11px] text-gray-500 truncate italic">Set destination...</span>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-[9px] font-bold text-gray-400 uppercase">Speed</label>
-                                <span id="speed-display" class="text-[10px] font-bold text-gray-900">Normal</span>
-                            </div>
-                            <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-1 bg-gray-200 rounded-lg cursor-pointer">
-                        </div>
-
-                        <div class="flex items-center justify-center gap-3">
-                            <button id="start-btn" disabled onclick="handleStart()" class="w-[40px] h-[40px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Trip">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </button>
-                            <button id="pause-btn" disabled onclick="togglePause()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Pause Trip">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="6" y="4" width="4" height="16"/>
-                                    <rect x="14" y="4" width="4" height="16"/>
-                                </svg>
-                            </button>
-                            <button id="resume-btn" disabled onclick="togglePause()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Resume Trip">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </button>
-                            <button id="end-btn" onclick="endTrip()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="End Trip">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="6" y="6" width="12" height="12"/>
-                                </svg>
-                            </button>
-                            <button id="reset-planner-btn" onclick="resetPlanner()" class="w-[40px] h-[40px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                                    <path d="M21 3v5h-5"/>
-                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                                    <path d="M3 21v-5h5"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- RECORDER TAB -->
-                    <div id="recorder-tab" class="tab-content space-y-3 hidden">
-                        <div class="flex items-center justify-between">
-                            <span id="record-badge" class="bg-gray-100 text-gray-700 text-[9px] px-2 py-0.5 rounded uppercase font-bold">Ready</span>
-                            <div id="recording-indicator" class="hidden flex items-center gap-1.5">
-                                <div class="w-1.5 h-1.5 bg-red-500 rounded-full recording-pulse"></div>
-                                <span class="text-[9px] font-bold text-red-500">REC</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-200">
-                            <span class="text-[9px] font-bold text-gray-700 uppercase">Auto Focus</span>
-                            <input type="checkbox" id="auto-focus-toggle" checked class="w-3.5 h-3.5 rounded">
-                        </div>
-
-                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg border border-yellow-200">
-                            <span class="text-[9px] font-bold text-yellow-700 uppercase">Simulation</span>
-                            <input type="checkbox" id="sim-mode-toggle" onchange="toggleSimMode()" class="w-3.5 h-3.5 rounded">
-                        </div>
-                        <p id="sim-hint" class="hidden text-[9px] text-yellow-600 italic -mt-2">Click map to navigate via streets</p>
-
-                        <div class="bg-white p-3 rounded-lg border border-gray-200">
-                            <div class="grid grid-cols-2 gap-2 text-center">
-                                <div>
-                                    <p class="text-[8px] text-gray-400 uppercase mb-0.5">Distance</p>
-                                    <p id="rec-distance" class="text-sm font-bold text-gray-900">0.0 km</p>
-                                </div>
-                                <div>
-                                    <p class="text-[8px] text-gray-400 uppercase mb-0.5">Time</p>
-                                    <p id="rec-duration" class="text-sm font-bold text-gray-900">00:00</p>
-                                </div>
-                                <div>
-                                    <p class="text-[8px] text-gray-400 uppercase mb-0.5">New</p>
-                                    <p id="rec-streets" class="text-sm font-bold text-blue-600">0</p>
-                                </div>
-                                <div>
-                                    <p class="text-[8px] text-gray-400 uppercase mb-0.5">Revisit</p>
-                                    <p id="rec-revisited" class="text-sm font-bold text-orange-600">0</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-1.5 text-[10px]">
-                            <div class="flex items-center gap-2 text-gray-600">
-                                <div class="w-2.5 h-2.5 bg-blue-500 rounded"></div>
-                                <span>New street</span>
-                            </div>
-                            <div class="flex items-center gap-2 text-gray-600">
-                                <div class="w-2.5 h-2.5 bg-orange-500 rounded"></div>
-                                <span>Revisited</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-center gap-3">
-                            <button id="start-recording-btn" onclick="startRecording()" disabled class="w-[40px] h-[40px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Recording">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </button>
-                            <button id="stop-recording-btn" disabled onclick="stopRecording()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Stop Recording">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                    <rect x="6" y="6" width="12" height="12"/>
-                                </svg>
-                            </button>
-                            <button id="reset-recorder-btn" onclick="resetRecorder()" class="w-[40px] h-[40px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                                    <path d="M21 3v5h-5"/>
-                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                                    <path d="M3 21v-5h5"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <button id="save-session-btn" disabled onclick="saveSession()" class="hidden w-full bg-green-500 text-white text-[11px] font-bold py-2.5 rounded-lg hover:bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg uppercase tracking-wide">
-                            Save Session
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Panel will be injected by panel.js -->
 
     <!-- Floating Buttons - Right Bottom -->
     <div class="absolute bottom-5 right-5 z-[1000] pointer-events-auto flex flex-col gap-3">
@@ -357,7 +133,8 @@
         let editingPointIndex = null;
         let pickupMarker = null;
         let destMarker = null;
-        let currentMode = 'planner';
+        // currentMode is now managed globally via window.currentMode
+        // let currentMode = 'planner';
 
         // Live Recording Variables
         let isRecording = false;
@@ -380,71 +157,8 @@
         let trafficLayer = null;
         let trafficEnabled = false;
 
-        // Panel Controller - Clean Architecture
-        const Panel = {
-            isCollapsed: false,
-            currentTab: 'planner',
-            
-            toggle() {
-                this.isCollapsed = !this.isCollapsed;
-                const body = document.getElementById('panel-body');
-                const icon = document.getElementById('collapse-icon');
-                const btn = document.getElementById('collapse-btn');
-                
-                if (this.isCollapsed) {
-                    body.style.maxHeight = '0px';
-                    body.style.opacity = '0';
-                    icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
-                    btn.title = 'Expand';
-                } else {
-                    body.style.maxHeight = '600px';
-                    body.style.opacity = '1';
-                    icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
-                    btn.title = 'Collapse';
-                }
-            },
-            
-            switchTab(tab) {
-                if (isDriving || isRecording) {
-                    alert('Please stop the current activity before switching tabs');
-                    return;
-                }
-                
-                // Clear the previous tab's state completely
-                if (this.currentTab === 'planner' && tab === 'recorder') {
-                    resetPlanner();
-                } else if (this.currentTab === 'recorder' && tab === 'planner') {
-                    resetRecorder();
-                }
-                
-                this.currentTab = tab;
-                currentMode = tab;
-                
-                // Update tab buttons
-                document.getElementById('tab-planner').classList.toggle('active', tab === 'planner');
-                document.getElementById('tab-recorder').classList.toggle('active', tab === 'recorder');
-                
-                // Update tab content
-                document.getElementById('planner-tab').classList.toggle('active', tab === 'planner');
-                document.getElementById('recorder-tab').classList.toggle('active', tab === 'recorder');
-                
-                // Update title
-                document.getElementById('panel-title').innerText = tab === 'planner' ? 'Trip Planner' : 'Live Recorder';
-                
-                // Update map cursor
-                map.getContainer().style.cursor = tab === 'planner' ? 'crosshair' : 'default';
-                
-                // Ensure panel is expanded when switching tabs
-                if (this.isCollapsed) {
-                    this.toggle();
-                }
-            },
-            
-            init() {
-                // Set initial active tab
-                document.getElementById('planner-tab').classList.add('active');
-            }
-        };
+        // Panel API (will be initialized after map)
+        let Panel = null;
 
         function initMap() {
             map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.7115, 46.6744], 15);
@@ -485,12 +199,6 @@
             }).addTo(map);
 
             map.on('click', onMapClick);
-
-            document.getElementById('speed-slider').oninput = function() {
-                const val = parseInt(this.value);
-                currentSpeed = val;
-                document.getElementById('speed-display').innerText = val < 40 ? "Traffic" : val > 150 ? "Express" : "Normal";
-            };
         }
 
         function toggleTraffic() {
@@ -509,13 +217,21 @@
         }
 
         function onMapClick(e) {
-            // Simulation mode for recording
-            if (currentMode === 'recorder' && simulationMode && isRecording) {
+            console.log('🗺️ MAP CLICKED at:', e.latlng);
+            console.log('currentMode:', window.currentMode);
+            console.log('simulationMode:', simulationMode);
+            console.log('isRecording:', isRecording);
+            
+            // Simulation mode for recording (AUTO-ENABLED)
+            if (window.currentMode === 'recorder' && simulationMode && isRecording) {
+                console.log('✅ Calling simulateMovement...');
                 simulateMovement(e.latlng);
                 return;
             }
             
-            if (isDriving || currentMode === 'recorder') return;
+            console.log('❌ Not in recording simulation mode');
+            
+            if (isDriving || window.currentMode === 'recorder') return;
             
             // If editing a point, update it
             if (editingPointIndex !== null) {
@@ -673,7 +389,7 @@
             
             // Show the active tab content when expanding
             if (!isMinimized) {
-                if (currentMode === 'planner') {
+                if (window.currentMode === 'planner') {
                     document.getElementById('planner-content').classList.remove('hidden');
                     document.getElementById('recorder-content').classList.add('hidden');
                 } else {
@@ -779,8 +495,6 @@
             totalDistance = 0;
             streetsVisited = 0;
             streetsRevisited = 0;
-            simulatedElapsedTime = 0;
-            isSimulationAnimating = false;
             
             // Remove all path polylines
             pathPolylines.forEach(polyline => map.removeLayer(polyline));
@@ -807,20 +521,11 @@
             document.getElementById('stop-recording-btn').classList.add('hidden');
             document.getElementById('save-session-btn').classList.add('hidden');
             document.getElementById('recording-indicator').classList.add('hidden');
-            document.getElementById('sim-mode-toggle').checked = false;
-            document.getElementById('sim-hint').classList.add('hidden');
             
-            simulationMode = false;
             isLocationFound = false;
-            
-            if (!simulationMode) {
-                document.getElementById('start-recording-btn').disabled = true;
-            }
         }
 
         async function startTrip() {
-            isDriving = true;
-            isPaused = false;
             shouldEndTrip = false;
             currentSegmentIndex = 0;
             currentSpeed = parseInt(document.getElementById('speed-slider').value);
@@ -956,6 +661,10 @@
                 }
             }
         }
+
+        // ============================================
+        // SIMULATION MODE FUNCTIONS (AUTO-ENABLED)
+        // ============================================
 
         function simulateMovement(latlng) {
             if (!isRecording || isSimulationAnimating) return;
@@ -1098,7 +807,7 @@
 
                     isLocationFound = true;
 
-                    if (currentMode === 'recorder') {
+                    if (window.currentMode === 'recorder') {
                         document.getElementById('start-recording-btn').disabled = false;
                         document.getElementById('record-badge').innerText = 'Ready';
                         document.getElementById('record-badge').classList.remove('bg-gray-100', 'text-gray-700');
@@ -1224,15 +933,25 @@
         }
 
         function startRecording() {
-            if (!navigator.geolocation && !simulationMode) {
-                alert('Geolocation is not supported by your browser. Enable Simulation Mode to test.');
-                return;
+            console.log('🔴 START RECORDING CALLED');
+            console.log('simulationMode:', simulationMode);
+            console.log('isLocationFound:', isLocationFound);
+            console.log('navigator.geolocation:', navigator.geolocation);
+            
+            // In simulation mode, we don't need geolocation or location to be found
+            // Just start recording immediately!
+            if (!simulationMode) {
+                if (!navigator.geolocation) {
+                    alert('Geolocation is not supported by your browser.');
+                    return;
+                }
+                if (!isLocationFound) {
+                    alert('Please locate yourself first by clicking the locate button');
+                    return;
+                }
             }
 
-            if (!isLocationFound && !simulationMode) {
-                alert('Please locate yourself first by clicking the locate button or enable Simulation Mode');
-                return;
-            }
+            console.log('✅ Checks passed, starting recording...');
 
             isRecording = true;
             recordingStartTime = Date.now();
@@ -1242,8 +961,7 @@
             streetsVisited = 0;
             streetsRevisited = 0;
 
-            const simToggle = document.getElementById('sim-mode-toggle');
-            if (simToggle) simToggle.disabled = true;
+            console.log('✅ Recording state set, updating UI...');
 
             // Update UI
             document.getElementById('start-recording-btn').classList.add('hidden');
@@ -1270,10 +988,14 @@
                 );
             }
 
-            console.log('Recording started', simulationMode ? '(Simulation Mode)' : '(GPS Mode)');
+            console.log('✅ Recording started', simulationMode ? '(Simulation Mode - Click map to move car)' : '(GPS Mode)');
+            console.log('🟢 Now click on the map to simulate car movement!');
         }
 
         function stopRecording() {
+            console.log('🛑 STOP RECORDING CALLED');
+            console.trace('Called from:'); // This will show WHO called it!
+            
             if (!isRecording) return;
 
             isRecording = false;
@@ -1475,10 +1197,46 @@
         }
 
         window.onload = function() {
+            // Expose currentMode globally for backward compatibility
+            window.currentMode = 'planner';
+            
+            // Expose simulationMode globally and set to true by default
+            window.simulationMode = true;
+            simulationMode = true;
+            
+            // Expose isLocationFound globally
+            window.isLocationFound = false;
+            
+            // Expose trip control variables
+            window.isDriving = false;
+            window.isPaused = false;
+            window.shouldEndTrip = false;
+            window.isRecording = false;
+            
+            // Initialize map first (without panel dependencies)
             initMap();
             loadSavedSessions();
-            Panel.init();
+            
+            // Initialize modular panel AFTER map
+            Panel = initPanel(map, CONFIG);
+            
+            // NOW wire up the speed slider (after panel exists)
+            const speedSlider = document.getElementById('speed-slider');
+            if (speedSlider) {
+                speedSlider.oninput = function() {
+                    const val = parseInt(this.value);
+                    currentSpeed = val;
+                    document.getElementById('speed-display').innerText = val < 40 ? "Traffic" : val > 150 ? "Express" : "Normal";
+                };
+            }
+            
+            // Register app functions for panel to call
+            // Most functions are already global, just ensure startTrip is accessible
+            window.startTrip = startTrip;
+            
+            console.log('✅ App initialized with modular panel');
         };
     </script>
+    <script src="panel.js"></script>
 </body>
 </html>

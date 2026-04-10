@@ -1,0 +1,37 @@
+17:44:40.975 Navigated to http://localhost:8247/
+17:44:41.844 panel.js:390 ✅ Panel initialized
+17:44:41.845 (index):1228 ✅ App initialized with modular panel
+17:44:46.162 (index):220 🗺️ MAP CLICKED at: v {lat: 24.720715795066145, lng: 46.67584419250489}
+17:44:46.163 (index):221 currentMode: recorder
+17:44:46.163 (index):222 simulationMode: true
+17:44:46.163 (index):223 isRecording: false
+17:44:46.163 (index):232 ❌ Not in recording simulation mode
+17:44:50.601 (index):220 🗺️ MAP CLICKED at: v {lat: 24.718727673990088, lng: 46.6776466369629}
+17:44:50.601 (index):221 currentMode: recorder
+17:44:50.601 (index):222 simulationMode: true
+17:44:50.602 (index):223 isRecording: false
+17:44:50.602 (index):232 ❌ Not in recording simulation mode
+17:44:52.649 (index):220 🗺️ MAP CLICKED at: v {lat: 24.713074999394916, lng: 46.679749488830566}
+17:44:52.650 (index):221 currentMode: recorder
+17:44:52.650 (index):222 simulationMode: true
+17:44:52.650 (index):223 isRecording: false
+17:44:52.650 (index):232 ❌ Not in recording simulation mode
+17:44:53.105 (index):220 🗺️ MAP CLICKED at: v {lat: 24.70999515832172, lng: 46.678547859191895}
+17:44:53.105 (index):221 currentMode: recorder
+17:44:53.105 (index):222 simulationMode: true
+17:44:53.105 (index):223 isRecording: false
+17:44:53.105 (index):232 ❌ Not in recording simulation mode
+17:44:53.521 (index):220 🗺️ MAP CLICKED at: v {lat: 24.709332397750114, lng: 46.68189525604249}
+17:44:53.522 (index):221 currentMode: recorder
+17:44:53.522 (index):222 simulationMode: true
+17:44:53.522 (index):223 isRecording: false
+17:44:53.522 (index):232 ❌ Not in recording simulation mode
+17:44:54.472 (index):936 🔴 START RECORDING CALLED
+17:44:54.472 (index):937 simulationMode: true
+17:44:54.473 (index):938 isLocationFound: false
+17:44:54.473 (index):939 navigator.geolocation: Geolocation {}
+17:44:54.473 (index):954 ✅ Checks passed, starting recording...
+17:44:54.473 (index):964 ✅ Recording state set, updating UI...
+17:44:54.474 (index):991 ✅ Recording started (Simulation Mode - Click map to move car)
+17:44:54.474 (index):992 🟢 Now click on the map to simulate car movement!
+17:44:55.696 (index):1024 Recording stopped. Total points: 0

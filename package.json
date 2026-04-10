@@ -1,12 +1,18 @@
 {
-  "name": "sitetrack-pro-demo",
+  "name": "streettracker",
   "version": "1.0.0",
-  "description": "SiteTrack Pro - Construction Intelligence Demo",
+  "description": "Real-time street tracking application for Riyadh",
   "main": "index.html",
   "scripts": {
-    "deploy": "vercel --prod"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
-  "keywords": ["construction", "tracking", "demo"],
+  "keywords": [
+    "streettracker",
+    "leaflet",
+    "maps",
+    "tracking"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "ISC"
 }
