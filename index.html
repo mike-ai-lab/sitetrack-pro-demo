@@ -37,7 +37,7 @@
 <body class="bg-gray-100 overflow-hidden">
 
     <!-- Main Trip Planner Modal -->
-    <div id="ui-overlay" class="absolute top-5 left-5 z-[1000] pointer-events-none">
+    <div id="ui-overlay" class="absolute top-5 left-5 z-[1000] pointer-events-none hidden">
         <div id="planner-card" class="glass p-4 rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 panel-transition max-h-[85vh] overflow-y-auto">
             <!-- Mode Switcher -->
             <div class="flex gap-1 mb-3 p-0.5 bg-gray-100 rounded-lg">
@@ -199,7 +199,7 @@
     </div>
 
     <!-- Main Panel Toggle Button -->
-    <div class="absolute top-5 left-5 z-[1000] pointer-events-auto hidden">
+    <div class="absolute top-5 left-5 z-[1000] pointer-events-auto">
         <button id="main-panel-btn" onclick="toggleMainPanel()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="3" y1="12" x2="21" y2="12"/>
@@ -651,22 +651,6 @@
             }
         }
 
-        function switchMode(mode) {
-            if (isDriving || isRecording) return;
-            
-            currentMode = mode;
-            
-            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
-            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
-            
-            document.getElementById('planner-content').classList.toggle('hidden', mode !== 'planner');
-            document.getElementById('recorder-content').classList.toggle('hidden', mode !== 'recorder');
-            
-            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
-            
-            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
-        }
-
         // ============================================
         // LIVE RECORDER FUNCTIONS
         // ============================================
@@ -838,12 +822,8 @@
                     });
 
                     userLocationMarker = L.marker(userLocation, { icon: locationIcon }).addTo(map);
-                    
-                    // Position car marker at user location and make it visible
-                    if (carMarker) {
-                        carMarker.setLatLng(userLocation);
-                        carMarker.setOpacity(1);
-                    }
+                    carMarker.setLatLng(userLocation);
+                    carMarker.setOpacity(1);
 
                     isLocationFound = true;
 
