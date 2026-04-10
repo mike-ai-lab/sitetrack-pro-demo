@@ -37,7 +37,7 @@
 <body class="bg-gray-100 overflow-hidden">
 
     <!-- Main Trip Planner Modal -->
-    <div id="ui-overlay" class="absolute top-5 left-5 z-[1000] pointer-events-none hidden">
+    <div id="ui-overlay" class="absolute top-5 left-5 z-[1000] pointer-events-none">
         <div id="planner-card" class="glass p-4 rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 panel-transition max-h-[85vh] overflow-y-auto">
             <!-- Mode Switcher -->
             <div class="flex gap-1 mb-3 p-0.5 bg-gray-100 rounded-lg">
@@ -52,9 +52,7 @@
             <div class="flex items-center justify-between mb-3">
                 <h1 class="text-sm font-bold text-gray-900" id="panel-title">Trip Planner</h1>
                 <button onclick="toggleMainPanel()" class="p-1 hover:bg-gray-200 rounded-md transition">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
+                    <svg id="min-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
                 </button>
             </div>
             
@@ -199,7 +197,7 @@
     </div>
 
     <!-- Main Panel Toggle Button -->
-    <div class="absolute top-5 left-5 z-[1000] pointer-events-auto">
+    <div class="absolute top-5 left-5 z-[1000] pointer-events-auto hidden">
         <button id="main-panel-btn" onclick="toggleMainPanel()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Menu">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="3" y1="12" x2="21" y2="12"/>
@@ -374,13 +372,34 @@
                 pickupMarker = marker;
                 document.getElementById('pickup-label').innerText = "Pickup point set";
                 document.getElementById('trip-badge').innerText = "Set Destination";
+                // Minimize panel after setting pickup
+                minimizePanel();
             } else {
                 destMarker = marker;
                 document.getElementById('dest-label').innerText = "Destination point set";
                 document.getElementById('trip-badge').innerText = "Ready";
                 document.getElementById('start-btn').disabled = false;
                 calculateRoute();
+                // Expand panel after setting destination
+                expandPanel();
             }
+        }
+
+        function minimizePanel() {
+            document.getElementById('planner-content').style.display = 'none';
+            document.getElementById('recorder-content').style.display = 'none';
+            isMinimized = true;
+        }
+
+        function expandPanel() {
+            if (currentMode === 'planner') {
+                document.getElementById('planner-content').style.display = 'block';
+                document.getElementById('recorder-content').style.display = 'none';
+            } else {
+                document.getElementById('recorder-content').style.display = 'block';
+                document.getElementById('planner-content').style.display = 'none';
+            }
+            isMinimized = false;
         }
 
         function startEditingPoint(index) {
@@ -639,16 +658,28 @@
         }
 
         window.toggleMainPanel = function() {
-            const panel = document.getElementById('ui-overlay');
-            const btn = document.getElementById('main-panel-btn');
-            
-            if (panel.classList.contains('hidden')) {
-                panel.classList.remove('hidden');
-                btn.classList.add('hidden');
+            if (isMinimized) {
+                expandPanel();
             } else {
-                panel.classList.add('hidden');
-                btn.classList.remove('hidden');
+                minimizePanel();
             }
+            document.getElementById('min-icon').style.transform = isMinimized ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        function switchMode(mode) {
+            if (isDriving || isRecording) return;
+            
+            currentMode = mode;
+            
+            document.getElementById('tab-planner').classList.toggle('active', mode === 'planner');
+            document.getElementById('tab-recorder').classList.toggle('active', mode === 'recorder');
+            
+            document.getElementById('planner-content').classList.toggle('hidden', mode !== 'planner');
+            document.getElementById('recorder-content').classList.toggle('hidden', mode !== 'recorder');
+            
+            document.getElementById('panel-title').innerText = mode === 'planner' ? 'Trip Planner' : 'Live Recorder';
+            
+            map.getContainer().style.cursor = mode === 'planner' ? 'crosshair' : 'default';
         }
 
         // ============================================
