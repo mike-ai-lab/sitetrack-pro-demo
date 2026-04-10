@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiteTrack Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://rawgit.com/luckyamit2011/leaflet.animatedrotatedmarker/master/AnimatedRotatedMarker.js"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+        #map { position: absolute; inset: 0; z-index: 1; }
+        .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); }
+        .user-dot { 
+            background: transparent !important;
+            border: none !important;
+        }
+        .user-dot img {
+            width: 40px !important;
+            height: 40px !important;
+            object-fit: contain;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        }
+        .pin-marker { 
+            z-index: 1000 !important;
+        }
+        .pin-marker svg {
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        .leaflet-routing-container { display: none !important; }
+        @keyframes pulse { 
+            0%, 100% { transform: scale(1); } 
+            50% { transform: scale(1.1); } 
+        }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes popIn { 
+            0% { transform: scale(0) translateY(-20px); opacity: 0; } 
+            60% { transform: scale(1.2) translateY(0); } 
+            100% { transform: scale(1) translateY(0); opacity: 1; } 
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Header -->
+    <header class="absolute top-0 left-0 right-0 h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                <i data-lucide="compass" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-bold text-sm">SITETRACK <span class="text-blue-600">PRO</span></span>
+        </div>
+        <button onclick="toggleLeads()" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100">
+            <i data-lucide="list" class="w-5 h-5"></i>
+        </button>
+    </header>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Stats -->
+    <div class="absolute top-20 left-4 flex gap-2 z-40">
+        <div class="glass px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+            <i data-lucide="navigation" class="w-4 h-4 text-blue-600"></i>
+            <span id="distance">0.0 km</span>
+        </div>
+        <div class="glass px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>
+            <span id="leads-count">0 Leads</span>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <!-- Playback Controls -->
+    <div id="playback-controls" class="fixed top-20 left-1/2 -translate-x-1/2 z-[200] hidden">
+        <div class="glass px-2 py-2 rounded-2xl flex items-center gap-1 shadow-xl">
+            <button onclick="togglePause()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 transition text-slate-700">
+                <i data-lucide="pause" id="pause-icon" class="w-5 h-5"></i>
+                <i data-lucide="play" id="play-icon" class="w-5 h-5 hidden"></i>
+            </button>
+            <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
+            <button onclick="resetDemo()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-red-50 transition text-red-500">
+                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-40">
+        <button id="start-btn" onclick="startDemo()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-3 shadow-xl hover:bg-slate-800 active:scale-95 transition">
+            <i data-lucide="play" class="w-5 h-5"></i>
+            START DEMO
+        </button>
+    </div>
+
+    <!-- Leads Panel -->
+    <div id="leads-panel" class="absolute top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform">
+        <div class="p-4 border-b flex justify-between items-center">
+            <div>
+                <h2 class="font-bold">Today's Leads</h2>
+                <p class="text-xs text-slate-500"><span id="panel-count">0</span> captured</p>
+            </div>
+            <button onclick="toggleLeads()" class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <div id="leads-list" class="p-4 overflow-y-auto" style="height: calc(100% - 80px);">
+            <div class="text-center py-12 text-slate-400">
+                <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                <p class="text-sm">No leads yet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Modal -->
+    <div id="form-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="p-4 border-b bg-gradient-to-r from-slate-50 to-blue-50 flex justify-between items-center">
+                <h3 class="font-bold text-sm uppercase tracking-wide text-slate-600">New Site Entry</h3>
+                <button onclick="closeForm()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Project Name</label>
+                    <input id="f-name" type="text" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm" placeholder="Enter project name">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Contact</label>
+                        <input id="f-contact" type="text" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm" placeholder="Name">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Phone</label>
+                        <input id="f-phone" type="text" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm" placeholder="Phone">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Type</label>
+                        <select id="f-type" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                            <option value="">Select...</option>
+                            <option>Residential</option>
+                            <option>Commercial</option>
+                            <option>Industrial</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Status</label>
+                        <select id="f-status" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                            <option value="">Select...</option>
+                            <option>Planning</option>
+                            <option>Foundation</option>
+                            <option>Construction</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Budget</label>
+                    <input id="f-budget" type="text" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm" placeholder="e.g. 2.5M SAR">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase block mb-1">Notes</label>
+                    <textarea id="f-notes" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm" rows="2" placeholder="Additional notes"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button onclick="closeForm()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-lg font-bold text-sm hover:bg-slate-300">CANCEL</button>
+                    <button onclick="saveLead()" class="flex-1 bg-blue-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-blue-700">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let map, userMarker, routeLine, leads = [], isPaused = false, demoRunning = false, routingControl = null, routePoints = [], animationIndex = 0;
+
+        // Init map
+        map = L.map('map', { 
+            zoomControl: false,
+            attributionControl: false,
+            preferCanvas: false,
+            
+            // Smooth animations
+            zoomAnimation: true,
+            fadeAnimation: true,
+            markerZoomAnimation: true,
+            zoomAnimationThreshold: 4,
+            
+            // Smooth zooming
+            zoomSnap: 0.25,
+            zoomDelta: 0.25,
+            wheelPxPerZoomLevel: 120,
+            wheelDebounceTime: 40,
+            scrollWheelZoom: true,
+            doubleClickZoom: 'center',
+            touchZoom: 'center',
+            bounceAtZoomLimits: false,
+            
+            // Smooth panning
+            inertia: true,
+            inertiaDeceleration: 3000,
+            inertiaMaxSpeed: 1500,
+            easeLinearity: 0.2,
+            worldCopyJump: true,
+            maxBoundsViscosity: 1.0,
+            
+            // Interaction
+            dragging: true,
+            trackResize: true,
+            boxZoom: false,
+            keyboard: true,
+            keyboardPanDelta: 80,
+            tapTolerance: 15,
+            closePopupOnClick: true
+        }).setView([24.7136, 46.6753], 14);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', { 
+            attribution: '© CARTO',
+            updateWhenIdle: false,
+            updateWhenZooming: false,
+            keepBuffer: 4,
+            maxZoom: 19,
+            minZoom: 3,
+            opacity: 1,
+            zIndex: 1
+        }).addTo(map);
+        
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
+        // Demo waypoints
+        const waypoints = [
+            { lat: 24.7136, lng: 46.6753 },
+            { lat: 24.7180, lng: 46.6820, lead: { name: "Villa Al-Mansour", contact: "Eng. Ahmed", phone: "+966 50 123 4567", type: "Residential", status: "Foundation", budget: "2.5M SAR", notes: "3-story villa project" }},
+            { lat: 24.7260, lng: 46.6900, lead: { name: "Central Plaza Mall", contact: "Saleh", phone: "+966 55 987 6543", type: "Commercial", status: "Planning", budget: "15M SAR", notes: "Large commercial project" }},
+            { lat: 24.7340, lng: 46.7000, lead: { name: "Luxury Tower", contact: "Khalid", phone: "+966 54 456 7890", type: "Industrial", status: "Construction", budget: "45M SAR", notes: "High-rise hotel project" }}
+        ];
+
+        // Calculate route using real roads
+        async function calculateRoute() {
+            return new Promise((resolve) => {
+                const waypointCoords = waypoints.map(w => L.latLng(w.lat, w.lng));
+                
+                routingControl = L.Routing.control({
+                    waypoints: waypointCoords,
+                    routeWhileDragging: false,
+                    addWaypoints: false,
+                    draggableWaypoints: false,
+                    show: false,
+                    createMarker: function() { return null; },
+                    router: L.Routing.osrmv1({
+                        serviceUrl: 'https://router.project-osrm.org/route/v1'
+                    }),
+                    lineOptions: {
+                        styles: [{ color: 'transparent', opacity: 0, weight: 0 }]
+                    }
+                }).addTo(map);
+
+                routingControl.on('routesfound', function(e) {
+                    const route = e.routes[0];
+                    routePoints = route.coordinates;
+                    const totalDistance = route.summary.totalDistance;
+                    document.getElementById('distance').innerText = `${(totalDistance / 1000).toFixed(1)} km`;
+                    
+                    map.eachLayer(layer => {
+                        if (layer instanceof L.Polyline && layer !== routeLine) {
+                            map.removeLayer(layer);
+                        }
+                    });
+                    
+                    resolve();
+                });
+
+                routingControl.on('routingerror', function(e) {
+                    console.error('Routing error:', e);
+                    routePoints = waypoints.map(w => L.latLng(w.lat, w.lng));
+                    resolve();
+                });
+            });
+        }
+
+        // Start demo
+        async function startDemo() {
+            if (demoRunning) return;
+            
+            // Force full reset before starting
+            performReset();
+            await delay(100);
+            
+            demoRunning = true;
+            isPaused = false;
+            animationIndex = 0;
+            
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('playback-controls').classList.remove('hidden');
+            
+            const carIcon = L.icon({
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+            
+            userMarker = L.marker(waypoints[0], { icon: carIcon, rotationAngle: 0 }).addTo(map);
+            map.setView(waypoints[0], 15);
+
+            await calculateRoute();
+
+            routeLine = L.polyline([], { color: '#0066FF', weight: 4, opacity: 0.6 }).addTo(map);
+
+            await runAnimation();
+            
+            // Demo finished
+            if (demoRunning) {
+                demoRunning = false;
+                document.getElementById('playback-controls').classList.add('hidden');
+                document.getElementById('start-btn').classList.remove('hidden');
+                toggleLeads();
+            }
+        }
+
+        // Wait if paused
+        async function waitIfPaused() {
+            while (isPaused && demoRunning) {
+                await delay(100);
+            }
+        }
+
+        // Animation loop
+        async function runAnimation() {
+            const totalPoints = routePoints.length;
+            const speed = 20;
+            const interval = 1000 / speed;
+
+            for (let i = animationIndex; i < totalPoints; i++) {
+                if (!demoRunning) break;
+                
+                await waitIfPaused();
+                
+                if (!demoRunning) break;
+                
+                animationIndex = i;
+                const point = routePoints[i];
+                userMarker.setLatLng(point);
+                routeLine.addLatLng(point);
+                map.panTo(point, { animate: true, duration: 0.3 });
+
+                for (let j = 0; j < waypoints.length; j++) {
+                    const wp = waypoints[j];
+                    if (wp.lead && !wp.captured) {
+                        const dist = map.distance(point, [wp.lat, wp.lng]);
+                        if (dist < 50) {
+                            wp.captured = true;
+                            await delay(500);
+                            await captureLeadAuto(wp.lead, [wp.lat, wp.lng]);
+                            await delay(500);
+                        }
+                    }
+                }
+
+                await delay(interval);
+            }
+        }
+
+        // Toggle pause/resume
+        function togglePause() {
+            if (!demoRunning) return;
+            isPaused = !isPaused;
+            document.getElementById('pause-icon').classList.toggle('hidden', isPaused);
+            document.getElementById('play-icon').classList.toggle('hidden', !isPaused);
+            lucide.createIcons();
+        }
+
+        // Reset demo
+        function resetDemo() {
+            performReset();
+        }
+        
+        // Perform reset logic
+        function performReset() {
+            demoRunning = false;
+            isPaused = false;
+            animationIndex = 0;
+            
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            routePoints = [];
+            
+            if (userMarker) {
+                map.removeLayer(userMarker);
+                userMarker = null;
+            }
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
+            
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker && layer !== userMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            leads = [];
+            waypoints.forEach(w => delete w.captured);
+            
+            updateStats();
+            updateLeadsList();
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('playback-controls').classList.add('hidden');
+            
+            document.getElementById('pause-icon').classList.remove('hidden');
+            document.getElementById('play-icon').classList.add('hidden');
+            
+            // Close leads panel if open
+            const leadsPanel = document.getElementById('leads-panel');
+            if (leadsPanel.classList.contains('translate-x-0')) {
+                leadsPanel.classList.remove('translate-x-0');
+            }
+            
+            map.setView([24.7136, 46.6753], 14);
+            
+            lucide.createIcons();
+        }
+
+        async function captureLeadAuto(data, coords) {
+            await delay(500);
+            addLead({ ...data, lat: coords[0], lng: coords[1] });
+            console.log('Dropping pin at:', coords[0], coords[1], data.name);
+            dropPin(coords[0], coords[1], data.name);
+            await delay(500);
+        }
+
+        function addLead(data) {
+            leads.push({ ...data, time: new Date() });
+            updateStats();
+            updateLeadsList();
+        }
+
+        function dropPin(lat, lng, name) {
+            const icon = L.divIcon({ 
+                className: 'pin-marker', 
+                iconSize: [30, 42], 
+                iconAnchor: [15, 42],
+                popupAnchor: [0, -42],
+                html: `
+                    <svg width="30" height="42" viewBox="0 0 30 42" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                        <path d="M15 0C6.7 0 0 6.7 0 15c0 10 15 27 15 27s15-17 15-27c0-8.3-6.7-15-15-15z" fill="#ef4444"/>
+                        <circle cx="15" cy="15" r="7" fill="white"/>
+                    </svg>
+                `
+            });
+            const marker = L.marker([lat, lng], { icon }).addTo(map);
+            marker.bindPopup(`<strong>${name}</strong>`);
+        }
+
+        function updateStats() {
+            document.getElementById('leads-count').innerText = `${leads.length} Leads`;
+            document.getElementById('panel-count').innerText = leads.length;
+            if (!routeLine || routeLine.getLatLngs().length === 0) {
+                document.getElementById('distance').innerText = '0.0 km';
+            }
+        }
+
+        function updateLeadsList() {
+            const list = document.getElementById('leads-list');
+            if (leads.length === 0) {
+                list.innerHTML = '<div class="text-center py-12 text-slate-400"><i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p class="text-sm">No leads yet</p></div>';
+            } else {
+                list.innerHTML = leads.map((l, i) => `
+                    <div class="bg-slate-50 rounded-lg p-3 mb-2 border border-slate-200">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-sm">${l.name}</h4>
+                            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded">#${i + 1}</span>
+                        </div>
+                        <div class="text-xs text-slate-600 space-y-1">
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="user" class="w-3 h-3"></i>
+                                <span>${l.contact}</span>
+                                <span class="mx-1">•</span>
+                                <i data-lucide="phone" class="w-3 h-3"></i>
+                                <span>${l.phone}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="building-2" class="w-3 h-3"></i>
+                                <span>${l.type}</span>
+                                <span class="mx-1">•</span>
+                                <i data-lucide="activity" class="w-3 h-3"></i>
+                                <span>${l.status}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="dollar-sign" class="w-3 h-3"></i>
+                                <span>${l.budget}</span>
+                            </div>
+                            <div class="text-slate-500 italic pt-1 border-t border-slate-200 mt-2">${l.notes}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleLeads() {
+            document.getElementById('leads-panel').classList.toggle('translate-x-0');
+        }
+
+        function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        // Init icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Real Street Tracker - Riyadh</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #map { height: 100vh; width: 100vw; cursor: crosshair; z-index: 1; }
+        .car-icon-inner {
+            transition: transform 0.6s ease-out;
+            transform-origin: center center;
+        }
+        .leaflet-routing-container { display: none; }
+        input[type=range] { accent-color: #000; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .panel-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            .mobile-bottom-sheet {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                border-radius: 24px 24px 0 0;
+                z-index: 1001;
+            }
+            .mobile-hide { display: none; }
+            .history-drawer {
+                position: fixed; /* Changed to fixed for better mobile reliability */
+                top: 0;
+                right: -100%;
+                width: 85%; /* Slightly less than full width to show map context */
+                height: 100%;
+                z-index: 2000; /* Ensure it is above everything */
+                pointer-events: auto !important; /* Force pointer events */
+            }
+            .history-drawer.open { right: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 overflow-hidden touch-none">
+
+    <!-- Header Overlay (Mobile History Toggle) -->
+    <div class="absolute top-4 right-4 z-[1001] md:hidden">
+        <button onclick="toggleHistory()" class="glass p-3 rounded-full shadow-lg border border-gray-100 pointer-events-auto active:bg-gray-100">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </button>
+    </div>
+
+    <!-- Main Trip Planner -->
+    <div id="ui-overlay" class="absolute top-0 left-0 md:top-5 md:left-5 z-[1000] pointer-events-none w-full md:w-auto">
+        <div id="planner-card" class="glass p-5 md:rounded-2xl shadow-2xl border-b md:border border-gray-100 pointer-events-auto w-full md:w-80 panel-transition mobile-bottom-sheet">
+            <!-- Pull Bar for Mobile -->
+            <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-4 md:hidden"></div>
+            
+            <div class="flex items-center justify-between mb-4">
+                <h1 class="text-lg font-bold text-gray-900">Riyadh Trip Planner</h1>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleMinimize()" class="p-2 hover:bg-gray-200 rounded-md transition mobile-hide">
+                        <svg id="min-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="planner-content" class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span id="trip-badge" class="bg-blue-100 text-blue-700 text-[10px] px-2 py-1 rounded-md uppercase font-bold tracking-tighter">Set Pickup</span>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[10px] font-bold text-gray-400">FOLLOW</label>
+                        <input type="checkbox" id="follow-toggle" checked class="w-5 h-5 md:w-4 md:h-4 rounded border-gray-300">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-2">
+                    <div id="pickup-box" class="flex items-center gap-3 p-3 md:p-2 bg-white rounded-xl border border-dashed border-gray-300 cursor-pointer active:scale-95 transition-all" onclick="startEditingPoint(0)">
+                        <div class="w-3 h-3 md:w-2 md:h-2 bg-blue-500 rounded-full"></div>
+                        <span id="pickup-label" class="text-sm md:text-xs text-gray-500 truncate">Set pickup on map...</span>
+                    </div>
+                    <div id="dest-box" class="flex items-center gap-3 p-3 md:p-2 bg-white rounded-xl border border-dashed border-gray-300 cursor-pointer active:scale-95 transition-all" onclick="startEditingPoint(1)">
+                        <div class="w-3 h-3 md:w-2 md:h-2 bg-red-500 rounded-full"></div>
+                        <span id="dest-label" class="text-sm md:text-xs text-gray-500 truncate">Set destination...</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Speed Control</label>
+                        <span id="speed-display" class="text-xs font-bold text-gray-900">Normal</span>
+                    </div>
+                    <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                </div>
+
+                <div class="flex gap-2 pb-4 md:pb-0">
+                    <button id="start-btn" disabled onclick="handleStart()" class="flex-1 bg-black text-white text-sm md:text-xs font-bold py-4 md:py-3 rounded-xl hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-300 transition-all uppercase tracking-widest">
+                        Start Trip
+                    </button>
+                    <button id="pause-btn" disabled onclick="togglePause()" class="hidden flex-1 bg-gray-100 text-black text-sm md:text-xs font-bold py-4 md:py-3 rounded-xl hover:bg-gray-200 transition-all uppercase">
+                        Pause
+                    </button>
+                    <button id="end-btn" onclick="endTrip()" class="hidden flex-1 bg-red-500 text-white text-sm md:text-xs font-bold py-4 md:py-3 rounded-xl hover:bg-red-600 transition-all uppercase tracking-widest">
+                        End
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Panel -->
+    <div id="history-panel" class="absolute top-0 right-[-100%] md:top-5 md:right-5 z-[1002] h-full md:h-auto pointer-events-none history-drawer panel-transition">
+        <div class="glass p-5 md:p-4 md:rounded-2xl shadow-xl border-l md:border border-gray-100 pointer-events-auto w-full md:w-72 h-full md:h-auto md:max-h-[40vh] flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trip History</h2>
+                <!-- Fixed Close Button -->
+                <button onclick="toggleHistory()" class="md:hidden p-3 bg-gray-100 rounded-full active:bg-gray-200 transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="history-list" class="space-y-2 overflow-y-auto pr-1 flex-1">
+                <p class="text-[10px] text-gray-400 italic text-center py-4">No recent trips</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Window -->
+    <div id="analytics" class="absolute bottom-24 md:bottom-5 right-5 z-[1000] pointer-events-none opacity-0 transition-opacity duration-500">
+        <div class="bg-black/90 backdrop-blur-md text-white p-3 rounded-xl shadow-xl w-40 md:w-48 border border-white/10 pointer-events-auto">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[8px] font-bold uppercase tracking-widest text-gray-400">Telemetry</span>
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div><p class="text-[8px] text-gray-500 uppercase">Dist</p><p id="stat-dist" class="text-xs font-mono font-bold">0.0 km</p></div>
+                <div><p class="text-[8px] text-gray-500 uppercase">Head</p><p id="stat-head" class="text-xs font-mono font-bold">0°</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map, carMarker, routingControl, historyPoints = [];
+        let waypoints = [];
+        let currentHeading = 0, isDriving = false, isPaused = false, routeCoords = [];
+        let isMinimized = false, currentSpeed = 80, shouldEndTrip = false, editingPointIndex = null;
+        let pickupMarker = null, destMarker = null;
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.7115, 46.6744], 15);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+            const carHtml = `
+                <div class="car-icon-inner" id="car-inner">
+                    <svg width="40" height="40" viewBox="0 0 100 100">
+                        <rect x="25" y="10" width="50" height="80" rx="15" fill="#1a1a1a" />
+                        <rect x="30" y="22" width="40" height="18" rx="4" fill="#444" />
+                        <rect x="30" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
+                        <rect x="62" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
+                    </svg>
+                </div>`;
+
+            const icon = L.divIcon({ html: carHtml, className: '', iconSize: [40, 40], iconAnchor: [20, 20] });
+            carMarker = L.marker([0,0], { icon: icon, opacity: 0 }).addTo(map);
+
+            map.on('click', onMapClick);
+            document.getElementById('speed-slider').oninput = function() {
+                currentSpeed = parseInt(this.value);
+                document.getElementById('speed-display').innerText = currentSpeed < 40 ? "Traffic" : currentSpeed > 150 ? "Express" : "Normal";
+            };
+        }
+
+        // Fixed toggle logic
+        function toggleHistory() {
+            const panel = document.getElementById('history-panel');
+            panel.classList.toggle('open');
+        }
+
+        function onMapClick(e) {
+            if (isDriving) return;
+            if (editingPointIndex !== null) { updatePoint(editingPointIndex, e.latlng); return; }
+            if (waypoints.length >= 2) resetPointsOnly();
+
+            waypoints.push(e.latlng);
+            const color = waypoints.length === 1 ? '#3b82f6' : '#ef4444';
+            const marker = L.circleMarker(e.latlng, { color: color, fillColor: color, fillOpacity: 0.5, radius: 8 }).addTo(map);
+            
+            if (waypoints.length === 1) {
+                pickupMarker = marker;
+                document.getElementById('pickup-label').innerText = "Pickup set";
+                document.getElementById('trip-badge').innerText = "Set Destination";
+            } else {
+                destMarker = marker;
+                document.getElementById('dest-label').innerText = "Destination set";
+                document.getElementById('trip-badge').innerText = "Ready";
+                document.getElementById('start-btn').disabled = false;
+                calculateRoute();
+            }
+        }
+
+        function startEditingPoint(idx) {
+            if (isDriving || waypoints.length <= idx) return;
+            editingPointIndex = idx;
+            const box = idx === 0 ? 'pickup-box' : 'dest-box';
+            const label = idx === 0 ? 'pickup-label' : 'dest-label';
+            document.getElementById(box).classList.add('ring-2', 'ring-black');
+            document.getElementById(label).innerText = "Tap map to move...";
+        }
+
+        function updatePoint(idx, latlng) {
+            waypoints[idx] = latlng;
+            const marker = idx === 0 ? pickupMarker : destMarker;
+            if (marker) marker.setLatLng(latlng);
+            const box = idx === 0 ? 'pickup-box' : 'dest-box';
+            const label = idx === 0 ? 'pickup-label' : 'dest-label';
+            document.getElementById(box).classList.remove('ring-2', 'ring-black');
+            document.getElementById(label).innerText = idx === 0 ? "Pickup updated" : "Dest updated";
+            editingPointIndex = null;
+            if (waypoints.length === 2) calculateRoute();
+        }
+
+        function calculateRoute(silent = false) {
+            if (routingControl) map.removeControl(routingControl);
+            routingControl = L.Routing.control({
+                waypoints: waypoints,
+                router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+                lineOptions: { styles: [{ color: '#3b82f6', opacity: 0.3, weight: 6 }] },
+                addWaypoints: false, draggableWaypoints: false
+            }).addTo(map);
+
+            routingControl.on('routesfound', (e) => {
+                routeCoords = e.routes[0].coordinates;
+                document.getElementById('stat-dist').innerText = `${(e.routes[0].summary.totalDistance / 1000).toFixed(2)} km`;
+                if (!silent) saveToHistory(waypoints[0], waypoints[1]);
+            });
+        }
+
+        function saveToHistory(p1, p2) {
+            const list = document.getElementById('history-list');
+            if (historyPoints.length === 0) list.innerHTML = '';
+            historyPoints.unshift({ p1, p2 });
+            if (historyPoints.length > 5) historyPoints.pop();
+
+            const item = document.createElement('div');
+            item.className = "p-3 bg-white rounded-xl border border-gray-100 hover:border-black cursor-pointer active:scale-95 transition-all text-xs font-semibold";
+            item.innerHTML = `<div class="flex items-center gap-2"><div class="w-2 h-2 bg-blue-500 rounded-full"></div><span>Trip #${historyPoints.length}</span></div>`;
+            item.onclick = () => { loadHistoryTrip(p1, p2); if(window.innerWidth < 768) toggleHistory(); };
+            list.prepend(item);
+        }
+
+        function loadHistoryTrip(p1, p2) {
+            if (isDriving) return;
+            resetPointsOnly();
+            waypoints = [p1, p2];
+            pickupMarker = L.circleMarker(p1, { color: '#3b82f6', radius: 8 }).addTo(map);
+            destMarker = L.circleMarker(p2, { color: '#ef4444', radius: 8 }).addTo(map);
+            document.getElementById('start-btn').disabled = false;
+            calculateRoute(true);
+        }
+
+        function handleStart() { if (!isDriving) startTrip(); }
+        function togglePause() { isPaused = !isPaused; document.getElementById('pause-btn').innerText = isPaused ? "Resume" : "Pause"; }
+        function toggleMinimize() { isMinimized = !isMinimized; document.getElementById('planner-content').classList.toggle('hidden'); document.getElementById('min-icon').style.transform = isMinimized ? 'rotate(180deg)' : 'rotate(0deg)'; }
+        
+        function endTrip() {
+            shouldEndTrip = true; isDriving = false; isPaused = false;
+            document.getElementById('start-btn').classList.remove('hidden');
+            document.getElementById('pause-btn').classList.add('hidden');
+            document.getElementById('end-btn').classList.add('hidden');
+            document.getElementById('analytics').style.opacity = "0";
+            carMarker.setOpacity(0);
+        }
+
+        async function startTrip() {
+            isDriving = true; isPaused = false; shouldEndTrip = false;
+            document.getElementById('start-btn').classList.add('hidden');
+            document.getElementById('pause-btn').classList.remove('hidden');
+            document.getElementById('end-btn').classList.remove('hidden');
+            document.getElementById('analytics').style.opacity = "1";
+            carMarker.setLatLng(routeCoords[0]); carMarker.setOpacity(1);
+
+            for (let i = 0; i < routeCoords.length - 1; i++) {
+                if (shouldEndTrip) break;
+                while (isPaused && !shouldEndTrip) await new Promise(r => setTimeout(r, 100));
+                if (shouldEndTrip) break;
+
+                const start = routeCoords[i], end = routeCoords[i+1];
+                const distance = L.latLng(start.lat, start.lng).distanceTo(L.latLng(end.lat, end.lng));
+                if (distance < 0.1) continue;
+
+                const heading = getHeading(start, end);
+                document.getElementById('car-inner').style.transform = `rotate(${heading}deg)`;
+                document.getElementById('stat-head').innerText = `${Math.round(heading)}°`;
+                const duration = Math.max((distance * 1000) / currentSpeed, 10);
+                
+                if (document.getElementById('follow-toggle').checked) map.panTo(carMarker.getLatLng(), { animate: true });
+                await moveSegment(start, end, duration);
+            }
+            if (!shouldEndTrip) endTrip();
+        }
+
+        function moveSegment(start, end, duration) {
+            return new Promise(resolve => {
+                const startTime = performance.now();
+                function step(now) {
+                    if (shouldEndTrip) { resolve(); return; }
+                    if (isPaused) { requestAnimationFrame(step); return; }
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    carMarker.setLatLng([start.lat + (end.lat - start.lat) * progress, start.lng + (end.lng - start.lng) * progress]);
+                    if (progress < 1) requestAnimationFrame(step); else resolve();
+                }
+                requestAnimationFrame(step);
+            });
+        }
+
+        function getHeading(p1, p2) {
+            const dLon = (p2.lng - p1.lng) * Math.PI / 180;
+            const y = Math.sin(dLon) * Math.cos(p2.lat * Math.PI / 180);
+            const x = Math.cos(p1.lat * Math.PI / 180) * Math.sin(p2.lat * Math.PI / 180) - Math.sin(p1.lat * Math.PI / 180) * Math.cos(p2.lat * Math.PI / 180) * Math.cos(dLon);
+            let target = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+            if (Math.abs(target - currentHeading) > 180) currentHeading += (target > currentHeading ? -360 : 360);
+            return currentHeading = target;
+        }
+
+        function resetPointsOnly() {
+            waypoints = []; editingPointIndex = null; pickupMarker = null; destMarker = null;
+            map.eachLayer(l => { if (l instanceof L.CircleMarker && l !== carMarker) map.removeLayer(l); });
+            if (routingControl) map.removeControl(routingControl);
+            carMarker.setOpacity(0);
+        }
+
+        window.onload = initMap;
+    </script>
+</body>
+</html>

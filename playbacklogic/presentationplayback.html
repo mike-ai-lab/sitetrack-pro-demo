@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SiteTrack Pro | Construction Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --brand-blue: #0066FF;
+            --bg-main: #F8FAFC;
+            --border-subtle: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: #0F172A;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #map-container {
+            position: absolute;
+            inset: 0;
+            background: #FFFFFF;
+            background-image: radial-gradient(#CBD5E1 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+        }
+
+        .map-grid-line {
+            position: absolute;
+            background: #F1F5F9;
+        }
+
+        .project-pin {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--brand-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+            z-index: 10;
+            transform: translate(-50%, -50%);
+        }
+
+        .user-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--brand-blue);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+            z-index: 50;
+            transform: translate(-50%, -50%);
+            transition: all 0.8s linear;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+        }
+
+        /* Typing Animation */
+        .typing::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Pulse for recording state */
+        .pulse {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(.7); opacity: 1; }
+            80%, 100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* Responsive Bottom Sheet for Mobile */
+        @media (max-width: 640px) {
+            #form-card {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-width: none;
+                border-radius: 24px 24px 0 0;
+                transform: translateY(100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #form-card.show {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Playback Controls (Always on top) -->
+    <div id="playback-controls" class="fixed top-20 left-1/2 -translate-x-1/2 z-[200] hidden">
+        <div class="glass-panel px-2 py-2 rounded-2xl flex items-center gap-1 border-slate-200 shadow-xl">
+            <button onclick="togglePause()" id="pause-resume-btn" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 transition text-slate-700">
+                <i data-lucide="pause" id="pause-icon" class="w-5 h-5"></i>
+                <i data-lucide="play" id="play-icon" class="w-5 h-5 hidden"></i>
+            </button>
+            <div class="w-[1px] h-6 bg-slate-200 mx-1"></div>
+            <button onclick="location.reload()" class="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-red-50 transition text-red-500">
+                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="h-14 md:h-16 border-b border-slate-200 bg-white px-4 md:px-6 flex items-center justify-between z-50">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-md flex items-center justify-center">
+                <i data-lucide="compass" class="text-white w-5 h-5"></i>
+            </div>
+            <span class="font-bold text-slate-900 tracking-tight text-sm md:text-base">SITETRACK <span class="text-blue-600">PRO</span></span>
+        </div>
+        
+        <div class="flex items-center gap-3 md:gap-6">
+            <div id="status-tag" class="hidden sm:flex text-[10px] font-bold uppercase tracking-widest text-slate-400 items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
+                Standby
+            </div>
+            <div class="hidden sm:block h-8 w-[1px] bg-slate-200"></div>
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden xs:block">
+                    <div class="text-[9px] font-bold text-slate-400 leading-none uppercase">Riyadh</div>
+                    <div class="text-[11px] font-semibold text-slate-700">Al-Olaya Dist.</div>
+                </div>
+                <div class="w-8 h-8 md:w-9 md:h-9 bg-slate-100 rounded-full border border-slate-200 flex items-center justify-center">
+                    <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 relative bg-slate-50">
+        <!-- Map Canvas -->
+        <div id="map-container" class="overflow-hidden">
+            <div class="absolute inset-0 opacity-40 pointer-events-none">
+                <div class="map-grid-line w-full h-[1px] top-1/4"></div>
+                <div class="map-grid-line w-full h-[1px] top-2/4"></div>
+                <div class="map-grid-line w-full h-[1px] top-3/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-1/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-2/4"></div>
+                <div class="map-grid-line h-full w-[1px] left-3/4"></div>
+            </div>
+
+            <svg id="route-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10">
+                <path id="route-path" d="" fill="none" stroke="#0066FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+            </svg>
+            
+            <div id="pins-layer" class="relative w-full h-full z-20"></div>
+            <div id="user-marker" class="user-marker" style="top: 85%; left: 15%;"></div>
+        </div>
+
+        <!-- Floating Stats Panel -->
+        <div class="absolute top-4 left-4 right-4 flex gap-2 z-40">
+            <div class="glass-panel px-3 py-2 rounded-xl flex items-center gap-2">
+                <i data-lucide="navigation" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span class="text-xs font-bold text-slate-700"><span id="km-count">0.0</span> km</span>
+            </div>
+            <div class="glass-panel px-3 py-2 rounded-xl flex items-center gap-2">
+                <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span class="text-xs font-bold text-slate-700"><span id="lead-count">0</span> Leads</span>
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <div class="absolute bottom-8 left-4 right-4 z-50 flex flex-col items-center gap-3">
+            <button id="start-pres-btn" onclick="startPresentation()" class="w-full max-w-xs bg-slate-900 text-white h-14 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-transform">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                START PRESENTATION
+            </button>
+        </div>
+
+        <!-- Form Overlay -->
+        <div id="form-overlay" class="absolute inset-0 bg-slate-900/20 backdrop-blur-[1px] z-[100] hidden flex items-end sm:items-center justify-center">
+            <div class="bg-white w-full sm:w-[340px] rounded-t-[32px] sm:rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden" id="form-card">
+                <div class="sm:hidden flex justify-center py-3">
+                    <div class="w-12 h-1 bg-slate-200 rounded-full"></div>
+                </div>
+                
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Site Registration</span>
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Project Name</label>
+                        <div id="input-name" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Foreman</label>
+                            <div id="input-contact" class="w-full p-3 text-sm bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Type</label>
+                            <div id="input-type" class="w-full p-3 text-[11px] bg-slate-50 border border-slate-200 rounded-xl min-h-[44px] flex items-center text-slate-400"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 pb-safe">
+                        <button class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-blue-100" id="save-btn">
+                            SAVE PROJECT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let leads = [];
+        let points = [];
+        let distance = 0;
+        let isPaused = false;
+        
+        const userMarker = document.getElementById('user-marker');
+        const routePath = document.getElementById('route-path');
+        const mapContainer = document.getElementById('map-container');
+        const formOverlay = document.getElementById('form-overlay');
+        const formCard = document.getElementById('form-card');
+        const playbackControls = document.getElementById('playback-controls');
+
+        const simulationScript = [
+            { move: { x: 25, y: 70 }, duration: 1800 },
+            { capture: { name: "Al-Olaya Villa 4", contact: "Abu Salem", type: "Residential" } },
+            { move: { x: 25, y: 40 }, duration: 1500 },
+            { move: { x: 55, y: 40 }, duration: 1800 },
+            { capture: { name: "King Road Mall", contact: "Eng. Omar", type: "Commercial" } },
+            { move: { x: 55, y: 15 }, duration: 1500 },
+            { capture: { name: "Riyadh Square", contact: "Khalid B.", type: "Public" } }
+        ];
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById('pause-icon').classList.toggle('hidden', isPaused);
+            document.getElementById('play-icon').classList.toggle('hidden', !isPaused);
+            
+            if (isPaused) {
+                document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>Paused';
+            } else {
+                document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 pulse"></div>Recording';
+            }
+        }
+
+        async function waitIfPaused() {
+            while (isPaused) {
+                await delay(100);
+            }
+        }
+
+        async function startPresentation() {
+            document.getElementById('start-pres-btn').classList.add('hidden');
+            playbackControls.classList.remove('hidden');
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 pulse"></div>Recording';
+            
+            for (let step of simulationScript) {
+                await waitIfPaused();
+                if (step.move) await moveTo(step.move.x, step.move.y, step.duration);
+                else if (step.capture) await performCapture(step.capture);
+            }
+
+            document.getElementById('status-tag').innerHTML = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>Finished';
+            setTimeout(() => {
+                playbackControls.classList.add('hidden');
+                document.getElementById('start-pres-btn').classList.remove('hidden');
+            }, 3000);
+        }
+
+        function moveTo(targetX, targetY, duration) {
+            return new Promise(resolve => {
+                const startX = parseFloat(userMarker.style.left) || 15;
+                const startY = parseFloat(userMarker.style.top) || 85;
+                let startTime = null;
+                let elapsedAtPause = 0;
+
+                async function update(currentTime) {
+                    if (isPaused) {
+                        if (startTime !== null) {
+                            elapsedAtPause = currentTime - startTime;
+                            startTime = null;
+                        }
+                        requestAnimationFrame(update);
+                        return;
+                    }
+
+                    if (startTime === null) {
+                        startTime = currentTime - elapsedAtPause;
+                    }
+
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    const curX = startX + (targetX - startX) * progress;
+                    const curY = startY + (targetY - startY) * progress;
+
+                    userMarker.style.left = curX + '%';
+                    userMarker.style.top = curY + '%';
+                    updatePath(curX, curY);
+                    
+                    distance += 0.004;
+                    document.getElementById('km-count').innerText = distance.toFixed(1);
+
+                    if (progress < 1) requestAnimationFrame(update);
+                    else resolve();
+                }
+                requestAnimationFrame(update);
+            });
+        }
+
+        function updatePath(x, y) {
+            const w = mapContainer.clientWidth;
+            const h = mapContainer.clientHeight;
+            const pxX = (x / 100) * w;
+            const pxY = (y / 100) * h;
+            points.push(`${pxX},${pxY}`);
+            if (points.length === 1) routePath.setAttribute('d', `M ${pxX} ${pxY}`);
+            else routePath.setAttribute('d', routePath.getAttribute('d') + ` L ${pxX} ${pxY}`);
+        }
+
+        async function performCapture(data) {
+            await waitIfPaused();
+            await delay(400);
+            formOverlay.classList.remove('hidden');
+            setTimeout(() => formCard.classList.add('show'), 10);
+            
+            await waitIfPaused();
+            await typeInto('input-name', data.name);
+            await waitIfPaused();
+            await delay(400);
+            await typeInto('input-contact', data.contact);
+            await waitIfPaused();
+            await delay(300);
+            document.getElementById('input-type').innerText = data.type;
+            
+            await waitIfPaused();
+            await delay(600);
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.replace('bg-blue-600', 'bg-emerald-500');
+            saveBtn.innerText = "SUCCESS ✓";
+            
+            await waitIfPaused();
+            await delay(800);
+            dropPin(parseFloat(userMarker.style.left), parseFloat(userMarker.style.top));
+            
+            formCard.classList.remove('show');
+            setTimeout(() => {
+                formOverlay.classList.add('hidden');
+                resetForm();
+                leads.length++;
+                document.getElementById('lead-count').innerText = leads.length;
+            }, 400);
+            await delay(500);
+        }
+
+        function typeInto(elementId, text) {
+            return new Promise(async resolve => {
+                const el = document.getElementById(elementId);
+                el.classList.add('typing');
+                let i = 0;
+                while (i < text.length) {
+                    await waitIfPaused();
+                    el.innerText += text[i];
+                    i++;
+                    await delay(60);
+                }
+                el.classList.remove('typing');
+                resolve();
+            });
+        }
+
+        function dropPin(x, y) {
+            const pin = document.createElement('div');
+            pin.className = 'project-pin';
+            pin.style.left = x + '%';
+            pin.style.top = y + '%';
+            document.getElementById('pins-layer').appendChild(pin);
+        }
+
+        function resetForm() {
+            document.getElementById('input-name').innerText = "";
+            document.getElementById('input-contact').innerText = "";
+            document.getElementById('input-type').innerText = "Type...";
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.classList.replace('bg-emerald-500', 'bg-blue-600');
+            saveBtn.innerText = "SAVE PROJECT";
+        }
+
+        function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+    </script>
+</body>
+</html>

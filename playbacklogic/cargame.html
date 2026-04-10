@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveSim Pro - Riyadh Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; }
+        canvas { display: block; }
+        #ui-overlay {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: white;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .speedometer {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            text-align: right;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .controls-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 15, 15, 0.85);
+            padding: 12px 24px;
+            border-radius: 50px;
+            color: white;
+            display: flex;
+            gap: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+        .kbd {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            border-bottom: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-overlay">
+        <h1 class="text-3xl font-black tracking-tighter uppercase italic text-yellow-500">DriveSim Pro</h1>
+        <p class="text-xs tracking-widest uppercase opacity-60">Architectural Visualization Mode</p>
+        <div class="mt-4 bg-black/40 p-2 rounded inline-block backdrop-blur-sm">
+            <p class="text-sm">View: <span id="viewModeText" class="font-bold text-yellow-400">Cinematic</span></p>
+        </div>
+    </div>
+
+    <div class="speedometer">
+        <div class="text-5xl font-black italic"><span id="speedVal">0</span> <span class="text-xl not-italic font-normal opacity-50">KM/H</span></div>
+        <div class="w-48 h-1 bg-white/20 mt-1 rounded-full overflow-hidden">
+            <div id="speedBar" class="h-full bg-yellow-500 w-0 transition-all"></div>
+        </div>
+    </div>
+
+    <div class="controls-panel">
+        <div><span class="kbd">WASD</span> Navigate</div>
+        <div><span class="kbd">C</span> Viewpoint</div>
+        <div><span class="kbd">Space</span> Handbrake</div>
+        <div><span class="kbd">R</span> Reset</div>
+    </div>
+
+    <script>
+        let scene, camera, renderer, car, clock;
+        let viewMode = 'follow'; 
+        let wheels = [];
+        let headlights = [];
+        let brakeLights = [];
+        
+        const carState = {
+            velocity: 0,
+            angle: 0,
+            steeringAngle: 0,
+            maxSteeringAngle: 0.5,
+            steeringSpeed: 0.03,
+            maxSpeed: 1.2,
+            acceleration: 0.012,
+            friction: 0.006,
+            brakeForce: 0.03,
+            bodyRoll: 0,
+            wheelRotation: 0
+        };
+
+        const keys = { w: false, a: false, s: false, d: false, ' ': false };
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87ceeb); 
+            scene.fog = new THREE.Fog(0xd2b48c, 40, 300);
+
+            clock = new THREE.Clock();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0xfffaf0, 1.2);
+            sunLight.position.set(100, 150, 100);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.left = -100;
+            sunLight.shadow.camera.right = 100;
+            sunLight.shadow.camera.top = 100;
+            sunLight.shadow.camera.bottom = -100;
+            scene.add(sunLight);
+
+            // Set near clipping plane to 0.01 to prevent geometry clipping in cockpit
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.01, 2000);
+
+            createEnvironment();
+            createCar();
+            
+            window.addEventListener('keydown', (e) => handleKey(e, true));
+            window.addEventListener('keyup', (e) => handleKey(e, false));
+            window.addEventListener('resize', onWindowResize);
+            
+            animate();
+        }
+
+        function createEnvironment() {
+            const size = 2000;
+            const groundGeom = new THREE.PlaneGeometry(size, size);
+            const groundMat = new THREE.MeshPhongMaterial({ color: 0x222222 });
+            const ground = new THREE.Mesh(groundGeom, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            const grid = new THREE.GridHelper(size, 200, 0x444444, 0x333333);
+            scene.add(grid);
+
+            for(let i = 0; i < 60; i++) {
+                addTree(
+                    (Math.random() - 0.5) * 400, 
+                    (Math.random() - 0.5) * 400
+                );
+            }
+        }
+
+        function addTree(x, z) {
+            if (Math.abs(x) < 10 && Math.abs(z) < 10) return; 
+            const tree = new THREE.Group();
+            
+            const trunkGeom = new THREE.CylinderGeometry(0.2, 0.4, 5);
+            const trunkMat = new THREE.MeshPhongMaterial({ color: 0x5C4033 });
+            const trunk = new THREE.Mesh(trunkGeom, trunkMat);
+            trunk.position.y = 2.5;
+            trunk.castShadow = true;
+            tree.add(trunk);
+
+            const leafMat = new THREE.MeshPhongMaterial({ color: 0x2d5a27 });
+            for(let i = 0; i < 5; i++) {
+                const leafGeom = new THREE.SphereGeometry(1.2, 8, 8);
+                leafGeom.scale(1, 0.2, 2);
+                const leaf = new THREE.Mesh(leafGeom, leafMat);
+                leaf.position.y = 5;
+                leaf.rotation.y = (i * Math.PI * 2) / 5;
+                leaf.rotation.x = 0.5;
+                tree.add(leaf);
+            }
+
+            tree.position.set(x, 0, z);
+            scene.add(tree);
+        }
+
+        function createCar() {
+            car = new THREE.Group();
+            const bodyColor = 0xc0c0c0; 
+
+            const baseGeom = new THREE.BoxGeometry(1.2, 0.4, 2.4);
+            const baseMat = new THREE.MeshPhongMaterial({ color: bodyColor });
+            const base = new THREE.Mesh(baseGeom, baseMat);
+            base.position.y = 0.5;
+            base.castShadow = true;
+            car.add(base);
+
+            const cabinGeom = new THREE.BoxGeometry(1.0, 0.5, 1.2);
+            const cabinMat = new THREE.MeshPhongMaterial({ color: 0x111111 });
+            const cabin = new THREE.Mesh(cabinGeom, cabinMat);
+            cabin.position.set(0, 0.9, -0.1);
+            car.add(cabin);
+
+            const lightGeom = new THREE.CircleGeometry(0.15, 16);
+            const lightMat = new THREE.MeshBasicMaterial({ color: 0xffffaa });
+            
+            const hlLeft = new THREE.Mesh(lightGeom, lightMat);
+            hlLeft.position.set(-0.4, 0.5, 1.21);
+            car.add(hlLeft);
+            
+            const hlRight = hlLeft.clone();
+            hlRight.position.x = 0.4;
+            car.add(hlRight);
+
+            const spotLight = new THREE.SpotLight(0xffffff, 2, 40, 0.4, 0.5, 1);
+            spotLight.position.set(0, 0.5, 1.2);
+            spotLight.target.position.set(0, 0.5, 10);
+            car.add(spotLight);
+            car.add(spotLight.target);
+
+            const brakeGeom = new THREE.BoxGeometry(0.3, 0.1, 0.05);
+            const brakeMat = new THREE.MeshBasicMaterial({ color: 0x330000 });
+            const bl = new THREE.Mesh(brakeGeom, brakeMat);
+            bl.position.set(-0.4, 0.5, -1.21);
+            car.add(bl);
+            brakeLights.push(bl);
+
+            const br = bl.clone();
+            br.position.x = 0.4;
+            car.add(br);
+            brakeLights.push(br);
+
+            const wheelGeom = new THREE.CylinderGeometry(0.35, 0.35, 0.25, 24);
+            const wheelMat = new THREE.MeshPhongMaterial({ color: 0x151515 });
+            const rimGeom = new THREE.CylinderGeometry(0.2, 0.2, 0.26, 8);
+            const rimMat = new THREE.MeshPhongMaterial({ color: 0x888888 });
+
+            const positions = [
+                [-0.65, 0.35, 0.8], [0.65, 0.35, 0.8],  
+                [-0.65, 0.35, -0.8], [0.65, 0.35, -0.8] 
+            ];
+
+            positions.forEach((pos, i) => {
+                const wheelGroup = new THREE.Group();
+                const w = new THREE.Mesh(wheelGeom, wheelMat);
+                w.rotation.z = Math.PI / 2;
+                const r = new THREE.Mesh(rimGeom, rimMat);
+                r.rotation.z = Math.PI / 2;
+                wheelGroup.add(w);
+                wheelGroup.add(r);
+                wheelGroup.position.set(...pos);
+                wheelGroup.castShadow = true;
+                
+                if (i < 2) wheelGroup.name = "frontWheel";
+                wheels.push(wheelGroup);
+                car.add(wheelGroup);
+            });
+
+            scene.add(car);
+        }
+
+        function handleKey(e, isPressed) {
+            const key = e.key.toLowerCase();
+            if (keys.hasOwnProperty(key)) keys[key] = isPressed;
+
+            if (isPressed && key === 'c') {
+                const modes = ['follow', 'cockpit', 'top'];
+                viewMode = modes[(modes.indexOf(viewMode) + 1) % modes.length];
+                document.getElementById('viewModeText').innerText = viewMode.toUpperCase();
+            }
+            
+            if (isPressed && key === 'r') {
+                car.position.set(0,0,0);
+                car.rotation.set(0,0,0);
+                carState.velocity = 0;
+                carState.angle = 0;
+                carState.steeringAngle = 0;
+            }
+        }
+
+        function updatePhysics() {
+            if (keys.w) {
+                carState.velocity += carState.acceleration;
+            } else if (keys.s) {
+                if (carState.velocity > 0) carState.velocity -= carState.brakeForce;
+                else carState.velocity -= carState.acceleration;
+            } else if (keys[' ']) {
+                if (carState.velocity > 0) carState.velocity -= carState.brakeForce * 2;
+                else if (carState.velocity < 0) carState.velocity += carState.brakeForce * 2;
+            } else {
+                if (carState.velocity > 0) carState.velocity -= carState.friction;
+                if (carState.velocity < 0) carState.velocity += carState.friction;
+                if (Math.abs(carState.velocity) < carState.friction) carState.velocity = 0;
+            }
+
+            carState.velocity = Math.max(-carState.maxSpeed/1.5, Math.min(carState.maxSpeed, carState.velocity));
+
+            const isBraking = keys.s || keys[' '];
+            brakeLights.forEach(l => {
+                l.material.color.setHex(isBraking ? 0xff0000 : 0x330000);
+            });
+
+            if (keys.a) {
+                carState.steeringAngle += carState.steeringSpeed;
+            } else if (keys.d) {
+                carState.steeringAngle -= carState.steeringSpeed;
+            } else {
+                if (carState.steeringAngle > 0) carState.steeringAngle -= carState.steeringSpeed;
+                if (carState.steeringAngle < 0) carState.steeringAngle += carState.steeringSpeed;
+                if (Math.abs(carState.steeringAngle) < carState.steeringSpeed) carState.steeringAngle = 0;
+            }
+            carState.steeringAngle = Math.max(-carState.maxSteeringAngle, Math.min(carState.maxSteeringAngle, carState.steeringAngle));
+
+            if (Math.abs(carState.velocity) > 0.01) {
+                const turnRadius = carState.steeringAngle * (carState.velocity * 0.12);
+                carState.angle += turnRadius;
+                carState.bodyRoll = THREE.MathUtils.lerp(carState.bodyRoll, -carState.steeringAngle * carState.velocity * 0.2, 0.1);
+            } else {
+                carState.bodyRoll = THREE.MathUtils.lerp(carState.bodyRoll, 0, 0.1);
+            }
+
+            car.position.x += Math.sin(carState.angle) * carState.velocity;
+            car.position.z += Math.cos(carState.angle) * carState.velocity;
+            
+            car.rotation.y = carState.angle;
+            car.rotation.z = carState.bodyRoll;
+
+            carState.wheelRotation -= carState.velocity / 0.35;
+            wheels.forEach(w => {
+                w.children[0].rotation.x = carState.wheelRotation; 
+                w.children[1].rotation.x = carState.wheelRotation; 
+                if (w.name === "frontWheel") {
+                    w.rotation.y = carState.steeringAngle;
+                }
+            });
+
+            const speedKmH = Math.floor(Math.abs(carState.velocity) * 180);
+            document.getElementById('speedVal').innerText = speedKmH;
+            document.getElementById('speedBar').style.width = (speedKmH / 200 * 100) + '%';
+        }
+
+        function updateCamera() {
+            const lookAtPos = car.position.clone();
+            lookAtPos.y += 0.5;
+
+            if (viewMode === 'top') {
+                camera.position.lerp(new THREE.Vector3(car.position.x, 30, car.position.z), 0.1);
+                camera.lookAt(car.position);
+            } else if (viewMode === 'cockpit') {
+                // ADJUSTED: Moved cockpit camera further forward and higher to avoid the black box
+                const offset = new THREE.Vector3(0, 1.2, 0.6).applyMatrix4(car.matrixWorld);
+                camera.position.copy(offset);
+                const lookAtOffset = new THREE.Vector3(0, 1.0, 10).applyMatrix4(car.matrixWorld);
+                camera.lookAt(lookAtOffset);
+            } else {
+                const offset = new THREE.Vector3(0, 2.5, -6).applyMatrix4(car.matrixWorld);
+                camera.position.lerp(offset, 0.1);
+                camera.lookAt(lookAtPos);
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updatePhysics();
+            updateCamera();
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

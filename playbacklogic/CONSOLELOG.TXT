@@ -1,0 +1,66 @@
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:50:05.546 XHR finished loading: GET "<URL>;".
+03:49:46.135 UBERMOCKUP1.html:909 Recording started (Simulation Mode)
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:30.281 XHR finished loading: GET "<URL>".
+03:51:26.049 leaflet-routing-machine.js:88 XHR failed loading: GET "https://router.project-osrm.org/route/v1/driving/46.7217,24.77265;46.71867370605469,24.809797753364574?overview=full&alternatives=true&steps=true&hints=UV9Hgf___39FAAAAZAAAAAAAAAAAAAAAIo64QsUhJEIAAAAAAAAAAEUAAABkAAAAAAAAAAAAAAACHgAAperIAigAegGk6sgCKgB6AQAAXw8AAAAA;os4shafOLIVuAAAAGAIAAJcBAAA-AAAAaYn2QcuyFENXk-JCGYiJQW4AAAAYAgAAlwEAAD4AAAACHgAAz97IAkyRegHS3sgCRpF6AQYALwQAAAAA".
+corslite @ leaflet-routing-machine.js:88
+route @ leaflet-routing-machine.js:17977
+route @ leaflet-routing-machine.js:16151
+_onZoomEnd @ leaflet-routing-machine.js:15900
+fire @ Events.js:195
+_moveEnd @ Map.js:1248
+_onZoomTransitionEnd @ Map.js:1735
+setTimeout
+_animateZoom @ Map.js:1714
+(anonymous) @ Map.js:1679
+requestAnimationFrame
+x @ Util.js:231
+_tryAnimatedZoom @ Map.js:1676
+setView @ Map.js:195
+setZoomAround @ Map.js:249
+_performZoom @ Map.ScrollWheelZoom.js:83
+setTimeout
+_onWheelScroll @ Map.ScrollWheelZoom.js:57
+o @ DomEvent.js:108
+03:51:27.044 leaflet-routing-machine.js:88 XHR failed loading: GET "https://router.project-osrm.org/route/v1/driving/46.7217,24.77265;46.71867370605469,24.809797753364574?overview=full&alternatives=true&steps=true&hints=UV9Hgf___39FAAAAZAAAAAAAAAAAAAAAIo64QsUhJEIAAAAAAAAAAEUAAABkAAAAAAAAAAAAAAACHgAAperIAigAegGk6sgCKgB6AQAAXw8AAAAA;os4shafOLIVuAAAAGAIAAJcBAAA-AAAAaYn2QcuyFENXk-JCGYiJQW4AAAAYAgAAlwEAAD4AAAACHgAAz97IAkyRegHS3sgCRpF6AQYALwQAAAAA".
+corslite @ leaflet-routing-machine.js:88
+route @ leaflet-routing-machine.js:17977
+route @ leaflet-routing-machine.js:16151
+_onZoomEnd @ leaflet-routing-machine.js:15900
+fire @ Events.js:195
+_moveEnd @ Map.js:1248
+_onZoomTransitionEnd @ Map.js:1735
+setTimeout
+_animateZoom @ Map.js:1714
+(anonymous) @ Map.js:1679
+requestAnimationFrame
+x @ Util.js:231
+_tryAnimatedZoom @ Map.js:1676
+setView @ Map.js:195
+setZoomAround @ Map.js:249
+_performZoom @ Map.ScrollWheelZoom.js:83
+setTimeout
+_onWheelScroll @ Map.ScrollWheelZoom.js:57
+o @ DomEvent.js:108
+03:52:00.822 UBERMOCKUP1.html:965 Recording stopped. Total points: 833
