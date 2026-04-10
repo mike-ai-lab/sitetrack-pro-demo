@@ -51,6 +51,26 @@
             display: block;
         }
         
+        /* Custom Scrollbar */
+        #panel-body::-webkit-scrollbar,
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 6px;
+        }
+        #panel-body::-webkit-scrollbar-track,
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        #panel-body::-webkit-scrollbar-thumb,
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        #panel-body::-webkit-scrollbar-thumb:hover,
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
         /* Hide devtools inspector highlight */
         .element-inspector-highlight { display: none !important; }
         path.leaflet-interactive.element-inspector-highlight { display: none !important; }
@@ -87,14 +107,14 @@
 
     <!-- Main Control Panel -->
     <div id="control-panel" class="absolute top-5 left-5 z-[1000] pointer-events-none">
-        <div class="glass rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 overflow-hidden transition-all duration-300">
+        <div class="glass rounded-xl shadow-xl border border-gray-100 pointer-events-auto w-72 sm:w-80 overflow-hidden transition-all duration-300 flex flex-col max-h-[calc(100vh-40px)] sm:max-h-[530px]">
             <!-- Panel Header -->
-            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+            <div class="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors flex-shrink-0" onclick="Panel.toggle()">
                 <div class="flex items-center gap-2">
                     <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <h1 class="text-xs font-bold text-gray-900" id="panel-title">Trip Planner</h1>
                 </div>
-                <button onclick="Panel.toggle()" class="p-1.5 hover:bg-gray-100 rounded-lg transition-colors" id="collapse-btn" title="Collapse">
+                <button class="p-1.5 hover:bg-gray-200 rounded-lg transition-colors" id="collapse-btn" title="Collapse">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" id="collapse-icon">
                         <polyline points="18 15 12 9 6 15"/>
                     </svg>
@@ -102,9 +122,9 @@
             </div>
 
             <!-- Panel Body -->
-            <div id="panel-body" class="transition-all duration-300 overflow-hidden" style="max-height: 600px;">
+            <div id="panel-body" class="transition-all duration-300 overflow-hidden flex-1 flex flex-col" style="max-height: 600px;">
                 <!-- Tab Switcher -->
-                <div class="flex gap-1 p-2 bg-gray-50 border-b border-gray-100">
+                <div class="flex gap-1 p-2 bg-gray-50 border-b border-gray-100 flex-shrink-0">
                     <button onclick="Panel.switchTab('planner')" class="tab-btn active flex-1 text-[10px] font-bold py-2 rounded-lg uppercase tracking-wider transition-all" id="tab-planner">
                         Planner
                     </button>
@@ -113,8 +133,8 @@
                     </button>
                 </div>
 
-                <!-- Tab Content Container -->
-                <div class="p-4">
+                <!-- Tab Content Container with Auto Scroll -->
+                <div class="p-4 overflow-y-auto flex-1" style="overflow-y: auto;">
                     <!-- PLANNER TAB -->
                     <div id="planner-tab" class="tab-content space-y-3">
                         <div class="flex items-center justify-between">
@@ -144,21 +164,37 @@
                             <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-1 bg-gray-200 rounded-lg cursor-pointer">
                         </div>
 
-                        <div class="flex gap-2">
-                            <button id="start-btn" disabled onclick="handleStart()" class="flex-1 bg-black text-white text-[10px] font-bold py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-100 disabled:text-gray-300 transition-all uppercase">
-                                Start
+                        <div class="flex items-center justify-center gap-3">
+                            <button id="start-btn" disabled onclick="handleStart()" class="w-[40px] h-[40px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Trip">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
                             </button>
-                            <button id="pause-btn" disabled onclick="togglePause()" class="hidden flex-1 bg-gray-100 text-black text-[10px] font-bold py-2 rounded-lg hover:bg-gray-200 transition-all uppercase">
-                                Pause
+                            <button id="pause-btn" disabled onclick="togglePause()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Pause Trip">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16"/>
+                                    <rect x="14" y="4" width="4" height="16"/>
+                                </svg>
                             </button>
-                            <button id="end-btn" onclick="endTrip()" class="hidden flex-1 bg-red-500 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-red-600 transition-all uppercase">
-                                End
+                            <button id="resume-btn" disabled onclick="togglePause()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Resume Trip">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </button>
+                            <button id="end-btn" onclick="endTrip()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="End Trip">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12"/>
+                                </svg>
+                            </button>
+                            <button id="reset-planner-btn" onclick="resetPlanner()" class="w-[40px] h-[40px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                    <path d="M21 3v5h-5"/>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                    <path d="M3 21v-5h5"/>
+                                </svg>
                             </button>
                         </div>
-                        
-                        <button id="reset-planner-btn" onclick="resetPlanner()" class="w-full bg-gray-200 text-gray-700 text-[10px] font-bold py-2 rounded-lg hover:bg-gray-300 transition-all uppercase">
-                            Reset
-                        </button>
                     </div>
 
                     <!-- RECORDER TAB -->
@@ -214,27 +250,29 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-2">
-                            <button id="start-recording-btn" onclick="startRecording()" disabled class="flex-1 bg-red-500 text-white text-[10px] font-bold p-2 rounded-lg hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all flex items-center justify-center" title="Start Recording">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>
+                        <div class="flex items-center justify-center gap-3">
+                            <button id="start-recording-btn" onclick="startRecording()" disabled class="w-[40px] h-[40px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Recording">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
                             </button>
-                            <button id="pause-recording-btn" disabled onclick="togglePauseRecording()" class="hidden flex-1 bg-yellow-500 text-white text-[10px] font-bold p-2 rounded-lg hover:bg-yellow-600 transition-all flex items-center justify-center" title="Pause">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                            <button id="stop-recording-btn" disabled onclick="stopRecording()" class="hidden w-[40px] h-[40px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Stop Recording">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="6" width="12" height="12"/>
+                                </svg>
                             </button>
-                            <button id="resume-recording-btn" disabled onclick="togglePauseRecording()" class="hidden flex-1 bg-green-500 text-white text-[10px] font-bold p-2 rounded-lg hover:bg-green-600 transition-all flex items-center justify-center" title="Resume">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            </button>
-                            <button id="stop-recording-btn" disabled onclick="stopRecording()" class="hidden flex-1 bg-gray-900 text-white text-[10px] font-bold p-2 rounded-lg hover:bg-gray-800 transition-all flex items-center justify-center" title="Stop">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
+                            <button id="reset-recorder-btn" onclick="resetRecorder()" class="w-[40px] h-[40px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                    <path d="M21 3v5h-5"/>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                    <path d="M3 21v-5h5"/>
+                                </svg>
                             </button>
                         </div>
 
-                        <button id="save-session-btn" disabled onclick="saveSession()" class="hidden w-full bg-green-500 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-green-600 transition-all uppercase">
+                        <button id="save-session-btn" disabled onclick="saveSession()" class="hidden w-full bg-green-500 text-white text-[11px] font-bold py-2.5 rounded-lg hover:bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg uppercase tracking-wide">
                             Save Session
-                        </button>
-                        
-                        <button id="reset-recorder-btn" onclick="resetRecorder()" class="w-full bg-gray-200 text-gray-700 text-[10px] font-bold py-2 rounded-lg hover:bg-gray-300 transition-all uppercase">
-                            Reset
                         </button>
                     </div>
                 </div>
@@ -291,7 +329,7 @@
     </div>
 
     <!-- Analytics Window -->
-    <div id="analytics" class="absolute bottom-5 left-5 z-[1000] pointer-events-none opacity-0 transition-opacity duration-500">
+    <div id="analytics" class="absolute bottom-24 left-5 z-[500] pointer-events-none opacity-0 transition-opacity duration-500">
         <div class="bg-black/90 backdrop-blur-md text-white p-3 rounded-xl shadow-xl w-48 border border-white/10 pointer-events-auto">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Live Telemetry</span>
@@ -337,7 +375,6 @@
         let userLocationMarker = null;
         let isLocationFound = false;
         let simulationMode = false;
-        let isRecordingPaused = false;
         let simulatedElapsedTime = 0;
         let isSimulationAnimating = false;
         let trafficLayer = null;
@@ -613,7 +650,15 @@
 
         function togglePause() {
             isPaused = !isPaused;
-            document.getElementById('pause-btn').innerText = isPaused ? "Resume" : "Pause";
+            if (isPaused) {
+                document.getElementById('pause-btn').classList.add('hidden');
+                document.getElementById('resume-btn').classList.remove('hidden');
+                document.getElementById('resume-btn').disabled = false;
+            } else {
+                document.getElementById('resume-btn').classList.add('hidden');
+                document.getElementById('pause-btn').classList.remove('hidden');
+                document.getElementById('pause-btn').disabled = false;
+            }
         }
 
         function toggleMinimize() {
@@ -759,8 +804,6 @@
             document.getElementById('record-badge').classList.remove('bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
             document.getElementById('record-badge').classList.add('bg-gray-100', 'text-gray-700');
             document.getElementById('start-recording-btn').classList.remove('hidden');
-            document.getElementById('pause-recording-btn').classList.add('hidden');
-            document.getElementById('resume-recording-btn').classList.add('hidden');
             document.getElementById('stop-recording-btn').classList.add('hidden');
             document.getElementById('save-session-btn').classList.add('hidden');
             document.getElementById('recording-indicator').classList.add('hidden');
@@ -915,7 +958,7 @@
         }
 
         function simulateMovement(latlng) {
-            if (!isRecording || isRecordingPaused || isSimulationAnimating) return;
+            if (!isRecording || isSimulationAnimating) return;
             
             // If this is the first point or we need a new route
             if (recordedPath.length === 0) {
@@ -1002,16 +1045,6 @@
             const interval = 1000 / speed;
 
             for (let i = 0; i < routeCoords.length; i++) {
-                if (!isRecording) {
-                    isSimulationAnimating = false;
-                    break;
-                }
-                
-                // Wait if paused
-                while (isRecordingPaused && isRecording) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                
                 if (!isRecording) {
                     isSimulationAnimating = false;
                     break;
@@ -1202,7 +1235,6 @@
             }
 
             isRecording = true;
-            isRecordingPaused = false;
             recordingStartTime = Date.now();
             simulatedElapsedTime = 0;
             recordedPath = [];
@@ -1215,8 +1247,6 @@
 
             // Update UI
             document.getElementById('start-recording-btn').classList.add('hidden');
-            document.getElementById('pause-recording-btn').classList.remove('hidden');
-            document.getElementById('pause-recording-btn').disabled = false;
             document.getElementById('stop-recording-btn').classList.remove('hidden');
             document.getElementById('stop-recording-btn').disabled = false;
             document.getElementById('recording-indicator').classList.remove('hidden');
@@ -1243,33 +1273,10 @@
             console.log('Recording started', simulationMode ? '(Simulation Mode)' : '(GPS Mode)');
         }
 
-        function togglePauseRecording() {
-            isRecordingPaused = !isRecordingPaused;
-            
-            if (isRecordingPaused) {
-                // Paused
-                document.getElementById('pause-recording-btn').classList.add('hidden');
-                document.getElementById('resume-recording-btn').classList.remove('hidden');
-                document.getElementById('record-badge').innerText = 'Paused';
-                document.getElementById('record-badge').classList.remove('bg-red-100', 'text-red-700');
-                document.getElementById('record-badge').classList.add('bg-yellow-100', 'text-yellow-700');
-                document.getElementById('recording-indicator').classList.add('hidden');
-            } else {
-                // Resumed
-                document.getElementById('resume-recording-btn').classList.add('hidden');
-                document.getElementById('pause-recording-btn').classList.remove('hidden');
-                document.getElementById('record-badge').innerText = simulationMode ? 'Simulating' : 'Recording';
-                document.getElementById('record-badge').classList.remove('bg-yellow-100', 'text-yellow-700');
-                document.getElementById('record-badge').classList.add('bg-red-100', 'text-red-700');
-                document.getElementById('recording-indicator').classList.remove('hidden');
-            }
-        }
-
         function stopRecording() {
             if (!isRecording) return;
 
             isRecording = false;
-            isRecordingPaused = false;
             isSimulationAnimating = false; // Reset animation flag
 
             if (watchId !== null) {
@@ -1287,8 +1294,6 @@
 
             // Update UI
             document.getElementById('start-recording-btn').classList.remove('hidden');
-            document.getElementById('pause-recording-btn').classList.add('hidden');
-            document.getElementById('resume-recording-btn').classList.add('hidden');
             document.getElementById('stop-recording-btn').classList.add('hidden');
             document.getElementById('recording-indicator').classList.add('hidden');
             document.getElementById('record-badge').innerText = 'Stopped';
@@ -1301,8 +1306,6 @@
         }
 
         function onPositionUpdate(position) {
-            if (isRecordingPaused) return; // Don't update if paused
-
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const newPoint = L.latLng(lat, lng);
@@ -1405,7 +1408,7 @@
         }
 
         function updateDuration() {
-            if (!isRecording || !recordingStartTime || isRecordingPaused) return;
+            if (!isRecording || !recordingStartTime) return;
             
             let elapsed;
             if (simulationMode) {
