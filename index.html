@@ -4,19 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real Street Tracker - Riyadh</title>
+    
+    <!-- Favicon (data URI to avoid 404 error) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗺️</text></svg>">
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script>
-        // API Configuration
-        const CONFIG = {
-            TOMTOM_API_KEY: 'JyADf97GtHsnNPfFQcUUrc2YVS1m0u3I'
-        };
+        // No API keys needed - using Google Maps tiles
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        #map { height: 100vh; width: 100vw; cursor: crosshair; }
+        #map { 
+            height: 100vh; 
+            width: 100vw; 
+            cursor: crosshair;
+            touch-action: pan-x pan-y pinch-zoom;
+        }
+        
+        /* Ensure map is clickable on mobile */
+        .leaflet-container {
+            touch-action: pan-x pan-y pinch-zoom !important;
+        }
+        
+        .leaflet-tile-pane,
+        .leaflet-overlay-pane {
+            pointer-events: auto !important;
+        }
+        
+        /* History Panel States */
+        .history-collapsed {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 50% !important;
+        }
+
+        .history-expanded {
+            width: 340px !important;
+            height: auto !important;
+            border-radius: 2.8rem !important;
+        }
+        
+        .history-collapsed .content-visible {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .history-collapsed #history-header {
+            padding: 0 !important;
+            justify-content: center !important;
+            align-items: center !important;
+            height: 56px !important;
+        }
+        
+        .history-collapsed #history-header h2,
+        .history-collapsed #history-header > div:last-child {
+            display: none !important;
+        }
+        
+        .history-collapsed #history-header::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
         .car-icon-inner {
             transition: transform 0.6s ease-out;
             transform-origin: center center;
@@ -36,6 +95,7 @@
         
         /* Mobile optimizations */
         @media (max-width: 640px) {
+            /* Car icon adjustments */
             .car-icon-inner {
                 width: 50px !important;
                 height: 50px !important;
@@ -44,22 +104,156 @@
                 width: 50px !important;
                 height: 50px !important;
             }
-            /* Ensure history button doesn't overlap */
+            
+            /* Improve touch targets on mobile */
+            #map {
+                cursor: default !important;
+            }
+            
+            /* Add visual feedback for touch */
+            .leaflet-container {
+                -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+            }
+            
+            /* Main Panel - Top Left */
+            #control-panel {
+                top: 16px !important;
+                left: 16px !important;
+            }
+            
+            /* History Button - Top Right */
+            .fixed.top-5.right-5:has(#history-btn) {
+                top: 16px !important;
+                right: 16px !important;
+            }
+            
             #history-btn {
-                top: 10px !important;
-                right: 10px !important;
+                width: 48px !important;
+                height: 48px !important;
+            }
+            
+            /* History Panel - Top Right */
+            #history-panel {
+                top: 16px !important;
+                right: 16px !important;
+                max-width: calc(100vw - 32px) !important;
+            }
+            
+            #history-panel > div {
+                width: 280px !important;
+                max-width: calc(100vw - 32px) !important;
+            }
+            
+            /* Live Telemetry - Top Center */
+            #analytics {
+                top: 16px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                max-width: calc(100vw - 32px) !important;
+            }
+            
+            #analytics > div {
+                height: 48px !important;
+                padding: 0 10px !important;
+                gap: 8px !important;
+            }
+            
+            #analytics .text-\[9px\] {
+                font-size: 8px !important;
+            }
+            
+            #analytics .text-sm {
+                font-size: 11px !important;
+            }
+            
+            #analytics .text-\[7px\] {
+                font-size: 6px !important;
+            }
+            
+            /* History panel mobile */
+            .history-expanded {
+                width: calc(100vw - 32px) !important;
+                max-width: 340px !important;
+            }
+            
+            .history-collapsed {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            
+            /* Right Side Buttons - Bottom Right */
+            .fixed.bottom-5.right-5 {
+                bottom: 16px !important;
+                right: 16px !important;
+                gap: 10px !important;
+            }
+            
+            #traffic-btn,
+            #locate-btn {
+                width: 48px !important;
+                height: 48px !important;
+            }
+            
+            /* Panel responsive */
+            .panel-expanded {
+                width: calc(100vw - 32px) !important;
+                max-width: 340px !important;
+            }
+            
+            .panel-collapsed {
+                width: 48px !important;
+                height: 48px !important;
             }
         }
     </style>
 </head>
 <body class="bg-gray-100 overflow-hidden">
 
-    <!-- Panel will be injected by panel.js -->
+    <!-- Panel will be injected by panel.js (it uses top-8 left-8 = 32px, we'll override it) -->
 
-    <!-- Floating Buttons - Right Bottom -->
-    <div class="absolute bottom-5 right-5 z-[1000] pointer-events-auto flex flex-col gap-3">
+    <!-- Right Side Buttons Column (Bottom Right) -->
+    <div class="fixed bottom-5 right-5 z-[1000] pointer-events-auto flex flex-col gap-3">
+        <!-- Layer Switcher -->
+        <div id="layer-switcher" class="relative">
+            <!-- Main Layer Button -->
+            <button id="layer-btn" onclick="toggleLayerMenu()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Map Layers">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                </svg>
+            </button>
+            
+            <!-- Layer Options (Hidden by default) -->
+            <div id="layer-menu" class="hidden absolute bottom-full right-0 mb-2 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden min-w-[140px]">
+                <button onclick="switchMapLayer('default')" class="w-full px-4 py-3 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2 border-b border-gray-100">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                        <line x1="15" y1="3" x2="15" y2="21"/>
+                    </svg>
+                    Default
+                </button>
+                <button onclick="switchMapLayer('satellite')" class="w-full px-4 py-3 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    Satellite
+                </button>
+            </div>
+        </div>
+        
+        <!-- Locate Me Button -->
+        <button id="locate-btn" onclick="locateUser()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Find My Location">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
+        
         <!-- Traffic Toggle Button -->
-        <button id="traffic-btn" onclick="toggleTraffic()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Toggle Traffic">
+        <button id="traffic-btn" onclick="toggleTraffic()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Toggle Traffic">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="6" r="2"/>
                 <circle cx="12" cy="12" r="2"/>
@@ -67,36 +261,11 @@
                 <line x1="12" y1="1" x2="12" y2="23"/>
             </svg>
         </button>
-        
-        <!-- Locate Me Button -->
-        <button id="locate-btn" onclick="locateUser()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Find My Location">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-        </button>
     </div>
 
-    <!-- History Panel -->
-    <div id="history-panel" class="absolute top-5 right-5 z-[1000] pointer-events-none hidden">
-        <div class="glass p-4 rounded-2xl shadow-xl border border-gray-100 pointer-events-auto w-64 max-h-[40vh] flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trip History</h2>
-                <button onclick="toggleHistory()" class="p-1 hover:bg-gray-200 rounded-md transition">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div id="history-list" class="space-y-2 overflow-y-auto pr-1">
-                <p class="text-[10px] text-gray-400 italic text-center py-4">No recent trips</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- History Toggle Button -->
-    <div class="absolute top-5 right-5 z-[999] pointer-events-auto">
-        <button id="history-btn" onclick="toggleHistory()" class="bg-white p-3 rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Trip History">
+    <!-- History Toggle Button (Top Right) -->
+    <div class="fixed top-5 right-5 z-[999] pointer-events-auto">
+        <button id="history-btn" onclick="toggleHistory()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Trip History">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
@@ -104,16 +273,52 @@
         </button>
     </div>
 
-    <!-- Analytics Window -->
-    <div id="analytics" class="absolute bottom-24 left-5 z-[500] pointer-events-none opacity-0 transition-opacity duration-500">
-        <div class="bg-black/90 backdrop-blur-md text-white p-3 rounded-xl shadow-xl w-48 border border-white/10 pointer-events-auto">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Live Telemetry</span>
-                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+    <!-- History Panel -->
+    <div id="history-panel" class="fixed top-5 right-5 z-[1000] pointer-events-auto hidden">
+        <div id="history-panel-inner" class="glass flex flex-col rounded-[2.8rem] shadow-[0_30px_90px_-10px_rgba(0,0,0,0.2)] w-[340px] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] history-expanded">
+            
+            <!-- Header (Clickable) -->
+            <div id="history-header" class="flex items-center justify-between px-8 py-6 cursor-pointer select-none active:scale-[0.98] transition-all" onclick="toggleHistory()">
+                <h2 class="text-[14px] font-bold tracking-[0.2em] text-black uppercase" style="font-family: 'Playfair Display', serif;">
+                    TRIP<span class="font-light opacity-30">HISTORY</span>
+                </h2>
+                <div class="flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span class="text-[10px] font-black text-blue-700 uppercase tracking-widest">History</span>
+                </div>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div><p class="text-[8px] text-gray-500">DISTANCE</p><p id="stat-dist" class="text-xs font-mono font-bold">0.0 km</p></div>
-                <div><p class="text-[8px] text-gray-500">HEADING</p><p id="stat-head" class="text-xs font-mono font-bold">0°</p></div>
+            
+            <!-- Content -->
+            <div id="history-content" class="content-visible">
+                <div class="px-8 pb-8">
+                    <div id="history-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-2">
+                        <p class="text-[10px] text-gray-400 italic text-center py-8">No recent trips</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Toggle Button -->
+    <!-- Analytics Window (Live Telemetry) -->
+    <div id="analytics" class="fixed top-5 left-1/2 -translate-x-1/2 z-[500] pointer-events-none opacity-0 transition-opacity duration-500">
+        <div class="bg-white backdrop-blur-md px-4 py-2 rounded-full shadow-lg h-[56px] border border-gray-200 pointer-events-auto flex items-center gap-3">
+            <div class="flex items-center gap-1.5">
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                <span class="text-[9px] font-bold uppercase tracking-wider text-black">SESSION</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1">
+                    <p class="text-[7px] text-gray-500 uppercase">Dist</p>
+                    <p id="stat-dist" class="text-sm font-mono font-bold whitespace-nowrap text-gray-900">0.0 km</p>
+                </div>
+                <div class="flex items-center gap-1">
+                    <p class="text-[7px] text-gray-500 uppercase">Time</p>
+                    <p id="stat-time" class="text-sm font-mono font-bold whitespace-nowrap text-gray-900">00:00</p>
+                </div>
             </div>
         </div>
     </div>
@@ -152,6 +357,14 @@
         let userLocationMarker = null;
         let isLocationFound = false;
         let simulationMode = false;
+        let recordingStartLocation = null;
+        let recordingStopCount = 0;
+        let recordingWaypoints = [];
+        let recordingStations = []; // Detailed station tracking with time and location
+        let recordingHistory = [];
+        
+        // Expose recordingHistory globally
+        window.recordingHistory = recordingHistory;
         let simulatedElapsedTime = 0;
         let isSimulationAnimating = false;
         let trafficLayer = null;
@@ -161,19 +374,41 @@
         let Panel = null;
 
         function initMap() {
-            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([24.7115, 46.6744], 15);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+            console.log('🗺️ INITIALIZING MAP...');
+            map = L.map('map', { 
+                zoomControl: false, 
+                attributionControl: false,
+                tap: true,
+                tapTolerance: 20,
+                touchZoom: true,
+                dragging: true
+            }).setView([24.7115, 46.6744], 15);
+            
+            console.log('✅ Map created at zoom level:', map.getZoom());
+            
+            // Google Maps tiles - no API key needed
+            const initialLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: 'Google'
+            });
+            
+            initialLayer.on('loading', () => console.log('📥 Initial tiles loading...'));
+            initialLayer.on('load', () => console.log('✅ Initial tiles loaded successfully'));
+            initialLayer.on('tileerror', (e) => console.error('❌ Initial tile error:', e));
+            initialLayer.on('tileload', (e) => console.log('📦 Tile loaded:', e.coords));
+            
+            initialLayer.addTo(map);
+            console.log('✅ Initial tile layer added to map');
 
-            // Initialize TomTom Traffic Layer for highways only (zoom 10-12 only)
-            trafficLayer = L.tileLayer(
-                `https://api.tomtom.com/traffic/map/4/tile/flow/relative/{z}/{x}/{y}.png?key=${CONFIG.TOMTOM_API_KEY}`,
-                {
-                    opacity: 0.5,
-                    minZoom: 10,
-                    maxZoom: 12,
-                    attribution: '© TomTom'
-                }
-            );
+            // Google Traffic Layer - using r,traffic with style=15
+            // Note: This includes road outlines which may appear white, but it's the only way traffic works
+            trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=r,traffic&x={x}&y={y}&z={z}&style=15', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                opacity: 1.0,
+                zIndex: 1000
+            });
 
             const carHtml = `
                 <div class="car-icon-inner" id="car-inner" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
@@ -199,6 +434,46 @@
             }).addTo(map);
 
             map.on('click', onMapClick);
+            
+            // Location event handlers
+            map.on('locationfound', (e) => {
+                const btn = document.getElementById('locate-btn');
+                btn.classList.remove('opacity-50');
+                
+                const radius = e.accuracy / 2;
+                L.circle(e.latlng, radius).addTo(map);
+                
+                if (userLocationMarker) {
+                    map.removeLayer(userLocationMarker);
+                }
+                
+                const locationIcon = L.divIcon({
+                    html: '<div style="width: 16px; height: 16px; background: #3b82f6; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);"></div>',
+                    className: '',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                
+                userLocationMarker = L.marker(e.latlng, { icon: locationIcon }).addTo(map);
+                carMarker.setLatLng(e.latlng);
+                carMarker.setOpacity(1);
+                
+                isLocationFound = true;
+                
+                if (window.currentMode === 'recorder') {
+                    document.getElementById('start-recording-btn').disabled = false;
+                    document.getElementById('record-badge').innerText = 'Ready';
+                    document.getElementById('record-badge').classList.remove('bg-gray-100', 'text-gray-700');
+                    document.getElementById('record-badge').classList.add('bg-green-100', 'text-green-700');
+                }
+            });
+
+            map.on('locationerror', (e) => {
+                const btn = document.getElementById('locate-btn');
+                btn.classList.remove('opacity-50');
+                console.warn("Location access denied or unavailable:", e.message);
+                alert('Unable to get location: ' + e.message);
+            });
         }
 
         function toggleTraffic() {
@@ -216,15 +491,172 @@
             }
         }
 
+        // Layer Switcher - Google Maps tiles
+        let currentMapLayer = 'default';
+        let baseLayer = null;
+        
+        function toggleLayerMenu() {
+            const menu = document.getElementById('layer-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        function switchMapLayer(layerType) {
+            console.log('🗺️ SWITCHING MAP LAYER TO:', layerType);
+            currentMapLayer = layerType;
+            
+            // Remove existing layer
+            if (baseLayer) {
+                console.log('🗑️ Removing old base layer');
+                map.removeLayer(baseLayer);
+            }
+            
+            // Add new Google Maps layer
+            if (layerType === 'satellite') {
+                console.log('🛰️ Adding Google Hybrid (satellite + labels)...');
+                // Google Hybrid: satellite imagery WITH labels
+                baseLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: 'Google'
+                }).addTo(map);
+                console.log('✅ Google Hybrid added');
+            } else {
+                console.log('🗺️ Adding Google Roadmap...');
+                // Google Roadmap: standard map with labels
+                baseLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                    maxZoom: 20,
+                    subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                    attribution: 'Google'
+                }).addTo(map);
+                console.log('✅ Google Roadmap added');
+            }
+            
+            // Close menu
+            document.getElementById('layer-menu').classList.add('hidden');
+            
+            // Update global for preview maps
+            window.currentMapLayer = currentMapLayer;
+            
+            console.log('🎯 Current zoom level:', map.getZoom());
+            console.log('🎯 Current center:', map.getCenter());
+        }
+        
+        // Close layer menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const layerSwitcher = document.getElementById('layer-switcher');
+            const layerMenu = document.getElementById('layer-menu');
+            
+            if (layerSwitcher && !layerSwitcher.contains(e.target)) {
+                layerMenu.classList.add('hidden');
+            }
+        });
+        
+        // Initialize with Google Roadmap
+        window.addEventListener('DOMContentLoaded', function() {
+            baseLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: 'Google'
+            });
+            window.currentMapLayer = 'default';
+        });
+
         function onMapClick(e) {
             console.log('🗺️ MAP CLICKED at:', e.latlng);
             console.log('currentMode:', window.currentMode);
             console.log('simulationMode:', simulationMode);
             console.log('isRecording:', isRecording);
             
+            // HISTORY TAB AUTO-RECORDING: If History tab is active, auto-switch to recorder mode
+            if (window.currentMode === 'history') {
+                console.log('📜 History tab active - auto-switching to recorder mode');
+                
+                // Switch to recorder tab
+                if (window.Panel && window.Panel.switchTab) {
+                    window.Panel.switchTab('recorder');
+                }
+                
+                // Enable simulation mode
+                simulationMode = true;
+                window.simulationMode = true;
+                
+                // Start recording if not already recording
+                if (!isRecording) {
+                    console.log('🔴 Auto-starting recording from history tab');
+                    startRecording();
+                }
+                
+                // Now simulate movement with the clicked point
+                // Add as a station with detailed tracking
+                const stationNumber = recordingStations.length + 1;
+                const arrivalTime = new Date();
+                
+                const station = {
+                    number: stationNumber,
+                    location: e.latlng,
+                    arrivalTime: arrivalTime,
+                    departureTime: null, // Will be set when moving to next station
+                    duration: null,
+                    address: 'Loading...',
+                    contact: null // Placeholder for contact details
+                };
+                
+                recordingStations.push(station);
+                recordingWaypoints.push(e.latlng);
+                
+                // Get address for this station
+                getAddressFromCoords(e.latlng.lat, e.latlng.lng).then(addr => {
+                    station.address = addr;
+                }).catch(() => {
+                    station.address = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                });
+                
+                // Set departure time for previous station
+                if (recordingStations.length > 1) {
+                    const prevStation = recordingStations[recordingStations.length - 2];
+                    prevStation.departureTime = arrivalTime;
+                    prevStation.duration = Math.floor((arrivalTime - prevStation.arrivalTime) / 1000); // seconds
+                }
+                
+                simulateMovement(e.latlng);
+                return;
+            }
+            
             // Simulation mode for recording (AUTO-ENABLED)
             if (window.currentMode === 'recorder' && simulationMode && isRecording) {
                 console.log('✅ Calling simulateMovement...');
+                
+                // Add as a station with detailed tracking
+                const stationNumber = recordingStations.length + 1;
+                const arrivalTime = new Date();
+                
+                const station = {
+                    number: stationNumber,
+                    location: e.latlng,
+                    arrivalTime: arrivalTime,
+                    departureTime: null,
+                    duration: null,
+                    address: 'Loading...',
+                    contact: null
+                };
+                
+                recordingStations.push(station);
+                recordingWaypoints.push(e.latlng);
+                
+                // Get address
+                getAddressFromCoords(e.latlng.lat, e.latlng.lng).then(addr => {
+                    station.address = addr;
+                }).catch(() => {
+                    station.address = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
+                });
+                
+                // Set departure time for previous station
+                if (recordingStations.length > 1) {
+                    const prevStation = recordingStations[recordingStations.length - 2];
+                    prevStation.departureTime = arrivalTime;
+                    prevStation.duration = Math.floor((arrivalTime - prevStation.arrivalTime) / 1000);
+                }
+                
                 simulateMovement(e.latlng);
                 return;
             }
@@ -332,7 +764,7 @@
             });
         }
 
-        function saveToHistory(p1, p2) {
+        async function saveToHistory(p1, p2) {
             const historyList = document.getElementById('history-list');
             if (historyPoints.length === 0) historyList.innerHTML = '';
             
@@ -340,11 +772,84 @@
             historyPoints.unshift({ id, p1, p2 });
             if (historyPoints.length > 5) historyPoints.pop();
 
+            // Render trip history in the right panel (not main panel)
             const item = document.createElement('div');
-            item.className = "p-2 bg-white/50 rounded-lg border border-gray-100 hover:border-black cursor-pointer transition-all text-[10px] font-medium text-gray-600";
-            item.innerHTML = `Trip to Olaya District #${historyPoints.length}`;
+            item.className = "p-3 bg-white/50 rounded-xl border border-gray-100 hover:border-black cursor-pointer transition-all";
             item.onclick = () => loadHistoryTrip(p1, p2);
+            
+            // Show loading state
+            item.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>
+                    <span class="text-[9px] text-gray-400">Loading addresses...</span>
+                </div>
+            `;
             historyList.prepend(item);
+            
+            // Get addresses using reverse geocoding
+            try {
+                const [pickupAddr, destAddr] = await Promise.all([
+                    getAddressFromCoords(p1.lat, p1.lng),
+                    getAddressFromCoords(p2.lat, p2.lng)
+                ]);
+                
+                // Update with real addresses
+                item.innerHTML = `
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></div>
+                            <span class="text-[9px] font-semibold text-gray-700 truncate">${pickupAddr}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 pl-3">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></div>
+                            <span class="text-[9px] font-semibold text-gray-700 truncate">${destAddr}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                // Fallback to coordinates if geocoding fails
+                item.innerHTML = `
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                            <span class="text-[9px] font-mono text-gray-600">${p1.lat.toFixed(4)}, ${p1.lng.toFixed(4)}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                            <span class="text-[9px] font-mono text-gray-600">${p2.lat.toFixed(4)}, ${p2.lng.toFixed(4)}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        async function getAddressFromCoords(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                
+                // Extract meaningful address parts
+                const addr = data.address;
+                const road = addr.road || addr.street || '';
+                const neighborhood = addr.neighbourhood || addr.suburb || addr.district || '';
+                
+                if (road && neighborhood) {
+                    return `${road}, ${neighborhood}`;
+                } else if (road) {
+                    return road;
+                } else if (neighborhood) {
+                    return neighborhood;
+                } else {
+                    return data.display_name.split(',').slice(0, 2).join(',');
+                }
+            } catch (error) {
+                throw error;
+            }
         }
 
         function loadHistoryTrip(p1, p2) {
@@ -402,6 +907,12 @@
         function endTrip() {
             shouldEndTrip = true;
             
+            // Stop trip timer
+            if (tripTimerInterval) {
+                clearInterval(tripTimerInterval);
+                tripTimerInterval = null;
+            }
+            
             // Complete the journey to destination instantly
             if (routeCoords && routeCoords.length > 0) {
                 const destination = routeCoords[routeCoords.length - 1];
@@ -439,6 +950,13 @@
                 isPaused = false;
             }
             
+            // Stop trip timer
+            if (tripTimerInterval) {
+                clearInterval(tripTimerInterval);
+                tripTimerInterval = null;
+            }
+            tripStartTime = null;
+            
             // Clear all waypoints and markers
             waypoints = [];
             editingPointIndex = null;
@@ -474,7 +992,7 @@
             document.getElementById('end-btn').classList.add('hidden');
             document.getElementById('analytics').style.opacity = "0";
             document.getElementById('stat-dist').innerText = "0.0 km";
-            document.getElementById('stat-head').innerText = "0°";
+            document.getElementById('stat-time').innerText = "00:00";
             document.getElementById('speed-slider').value = 80;
             document.getElementById('speed-display').innerText = "Normal";
             
@@ -484,30 +1002,30 @@
         }
         
         function resetRecorder() {
-            // Stop any ongoing recording
             if (isRecording) {
                 stopRecording();
             }
             
-            // Clear all recording data
+            clearWaypointQueue();
+            
             recordedPath = [];
             visitedSegments.clear();
             totalDistance = 0;
             streetsVisited = 0;
             streetsRevisited = 0;
             
-            // Remove all path polylines
-            pathPolylines.forEach(polyline => map.removeLayer(polyline));
+            pathPolylines.forEach(polyline => {
+                try { map.removeLayer(polyline); } catch(e) {}
+            });
             pathPolylines = [];
             
-            // Remove user location marker
             if (userLocationMarker) {
-                map.removeLayer(userLocationMarker);
+                try { map.removeLayer(userLocationMarker); } catch(e) {}
                 userLocationMarker = null;
             }
             
-            // Hide car marker
             carMarker.setOpacity(0);
+            isLocationFound = false;
             
             // Reset UI
             document.getElementById('rec-distance').innerText = "0.0 km";
@@ -518,17 +1036,46 @@
             document.getElementById('record-badge').classList.remove('bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
             document.getElementById('record-badge').classList.add('bg-gray-100', 'text-gray-700');
             document.getElementById('start-recording-btn').classList.remove('hidden');
+            document.getElementById('start-recording-btn').disabled = false;
             document.getElementById('stop-recording-btn').classList.add('hidden');
             document.getElementById('save-session-btn').classList.add('hidden');
             document.getElementById('recording-indicator').classList.add('hidden');
             
-            isLocationFound = false;
+            // Re-enable simulation mode if on recorder tab
+            if (window.currentMode === 'recorder') {
+                simulationMode = true;
+                isLocationFound = true;
+                document.getElementById('record-badge').innerText = 'Sim Ready';
+                document.getElementById('record-badge').classList.remove('bg-gray-100', 'text-gray-700');
+                document.getElementById('record-badge').classList.add('bg-yellow-100', 'text-yellow-700');
+            }
         }
+
+        function updateTripTime() {
+            if (!tripStartTime) return;
+            const timeEl = document.getElementById('stat-time');
+            if (!timeEl) return; // Safety check
+            
+            const elapsed = Math.floor((Date.now() - tripStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeStr = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            timeEl.innerText = timeStr;
+        }
+
+        let tripStartTime = null;
+        let tripTimerInterval = null;
 
         async function startTrip() {
             shouldEndTrip = false;
             currentSegmentIndex = 0;
             currentSpeed = parseInt(document.getElementById('speed-slider').value);
+            
+            // Start trip timer
+            tripStartTime = Date.now();
+            if (tripTimerInterval) clearInterval(tripTimerInterval);
+            tripTimerInterval = setInterval(updateTripTime, 1000);
+            
             document.getElementById('start-btn').classList.add('hidden');
             document.getElementById('pause-btn').classList.remove('hidden');
             document.getElementById('pause-btn').disabled = false;
@@ -551,7 +1098,6 @@
 
                 const heading = getHeading(start, end);
                 document.getElementById('car-inner').style.transform = `rotate(${heading}deg)`;
-                document.getElementById('stat-head').innerText = `${Math.round(heading)}°`;
 
                 const duration = Math.max((distance * 1000) / currentSpeed, 10);
                 
@@ -624,16 +1170,40 @@
 
         function resetApp() { location.reload(); }
 
+        let historyExpanded = true;
+
         window.toggleHistory = function() {
             const panel = document.getElementById('history-panel');
+            const panelInner = document.getElementById('history-panel-inner');
             const btn = document.getElementById('history-btn');
+            const content = document.getElementById('history-content');
+            const header = document.getElementById('history-header');
             
             if (panel.classList.contains('hidden')) {
+                // Show panel
                 panel.classList.remove('hidden');
                 btn.classList.add('hidden');
+                historyExpanded = true;
             } else {
-                panel.classList.add('hidden');
-                btn.classList.remove('hidden');
+                // Check if expanded or collapsed
+                if (historyExpanded) {
+                    // Collapse panel
+                    panelInner.classList.remove('history-expanded');
+                    panelInner.classList.add('history-collapsed');
+                    content.classList.remove('content-visible');
+                    content.classList.add('content-hidden');
+                    historyExpanded = false;
+                } else {
+                    // Hide panel completely
+                    panel.classList.add('hidden');
+                    btn.classList.remove('hidden');
+                    // Reset to expanded state for next time
+                    panelInner.classList.remove('history-collapsed');
+                    panelInner.classList.add('history-expanded');
+                    content.classList.remove('content-hidden');
+                    content.classList.add('content-visible');
+                    historyExpanded = true;
+                }
             }
         }
 
@@ -666,12 +1236,18 @@
         // SIMULATION MODE FUNCTIONS (AUTO-ENABLED)
         // ============================================
 
+        // Queue system for multiple waypoints
+        let waypointQueue = [];
+        let queueMarkers = [];
+        let plannedRoutePolylines = [];
+        let isProcessingQueue = false;
+        let currentRouteAnimation = null; // Track current animation
+
         function simulateMovement(latlng) {
-            if (!isRecording || isSimulationAnimating) return;
+            if (!isRecording) return;
             
-            // If this is the first point or we need a new route
+            // If this is the first point, set starting position
             if (recordedPath.length === 0) {
-                // Just set the starting position
                 const position = {
                     coords: {
                         latitude: latlng.lat,
@@ -679,24 +1255,59 @@
                     }
                 };
                 onPositionUpdate(position);
-            } else {
-                // Calculate route from current position to clicked point
-                const currentPos = recordedPath[recordedPath.length - 1];
-                calculateSimulationRoute(currentPos, latlng);
+                return;
+            }
+            
+            // Add point to queue
+            addWaypointToQueue(latlng);
+            
+            // Start processing queue if not already processing
+            if (!isProcessingQueue) {
+                processWaypointQueue();
             }
         }
 
-        function calculateSimulationRoute(from, to) {
-            if (isSimulationAnimating) return; // Prevent multiple simultaneous routes
+        function addWaypointToQueue(latlng) {
+            // Add to queue
+            waypointQueue.push(latlng);
             
-            isSimulationAnimating = true;
+            // Add blue marker for queued waypoint
+            const marker = L.circleMarker(latlng, {
+                radius: 6,
+                fillColor: '#3b82f6',
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
             
-            // Use Leaflet Routing Machine to get street route
+            queueMarkers.push(marker);
+            
+            // Calculate and show planned route (dashed orange)
+            const fromPoint = waypointQueue.length === 1 
+                ? recordedPath[recordedPath.length - 1] 
+                : waypointQueue[waypointQueue.length - 2];
+            
+            if (fromPoint) {
+                showPlannedRoute(fromPoint, latlng);
+            }
+        }
+
+        function showPlannedRoute(from, to) {
+            // Use routing to get street path
             const tempRouting = L.Routing.control({
-                waypoints: [from, to],
-                router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+                waypoints: [
+                    L.latLng(from.lat, from.lng),
+                    L.latLng(to.lat, to.lng)
+                ],
+                router: L.Routing.osrmv1({ 
+                    serviceUrl: 'https://router.project-osrm.org/route/v1',
+                    timeout: 10000
+                }),
                 show: false,
                 addWaypoints: false,
+                routeWhileDragging: false,
+                fitSelectedRoutes: false, // DON'T auto-fit the route bounds!
                 createMarker: function() { return null; },
                 lineOptions: { 
                     styles: [{ color: 'transparent', opacity: 0, weight: 0 }],
@@ -708,65 +1319,201 @@
                 const route = e.routes[0];
                 const routeCoords = route.coordinates;
                 
-                // Animate along the route
-                animateSimulationRoute(routeCoords).then(() => {
-                    isSimulationAnimating = false;
-                });
+                // Draw dashed orange line for planned route
+                const plannedPolyline = L.polyline(routeCoords, {
+                    color: '#fb923c',
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: '10, 10',
+                    lineCap: 'round'
+                }).addTo(map);
                 
-                // Remove temp routing control immediately
-                try {
-                    if (map.hasLayer(tempRouting)) {
+                plannedRoutePolylines.push(plannedPolyline);
+                
+                // Remove temp routing control
+                setTimeout(() => {
+                    try {
                         map.removeControl(tempRouting);
-                    }
-                } catch(err) {
-                    console.log('Routing control cleanup:', err);
-                }
+                    } catch(err) {}
+                }, 100);
             });
 
             tempRouting.on('routingerror', function(e) {
-                console.error('Routing error:', e);
-                isSimulationAnimating = false;
+                // Fallback to straight dashed line
+                const plannedPolyline = L.polyline([from, to], {
+                    color: '#fb923c',
+                    weight: 4,
+                    opacity: 0.7,
+                    dashArray: '10, 10',
+                    lineCap: 'round'
+                }).addTo(map);
                 
-                // Fallback to direct line if routing fails
-                const position = {
-                    coords: {
-                        latitude: to.lat,
-                        longitude: to.lng
-                    }
-                };
-                onPositionUpdate(position);
+                plannedRoutePolylines.push(plannedPolyline);
                 
-                try {
-                    if (map.hasLayer(tempRouting)) {
+                setTimeout(() => {
+                    try {
                         map.removeControl(tempRouting);
-                    }
-                } catch(err) {
-                    console.log('Routing control cleanup:', err);
-                }
+                    } catch(err) {}
+                }, 100);
             });
 
-            // Add to map to trigger routing
             tempRouting.addTo(map);
         }
 
-        async function animateSimulationRoute(routeCoords) {
-            const speed = 50; // Points per second
+        async function processWaypointQueue() {
+            if (isProcessingQueue || waypointQueue.length === 0) return;
+            
+            isProcessingQueue = true;
+            
+            while (waypointQueue.length > 0 && isRecording) {
+                const nextWaypoint = waypointQueue[0];
+                const currentPos = recordedPath[recordedPath.length - 1];
+                
+                try {
+                    await calculateSimulationRoute(currentPos, nextWaypoint);
+                    
+                    waypointQueue.shift();
+                    
+                    if (queueMarkers.length > 0) {
+                        map.removeLayer(queueMarkers.shift());
+                    }
+                    
+                    if (plannedRoutePolylines.length > 0) {
+                        map.removeLayer(plannedRoutePolylines.shift());
+                    }
+                } catch (error) {
+                    // Skip failed waypoint
+                    waypointQueue.shift();
+                    if (queueMarkers.length > 0) {
+                        map.removeLayer(queueMarkers.shift());
+                    }
+                    if (plannedRoutePolylines.length > 0) {
+                        map.removeLayer(plannedRoutePolylines.shift());
+                    }
+                }
+            }
+            
+            isProcessingQueue = false;
+        }
+
+        function clearWaypointQueue() {
+            if (currentRouteAnimation) {
+                currentRouteAnimation.cancelled = true;
+                currentRouteAnimation = null;
+            }
+            
+            waypointQueue = [];
+            isProcessingQueue = false;
+            
+            queueMarkers.forEach(marker => {
+                try { map.removeLayer(marker); } catch(e) {}
+            });
+            queueMarkers = [];
+            
+            plannedRoutePolylines.forEach(polyline => {
+                try { map.removeLayer(polyline); } catch(e) {}
+            });
+            plannedRoutePolylines = [];
+        }
+
+        function calculateSimulationRoute(from, to) {
+            return new Promise((resolve) => {
+                const animationTracker = { cancelled: false };
+                currentRouteAnimation = animationTracker;
+                
+                const tempRouting = L.Routing.control({
+                    waypoints: [
+                        L.latLng(from.lat, from.lng),
+                        L.latLng(to.lat, to.lng)
+                    ],
+                    router: L.Routing.osrmv1({ 
+                        serviceUrl: 'https://router.project-osrm.org/route/v1',
+                        timeout: 10000
+                    }),
+                    show: false,
+                    addWaypoints: false,
+                    routeWhileDragging: false,
+                    fitSelectedRoutes: false, // DON'T auto-fit the route bounds!
+                    createMarker: function() { return null; },
+                    lineOptions: { 
+                        styles: [{ color: 'transparent', opacity: 0, weight: 0 }],
+                        addWaypoints: false
+                    }
+                });
+
+                let routingResolved = false;
+
+                tempRouting.on('routesfound', function(e) {
+                    if (routingResolved) return;
+                    routingResolved = true;
+                    
+                    const route = e.routes[0];
+                    const routeCoords = route.coordinates;
+                    
+                    animateSimulationRoute(routeCoords, animationTracker)
+                        .then(() => resolve())
+                        .catch(() => resolve());
+                    
+                    setTimeout(() => {
+                        try { map.removeControl(tempRouting); } catch(e) {}
+                    }, 100);
+                });
+
+                tempRouting.on('routingerror', function() {
+                    if (routingResolved) return;
+                    routingResolved = true;
+                    
+                    // Fallback: direct movement
+                    onPositionUpdate({
+                        coords: { latitude: to.lat, longitude: to.lng }
+                    });
+                    
+                    setTimeout(() => {
+                        try { map.removeControl(tempRouting); } catch(e) {}
+                    }, 100);
+                    
+                    resolve();
+                });
+
+                // Timeout fallback
+                setTimeout(() => {
+                    if (!routingResolved) {
+                        routingResolved = true;
+                        onPositionUpdate({
+                            coords: { latitude: to.lat, longitude: to.lng }
+                        });
+                        try { map.removeControl(tempRouting); } catch(e) {}
+                        resolve();
+                    }
+                }, 12000);
+
+                try {
+                    tempRouting.addTo(map);
+                } catch(e) {
+                    resolve();
+                }
+            });
+        }
+
+        async function animateSimulationRoute(routeCoords, animationTracker) {
+            const speed = 100; // Increased to 100 points per second (even faster, smoother)
             const interval = 1000 / speed;
 
             for (let i = 0; i < routeCoords.length; i++) {
-                if (!isRecording) {
-                    isSimulationAnimating = false;
-                    break;
-                }
+                if (animationTracker && animationTracker.cancelled) break;
+                if (!isRecording) break;
                 
                 const point = routeCoords[i];
-                const position = {
-                    coords: {
-                        latitude: point.lat,
-                        longitude: point.lng
-                    }
-                };
-                onPositionUpdate(position);
+                if (!point || !point.lat || !point.lng) continue;
+                
+                try {
+                    onPositionUpdate({
+                        coords: {
+                            latitude: point.lat,
+                            longitude: point.lng
+                        }
+                    });
+                } catch(err) {}
                 
                 await new Promise(resolve => setTimeout(resolve, interval));
             }
@@ -774,58 +1521,23 @@
 
         function locateUser() {
             const btn = document.getElementById('locate-btn');
-            btn.classList.add('opacity-50');
             
             if (!navigator.geolocation) {
-                alert('Geolocation not supported');
-                btn.classList.remove('opacity-50');
+                alert('Geolocation is not supported by your browser');
                 return;
             }
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const userLocation = L.latLng(lat, lng);
-
-                    map.setView(userLocation, 17);
-
-                    if (userLocationMarker) {
-                        map.removeLayer(userLocationMarker);
-                    }
-
-                    const locationIcon = L.divIcon({
-                        html: '<div style="width: 16px; height: 16px; background: #3b82f6; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);"></div>',
-                        className: '',
-                        iconSize: [16, 16],
-                        iconAnchor: [8, 8]
-                    });
-
-                    userLocationMarker = L.marker(userLocation, { icon: locationIcon }).addTo(map);
-                    carMarker.setLatLng(userLocation);
-                    carMarker.setOpacity(1);
-
-                    isLocationFound = true;
-
-                    if (window.currentMode === 'recorder') {
-                        document.getElementById('start-recording-btn').disabled = false;
-                        document.getElementById('record-badge').innerText = 'Ready';
-                        document.getElementById('record-badge').classList.remove('bg-gray-100', 'text-gray-700');
-                        document.getElementById('record-badge').classList.add('bg-green-100', 'text-green-700');
-                    }
-
-                    btn.classList.remove('opacity-50');
-                },
-                (error) => {
-                    alert('Unable to get location');
-                    btn.classList.remove('opacity-50');
-                },
-                {
-                    enableHighAccuracy: false,
-                    timeout: 15000,
-                    maximumAge: 300000
-                }
-            );
+            
+            // Visual feedback
+            btn.classList.add('opacity-50');
+            
+            // Use optimized location options
+            map.locate({
+                setView: true, 
+                maxZoom: 16,
+                enableHighAccuracy: false,  // Faster, uses network/WiFi
+                timeout: 10000,             // 10 seconds for first request
+                maximumAge: 30000           // Use cached location up to 30 seconds old
+            });
         }
 
         function locateMe() {
@@ -960,6 +1672,10 @@
             totalDistance = 0;
             streetsVisited = 0;
             streetsRevisited = 0;
+            recordingStopCount = 0;
+            recordingWaypoints = [];
+            recordingStations = [];
+            recordingStartLocation = carMarker ? carMarker.getLatLng() : null;
 
             console.log('✅ Recording state set, updating UI...');
 
@@ -969,11 +1685,16 @@
             document.getElementById('stop-recording-btn').disabled = false;
             document.getElementById('recording-indicator').classList.remove('hidden');
             document.getElementById('record-badge').innerText = simulationMode ? 'Simulating' : 'Recording';
-            document.getElementById('record-badge').classList.remove('bg-green-100', 'text-green-700', 'bg-yellow-100', 'text-yellow-700', 'bg-gray-100', 'text-gray-700');
-            document.getElementById('record-badge').classList.add('bg-red-100', 'text-red-700');
+            document.getElementById('record-badge').classList.remove('bg-black/[0.03]', 'text-black/60', 'border-black/[0.05]');
+            document.getElementById('record-badge').classList.add('bg-black/[0.08]', 'text-black', 'border-black/10');
 
             // Start duration counter
             durationInterval = setInterval(updateDuration, 1000);
+
+            // Show history recording controls if on history tab
+            if (Panel && Panel.showHistoryRecordingControls) {
+                Panel.showHistoryRecordingControls();
+            }
 
             // Only start GPS watch if not in simulation mode
             if (!simulationMode) {
@@ -993,13 +1714,15 @@
         }
 
         function stopRecording() {
-            console.log('🛑 STOP RECORDING CALLED');
-            console.trace('Called from:'); // This will show WHO called it!
-            
             if (!isRecording) return;
 
             isRecording = false;
-            isSimulationAnimating = false; // Reset animation flag
+            clearWaypointQueue();
+
+            // Hide history recording controls
+            if (Panel && Panel.hideHistoryRecordingControls) {
+                Panel.hideHistoryRecordingControls();
+            }
 
             if (watchId !== null) {
                 navigator.geolocation.clearWatch(watchId);
@@ -1014,18 +1737,93 @@
             const simToggle = document.getElementById('sim-mode-toggle');
             if (simToggle) simToggle.disabled = false;
 
+            // Save recording session to history
+            saveRecordingToHistory();
+
             // Update UI
             document.getElementById('start-recording-btn').classList.remove('hidden');
             document.getElementById('stop-recording-btn').classList.add('hidden');
             document.getElementById('recording-indicator').classList.add('hidden');
             document.getElementById('record-badge').innerText = 'Stopped';
-            document.getElementById('record-badge').classList.remove('bg-red-100', 'text-red-700', 'bg-yellow-100', 'text-yellow-700');
-            document.getElementById('record-badge').classList.add('bg-gray-100', 'text-gray-700');
+            document.getElementById('record-badge').classList.remove('bg-black/[0.08]', 'text-black', 'border-black/10');
+            document.getElementById('record-badge').classList.add('bg-black/[0.03]', 'text-black/60', 'border-black/[0.05]');
             document.getElementById('save-session-btn').classList.remove('hidden');
             document.getElementById('save-session-btn').disabled = false;
-
-            console.log('Recording stopped. Total points:', recordedPath.length);
         }
+
+        async function saveRecordingToHistory() {
+            console.log('💾 SAVE RECORDING TO HISTORY CALLED');
+            console.log('recordedPath.length:', recordedPath.length);
+            console.log('recordingStartLocation:', recordingStartLocation);
+            
+            if (recordedPath.length === 0) {
+                console.log('❌ No recorded path, skipping save');
+                return;
+            }
+
+            const endLocation = recordedPath[recordedPath.length - 1];
+            const duration = simulationMode ? simulatedElapsedTime : Math.floor((Date.now() - recordingStartTime) / 1000);
+            
+            // Set departure time for last station
+            if (recordingStations.length > 0) {
+                const lastStation = recordingStations[recordingStations.length - 1];
+                if (!lastStation.departureTime) {
+                    lastStation.departureTime = new Date();
+                    lastStation.duration = Math.floor((lastStation.departureTime - lastStation.arrivalTime) / 1000);
+                }
+            }
+            
+            const session = {
+                id: Date.now(),
+                type: 'recording',
+                startLocation: recordingStartLocation,
+                endLocation: endLocation,
+                distance: totalDistance,
+                duration: duration,
+                stopCount: recordingStopCount,
+                waypoints: [...recordingWaypoints],
+                stations: [...recordingStations], // Detailed station data
+                path: [...recordedPath],
+                timestamp: new Date().toISOString(),
+                startAddress: 'Loading...',
+                endAddress: 'Loading...'
+            };
+
+            console.log('📦 Session created:', session);
+
+            recordingHistory.unshift(session);
+            window.recordingHistory = recordingHistory; // Update global reference
+            
+            if (recordingHistory.length > 10) recordingHistory.pop();
+
+            console.log('✅ Recording history updated, total sessions:', recordingHistory.length);
+            console.log('window.recordingHistory:', window.recordingHistory);
+
+            // Get addresses asynchronously
+            try {
+                const [startAddr, endAddr] = await Promise.all([
+                    getAddressFromCoords(recordingStartLocation.lat, recordingStartLocation.lng),
+                    getAddressFromCoords(endLocation.lat, endLocation.lng)
+                ]);
+                session.startAddress = startAddr;
+                session.endAddress = endAddr;
+                console.log('✅ Addresses loaded:', startAddr, '→', endAddr);
+            } catch (error) {
+                console.log('⚠️ Address loading failed, using coordinates');
+                session.startAddress = `${recordingStartLocation.lat.toFixed(4)}, ${recordingStartLocation.lng.toFixed(4)}`;
+                session.endAddress = `${endLocation.lat.toFixed(4)}, ${endLocation.lng.toFixed(4)}`;
+            }
+
+            // Update history panel if it's open
+            if (window.renderHistoryPanel) {
+                console.log('🔄 Calling renderHistoryPanel...');
+                window.renderHistoryPanel();
+            } else {
+                console.log('⚠️ renderHistoryPanel not available');
+            }
+        }
+
+        let lastAutoFocusState = null;
 
         function onPositionUpdate(position) {
             const lat = position.coords.latitude;
@@ -1035,10 +1833,8 @@
             carMarker.setLatLng(newPoint);
             carMarker.setOpacity(1);
 
-            // Auto focus if enabled
-            if (document.getElementById('auto-focus-toggle').checked) {
-                map.panTo(newPoint, { animate: true, duration: 0.5 });
-            }
+            const autoFocusToggle = document.getElementById('auto-focus-toggle');
+            const shouldAutoFocus = autoFocusToggle && autoFocusToggle.checked;
 
             if (recordedPath.length > 0) {
                 const prevPoint = recordedPath[recordedPath.length - 1];
@@ -1048,9 +1844,8 @@
                     drawPathSegment(prevPoint, newPoint);
                     totalDistance += distance / 1000;
                     
-                    // Calculate simulated time based on distance and speed (45 km/h)
                     if (simulationMode) {
-                        const timeInHours = (distance / 1000) / 45; // distance in km / speed
+                        const timeInHours = (distance / 1000) / 45;
                         const timeInSeconds = timeInHours * 3600;
                         simulatedElapsedTime += timeInSeconds;
                     }
@@ -1064,9 +1859,15 @@
                     document.getElementById('car-inner').style.transform = `rotate(${heading}deg)`;
                     
                     recordedPath.push(newPoint);
+                    
+                    if (shouldAutoFocus) {
+                        map.panTo(newPoint, { animate: true, duration: 0.3 });
+                    }
                 }
             } else {
-                map.setView(newPoint, 16);
+                if (shouldAutoFocus) {
+                    map.setView(newPoint, 16);
+                }
                 recordedPath.push(newPoint);
             }
         }
@@ -1217,8 +2018,8 @@
             initMap();
             loadSavedSessions();
             
-            // Initialize modular panel AFTER map
-            Panel = initPanel(map, CONFIG);
+            // Initialize modular panel AFTER map (no CONFIG needed)
+            Panel = initPanel(map);
             
             // NOW wire up the speed slider (after panel exists)
             const speedSlider = document.getElementById('speed-slider');
@@ -1238,5 +2039,6 @@
         };
     </script>
     <script src="panel.js"></script>
+    <script src="history-modal.js"></script>
 </body>
 </html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Interface - Riyadh</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        /* Search Bar Style */
+        .map-overlay-search {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 1000;
+            width: 390px;
+            max-width: calc(100% - 24px);
+        }
+        .search-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            height: 48px;
+        }
+        /* Layer Control customization */
+        .leaflet-control-layers {
+            border: none !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
+            border-radius: 8px !important;
+            margin-bottom: 25px !important;
+        }
+        /* Custom Locate Button Styling */
+        .custom-locate-btn {
+            background: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .custom-locate-btn:hover { background: #f4f4f4; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Search Overlay -->
+    <div class="map-overlay-search">
+        <div class="search-container">
+            <button class="p-2 text-gray-600">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"></path></svg>
+            </button>
+            <input type="text" placeholder="Search Riyadh..." class="flex-1 outline-none text-base ml-2">
+            <div class="h-6 w-px bg-gray-200 mx-2"></div>
+            <button class="p-2 text-blue-500">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const googleSubdomains = ['mt0', 'mt1', 'mt2', 'mt3'];
+        
+        // Roadmap with full labels
+        const googleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20, subdomains: googleSubdomains, attribution: 'Map data &copy; Google'
+        });
+
+        // Satellite with full labels (Hybrid)
+        const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 20, subdomains: googleSubdomains, attribution: 'Imagery &copy; Google'
+        });
+
+        // OPTIMIZED TRAFFIC LAYER
+        // Using lyrs=r,traffic with style=15 removes the heavy shadows and duplicate labels.
+        // It provides clean green/orange/red lines that don't overlap your text.
+        const trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=r,traffic&x={x}&y={y}&z={z}&style=15', {
+            maxZoom: 20, 
+            subdomains: googleSubdomains, 
+            opacity: 1.0, // Set to 1.0 because style=15 is already light and clean
+            zIndex: 1000 // Ensure it stays on top of base layers but below labels if needed
+        });
+
+        // Initialize Map
+        const map = L.map('map', {
+            center: [24.7136, 46.6753], 
+            zoom: 14,
+            layers: [googleRoadmap], 
+            zoomControl: false 
+        });
+
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        // Layers Control
+        const baseMaps = {
+            "Default View": googleRoadmap,
+            "Satellite Hybrid": googleHybrid
+        };
+
+        const overlayMaps = {
+            "Real-time Traffic": trafficLayer
+        };
+
+        L.control.layers(baseMaps, overlayMaps, {
+            position: 'bottomright',
+            collapsed: false
+        }).addTo(map);
+
+        // Locate Me Logic
+        const locateControl = L.Control.extend({
+            options: { position: 'bottomright' },
+            onAdd: function() {
+                const container = L.DomUtil.create('div', 'custom-locate-btn');
+                container.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" class="text-gray-700"><path fill="currentColor" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"></path></svg>`;
+                
+                container.onclick = function() {
+                    map.locate({setView: true, maxZoom: 16});
+                };
+                return container;
+            }
+        });
+        map.addControl(new locateControl());
+
+        // Location Found Marker
+        map.on('locationfound', (e) => {
+            const radius = e.accuracy / 2;
+            L.circle(e.latlng, radius).addTo(map);
+            L.marker(e.latlng).addTo(map).bindPopup("Muhamad, you are here").openPopup();
+        });
+
+        map.on('locationerror', (e) => {
+            console.warn("Location access denied.");
+        });
+
+    </script>
+</body>
+</html>

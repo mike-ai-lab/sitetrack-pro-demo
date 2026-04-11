@@ -23,7 +23,7 @@ const PanelComponent = {
     // HTML Template
     getTemplate() {
         return `
-            <div id="control-panel" class="fixed top-8 left-8 z-[1000] pointer-events-auto">
+            <div id="control-panel" class="fixed top-5 left-5 z-[1000] pointer-events-auto">
                 <div id="main-panel" class="glass flex flex-col rounded-[2.8rem] shadow-[0_30px_90px_-10px_rgba(0,0,0,0.2)] w-[340px] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] panel-expanded">
                     
                     <!-- Branding Section (Clickable Header) -->
@@ -31,9 +31,9 @@ const PanelComponent = {
                         <h1 class="text-[14px] font-bold tracking-[0.2em] text-black uppercase" style="font-family: 'Playfair Display', serif;">
                             STREET<span class="font-light opacity-30">TRACK</span>
                         </h1>
-                        <div class="flex items-center gap-2 bg-green-500/10 px-3 py-1.5 rounded-full">
-                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span class="text-[10px] font-black text-green-700 uppercase tracking-widest">Active</span>
+                        <div class="flex items-center gap-2 bg-black/[0.03] px-3 py-1.5 rounded-full border border-black/[0.05]">
+                            <div class="w-2 h-2 bg-black rounded-full"></div>
+                            <span class="text-[10px] font-black text-black/60 uppercase tracking-widest">Active</span>
                         </div>
                     </div>
 
@@ -109,28 +109,28 @@ const PanelComponent = {
 
                                 <!-- Control Buttons -->
                                 <div class="flex items-center justify-center gap-3 pt-2">
-                                    <button id="start-btn" disabled class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Trip">
+                                    <button id="start-btn" disabled class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Start Trip">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M8 5v14l11-7z"/>
                                         </svg>
                                     </button>
-                                    <button id="pause-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Pause">
+                                    <button id="pause-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="Pause">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <rect x="6" y="4" width="4" height="16"/>
                                             <rect x="14" y="4" width="4" height="16"/>
                                         </svg>
                                     </button>
-                                    <button id="resume-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Resume">
+                                    <button id="resume-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="Resume">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M8 5v14l11-7z"/>
                                         </svg>
                                     </button>
-                                    <button id="end-btn" class="hidden w-[44px] h-[44px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-lg hover:shadow-xl active:scale-95" title="End Trip">
+                                    <button id="end-btn" class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="End Trip">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <rect x="6" y="6" width="12" height="12"/>
                                         </svg>
                                     </button>
-                                    <button id="reset-planner-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
+                                    <button id="reset-planner-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg active:scale-95" title="Reset">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
                                             <path d="M21 3v5h-5"/>
@@ -145,17 +145,17 @@ const PanelComponent = {
                             <div id="view-recorder" class="space-y-6 hidden">
                                 <!-- Status Badge -->
                                 <div class="flex items-center justify-between">
-                                    <span id="record-badge" class="bg-gray-100 text-gray-700 text-[9px] px-2 py-0.5 rounded uppercase font-bold">Ready</span>
+                                    <span id="record-badge" class="bg-black/[0.03] text-black/60 text-[9px] px-2 py-0.5 rounded uppercase font-bold border border-black/[0.05]">Ready</span>
                                     <div id="recording-indicator" class="hidden flex items-center gap-1.5">
-                                        <div class="w-1.5 h-1.5 bg-red-500 rounded-full recording-pulse"></div>
-                                        <span class="text-[9px] font-bold text-red-500">RECORDING</span>
+                                        <div class="w-1.5 h-1.5 bg-black rounded-full"></div>
+                                        <span class="text-[9px] font-bold text-black/60">RECORDING</span>
                                     </div>
                                 </div>
 
                                 <!-- Auto Focus Toggle -->
                                 <div class="flex items-center justify-between p-2 bg-white/50 rounded-lg border border-gray-200">
                                     <span class="text-[10px] font-bold text-gray-700 uppercase">Auto Focus</span>
-                                    <input type="checkbox" id="auto-focus-toggle" checked class="w-3.5 h-3.5 rounded">
+                                    <input type="checkbox" id="auto-focus-toggle" class="w-3.5 h-3.5 rounded">
                                 </div>
 
                                 <!-- Recording Stats -->
@@ -182,17 +182,17 @@ const PanelComponent = {
 
                                 <!-- Control Buttons -->
                                 <div class="flex items-center justify-center gap-3">
-                                    <button id="start-recording-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Start Recording">
+                                    <button id="start-recording-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Start Recording">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M8 5v14l11-7z"/>
                                         </svg>
                                     </button>
-                                    <button id="stop-recording-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-red-500 text-white rounded-xl hover:bg-red-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl active:scale-95" title="Stop Recording">
+                                    <button id="stop-recording-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Stop Recording">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                             <rect x="6" y="6" width="12" height="12"/>
                                         </svg>
                                     </button>
-                                    <button id="reset-recorder-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg hover:shadow-xl active:scale-95" title="Reset">
+                                    <button id="reset-recorder-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg active:scale-95" title="Reset">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
                                             <path d="M21 3v5h-5"/>
@@ -203,7 +203,7 @@ const PanelComponent = {
                                 </div>
 
                                 <!-- Save Session Button -->
-                                <button id="save-session-btn" disabled class="hidden w-full bg-green-500 text-white text-[11px] font-bold py-2.5 rounded-lg hover:bg-green-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg uppercase tracking-wide">
+                                <button id="save-session-btn" disabled class="hidden w-full bg-black text-white text-[11px] font-bold py-2.5 rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-md uppercase tracking-wide">
                                     Save Session
                                 </button>
                             </div>
@@ -218,8 +218,27 @@ const PanelComponent = {
 
                             <!-- HISTORY TAB -->
                             <div id="view-history" class="hidden">
-                                <div id="history-list" class="space-y-2 max-h-[300px] overflow-y-auto">
-                                    <p class="text-[10px] text-gray-400 italic text-center py-8">No recent trips</p>
+                                <!-- Header with Action Buttons -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Sessions</span>
+                                    <div class="flex items-center gap-2">
+                                        <!-- Stop Recording Button (only visible when recording) -->
+                                        <button id="history-stop-btn" onclick="window.stopRecording && window.stopRecording()" class="hidden w-[36px] h-[36px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md" title="Stop Recording">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                                <rect x="6" y="6" width="12" height="12"/>
+                                            </svg>
+                                        </button>
+                                        <!-- Maximize Button -->
+                                        <button onclick="HistoryModal.open()" class="w-[36px] h-[36px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md" title="Maximize">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="main-history-list" class="space-y-2 max-h-[300px] overflow-y-auto">
+                                    <p class="text-[10px] text-gray-400 italic text-center py-8">No recording sessions yet</p>
                                 </div>
                             </div>
 
@@ -346,13 +365,21 @@ const PanelComponent = {
                 }
 
                 .panel-expanded {
-                    width: calc(100vw - 80px) !important;
+                    width: calc(100vw - 32px) !important;
                     max-width: 340px;
                 }
 
                 .panel-collapsed {
-                    width: 56px !important;
-                    height: 56px !important;
+                    width: 48px !important;
+                    height: 48px !important;
+                }
+                
+                #main-panel {
+                    border-radius: 2.8rem;
+                }
+                
+                .panel-collapsed {
+                    border-radius: 50% !important;
                 }
             }
 
@@ -366,10 +393,9 @@ const PanelComponent = {
         `;
     },
 
-    // Initialize Panel
-    init(map, config) {
+    // Initialize Panel (no config needed)
+    init(map) {
         this.refs.map = map;
-        this.refs.config = config;
 
         // Inject styles
         const styleEl = document.createElement('style');
@@ -404,7 +430,7 @@ const PanelComponent = {
             'record-badge', 'recording-indicator', 'auto-focus-toggle',
             'rec-distance', 'rec-duration', 'rec-streets', 'rec-revisited',
             'start-recording-btn', 'stop-recording-btn', 'reset-recorder-btn', 'save-session-btn',
-            'history-list'
+            'history-list', 'history-stop-btn'
         ];
 
         ids.forEach(id => {
@@ -490,19 +516,33 @@ const PanelComponent = {
         }
         
         if (previousTab === 'recorder' && tab !== 'recorder') {
-            console.log('🧹 Cleaning up Recorder tab - stopping recording and clearing map...');
-            
-            // Force stop any ongoing recording
-            if (window.isRecording && window.stopRecording) {
-                window.stopRecording();
+            // DON'T reset recorder when switching to/from history tab
+            if (tab === 'history') {
+                console.log('📜 Switching to History tab - keeping recorder session active');
+            } else {
+                console.log('🧹 Cleaning up Recorder tab - stopping recording and clearing map...');
+                
+                // Force stop any ongoing recording
+                if (window.isRecording && window.stopRecording) {
+                    window.stopRecording();
+                }
+                
+                // Full reset of recorder
+                if (window.resetRecorder) {
+                    window.resetRecorder();
+                }
+                
+                console.log('✅ Recorder cleaned up');
             }
-            
-            // Full reset of recorder
-            if (window.resetRecorder) {
-                window.resetRecorder();
+        }
+        
+        if (previousTab === 'history' && tab !== 'history') {
+            // DON'T reset recorder when switching from history to recorder
+            if (tab === 'recorder') {
+                console.log('🔴 Switching to Recorder tab - keeping session active');
+            } else {
+                console.log('📜 Leaving History tab');
             }
-            
-            console.log('✅ Recorder cleaned up');
         }
 
         // Update tab state
@@ -570,6 +610,12 @@ const PanelComponent = {
         el[`btn-${tab}`].classList.remove('tab-inactive');
         el[`btn-${tab}`].classList.add('tab-active');
 
+        // Render history panel when switching to history tab
+        if (tab === 'history' && window.renderHistoryPanel) {
+            console.log('📜 Switching to history tab, rendering history...');
+            setTimeout(() => window.renderHistoryPanel(), 50);
+        }
+
         // Update map cursor
         if (this.refs.map) {
             this.refs.map.getContainer().style.cursor = tab === 'planner' ? 'crosshair' : 'default';
@@ -587,12 +633,29 @@ const PanelComponent = {
         const display = val < 40 ? "Traffic" : val > 150 ? "Express" : "Normal";
         this.refs.elements['speed-display'].innerText = display;
     },
+    
+    // Show/hide history recording controls
+    showHistoryRecordingControls() {
+        const stopBtn = this.refs.elements['history-stop-btn'];
+        if (stopBtn) {
+            stopBtn.classList.remove('hidden');
+        }
+    },
+    
+    hideHistoryRecordingControls() {
+        const stopBtn = this.refs.elements['history-stop-btn'];
+        if (stopBtn) {
+            stopBtn.classList.add('hidden');
+        }
+    },
 
     // Public API
     getAPI() {
         return {
             toggle: () => this.togglePanel(),
             switchTab: (tab) => this.switchTab(tab),
+            showHistoryRecordingControls: () => this.showHistoryRecordingControls(),
+            hideHistoryRecordingControls: () => this.hideHistoryRecordingControls(),
             updateBadge: (text, color) => {
                 this.refs.elements['trip-badge'].innerText = text;
                 // Update colors as needed
@@ -619,8 +682,8 @@ const PanelComponent = {
     }
 };
 
-// Export initialization function
-window.initPanel = (map, config) => PanelComponent.init(map, config);
+// Export initialization function (no config needed)
+window.initPanel = (map) => PanelComponent.init(map);
 
 
 // Expose panel functions globally for onclick handlers
@@ -641,3 +704,319 @@ window.handleStart = function() {
 // - resetRecorder (already exists)
 // - saveSession (already exists)
 
+
+
+// Recording History Management
+let currentHistoryPage = 0;
+const ITEMS_PER_PAGE = 1;
+
+window.renderHistoryPanel = function() {
+    console.log('🎨 RENDER HISTORY PANEL CALLED');
+    
+    const historyList = document.getElementById('main-history-list');
+    if (!historyList) {
+        console.log('❌ main-history-list element not found');
+        return;
+    }
+
+    console.log('window.recordingHistory:', window.recordingHistory);
+
+    // Only show recording sessions (not trip plans)
+    const allHistory = (window.recordingHistory || [])
+        .sort((a, b) => b.id - a.id);
+
+    console.log('📊 Total recording sessions:', allHistory.length);
+    console.log('allHistory:', allHistory);
+
+    if (allHistory.length === 0) {
+        historyList.innerHTML = '<div class="text-center text-gray-400 text-xs py-8">No recording sessions yet</div>';
+        console.log('ℹ️ No recording sessions to display');
+        return;
+    }
+
+    const totalPages = Math.ceil(allHistory.length / ITEMS_PER_PAGE);
+    const startIdx = currentHistoryPage * ITEMS_PER_PAGE;
+    const endIdx = startIdx + ITEMS_PER_PAGE;
+    const pageItems = allHistory.slice(startIdx, endIdx);
+
+    console.log(`📄 Showing page ${currentHistoryPage + 1}/${totalPages}, items:`, pageItems.length);
+
+    historyList.innerHTML = '';
+
+    pageItems.forEach(item => {
+        console.log('🔨 Rendering recording session:', item);
+        renderRecordingItem(item, historyList);
+    });
+
+    // Add pagination controls
+    if (totalPages > 1) {
+        const pagination = document.createElement('div');
+        pagination.className = 'flex items-center justify-between mt-4 pt-4 border-t border-gray-200';
+        pagination.innerHTML = `
+            <button id="prev-page" ${currentHistoryPage === 0 ? 'disabled' : ''} 
+                class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                ← Previous
+            </button>
+            <span class="text-xs text-gray-500">
+                ${currentHistoryPage + 1} / ${totalPages}
+            </span>
+            <button id="next-page" ${currentHistoryPage >= totalPages - 1 ? 'disabled' : ''} 
+                class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                Next →
+            </button>
+        `;
+        historyList.appendChild(pagination);
+
+        document.getElementById('prev-page').onclick = () => {
+            if (currentHistoryPage > 0) {
+                currentHistoryPage--;
+                window.renderHistoryPanel();
+            }
+        };
+
+        document.getElementById('next-page').onclick = () => {
+            if (currentHistoryPage < totalPages - 1) {
+                currentHistoryPage++;
+                window.renderHistoryPanel();
+            }
+        };
+    }
+};
+
+function renderRecordingItem(session, container) {
+    const item = document.createElement('div');
+    item.className = 'bg-white/50 rounded-2xl border border-gray-100 overflow-hidden';
+    
+    const date = new Date(session.timestamp);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    const durationMin = Math.floor(session.duration / 60);
+    const durationSec = session.duration % 60;
+    const durationStr = `${durationMin}:${durationSec.toString().padStart(2, '0')}`;
+    
+    // Create unique ID for this map
+    const mapId = `route-preview-${session.id}`;
+    
+    item.innerHTML = `
+        <div>
+            <!-- Route Preview Map -->
+            <div id="${mapId}" class="w-full h-32 bg-gray-100 relative">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                    Loading map...
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                        <span class="text-xs font-bold text-gray-700">RECORDING SESSION</span>
+                    </div>
+                    <span class="text-[9px] text-gray-400">${dateStr} • ${timeStr}</span>
+                </div>
+                
+                <div class="space-y-2 mb-3">
+                    <div class="flex items-start gap-2">
+                        <div class="w-2 h-2 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[8px] text-gray-400 uppercase tracking-wide mb-0.5">Start</div>
+                            <div class="text-[10px] font-semibold text-gray-700 truncate">${session.startAddress}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500 mt-1 flex-shrink-0"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[8px] text-gray-400 uppercase tracking-wide mb-0.5">End</div>
+                            <div class="text-[10px] font-semibold text-gray-700 truncate">${session.endAddress}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="toggleRecordingDetails(${session.id})" 
+                    class="w-full text-[9px] text-blue-600 hover:text-blue-700 font-medium py-2 border-t border-gray-100 transition-colors">
+                    View Details
+                </button>
+                
+                <div id="details-${session.id}" class="hidden mt-3 pt-3 border-t border-gray-100 space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                            <div class="text-[8px] text-gray-500 uppercase tracking-wide mb-1">Distance</div>
+                            <div class="text-sm font-bold text-gray-900">${session.distance.toFixed(2)} <span class="text-[9px] font-normal">km</span></div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 border border-gray-200">
+                            <div class="text-[8px] text-gray-500 uppercase tracking-wide mb-1">Duration</div>
+                            <div class="text-sm font-bold text-gray-900">${durationStr} <span class="text-[9px] font-normal">min</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stations List -->
+                    ${session.stations && session.stations.length > 0 ? `
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] font-bold text-gray-700 uppercase tracking-wide">Sites Visited (${session.stations.length})</span>
+                            </div>
+                            <div class="space-y-2 max-h-48 overflow-y-auto">
+                                ${session.stations.map((station, idx) => {
+                                    const arrivalTime = new Date(station.arrivalTime);
+                                    const departureTime = station.departureTime ? new Date(station.departureTime) : null;
+                                    const arrivalStr = arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                                    const departureStr = departureTime ? departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'In Progress';
+                                    const durationMin = station.duration ? Math.floor(station.duration / 60) : 0;
+                                    const durationSec = station.duration ? station.duration % 60 : 0;
+                                    
+                                    return `
+                                        <div class="bg-white rounded-lg p-2 border border-gray-200 hover:border-gray-300 transition-all">
+                                            <div class="flex items-start justify-between mb-1">
+                                                <span class="text-[9px] font-bold text-gray-700">Site #${station.number}</span>
+                                                <span class="text-[8px] text-gray-400">${durationMin}:${durationSec.toString().padStart(2, '0')} min</span>
+                                            </div>
+                                            <div class="text-[9px] text-gray-700 mb-1 truncate">${station.address}</div>
+                                            <div class="text-[8px] text-gray-400">${arrivalStr} - ${departureStr}</div>
+                                            <button onclick="addContactToStation(${session.id}, ${idx})" 
+                                                class="mt-2 w-full px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-[8px] font-medium rounded border border-gray-200 transition-all">
+                                                ${station.contact ? 'View Contact' : 'Add Lead Info'}
+                                            </button>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <button onclick="replayRecording(${session.id})" 
+                        class="w-full mt-2 px-3 py-2 bg-black text-white text-[10px] font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm">
+                        Replay Recording
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(item);
+    
+    // Initialize the preview map after DOM insertion
+    setTimeout(() => {
+        initializeRoutePreview(mapId, session);
+    }, 100);
+}
+
+function initializeRoutePreview(mapId, session) {
+    const mapContainer = document.getElementById(mapId);
+    if (!mapContainer) return;
+    
+    try {
+        // Create a small Leaflet map
+        const previewMap = L.map(mapId, {
+            zoomControl: false,
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: false,
+            attributionControl: false
+        });
+        
+        // Add tile layer matching the main map's current layer
+        const layerType = window.currentMapLayer || 'default';
+        if (layerType === 'satellite') {
+            // Google Hybrid (satellite + labels)
+            L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            }).addTo(previewMap);
+        } else {
+            // Google Roadmap
+            L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+            }).addTo(previewMap);
+        }
+        
+        // Draw the route path
+        if (session.path && session.path.length > 0) {
+            const pathCoords = session.path.map(p => [p.lat, p.lng]);
+            
+            // Draw the blue path
+            L.polyline(pathCoords, {
+                color: '#3b82f6',
+                weight: 3,
+                opacity: 0.8
+            }).addTo(previewMap);
+            
+            // Add start marker
+            L.circleMarker([session.startLocation.lat, session.startLocation.lng], {
+                radius: 5,
+                fillColor: '#3b82f6',
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(previewMap);
+            
+            // Add end marker
+            L.circleMarker([session.path[session.path.length - 1].lat, session.path[session.path.length - 1].lng], {
+                radius: 5,
+                fillColor: '#ef4444',
+                color: '#fff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(previewMap);
+            
+            // Fit bounds to show entire route
+            const bounds = L.latLngBounds(pathCoords);
+            previewMap.fitBounds(bounds, { padding: [10, 10] });
+        }
+    } catch (error) {
+        console.error('Error creating route preview:', error);
+        mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400 text-xs">Map unavailable</div>';
+    }
+}
+
+window.toggleRecordingDetails = function(sessionId) {
+    const details = document.getElementById(`details-${sessionId}`);
+    if (details) {
+        details.classList.toggle('hidden');
+        const button = details.previousElementSibling;
+        if (button) {
+            button.innerHTML = details.classList.contains('hidden') 
+                ? 'View Details ↓' 
+                : 'Hide Details ↑';
+        }
+    }
+};
+
+// Placeholder function for adding contact to station
+window.addContactToStation = function(sessionId, stationIndex) {
+    console.log(`📝 Add contact to session ${sessionId}, station ${stationIndex}`);
+    alert(`Contact form will open here.\n\nSession ID: ${sessionId}\nStation #${stationIndex + 1}\n\nThis will be integrated with your contact form component.`);
+    
+    // TODO: Open contact form modal
+    // TODO: Save contact data to station.contact
+    // TODO: Re-render history panel to show updated contact
+};
+
+window.replayRecording = function(sessionId) {
+    const session = window.recordingHistory.find(s => s.id === sessionId);
+    if (!session) return;
+    
+    alert('Replay feature coming soon! This will animate the recorded path on the map.');
+    // TODO: Implement replay functionality
+};
+
+// Initialize history panel when it opens
+const historyBtn = document.getElementById('history-btn');
+if (historyBtn) {
+    const originalClick = historyBtn.onclick;
+    historyBtn.onclick = function() {
+        console.log('🔘 HISTORY BUTTON CLICKED');
+        console.log('window.recordingHistory at click:', window.recordingHistory);
+        if (originalClick) originalClick();
+        setTimeout(() => {
+            console.log('⏰ Calling renderHistoryPanel after 100ms delay...');
+            window.renderHistoryPanel();
+        }, 100);
+    };
+}
