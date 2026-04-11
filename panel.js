@@ -69,7 +69,7 @@ const PanelComponent = {
                                 <div class="space-y-4">
                                     <div class="flex justify-between items-end">
                                         <p class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Route</p>
-                                        <span id="trip-badge" class="text-[9px] font-bold text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded">Set Pickup</span>
+                                        <span id="trip-badge" class="text-[9px] font-bold text-black/40 uppercase tracking-widest">Set Pickup</span>
                                     </div>
                                     
                                     <div class="relative space-y-4 pl-6 before:content-[''] before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[1px] before:bg-black/10">
@@ -77,61 +77,57 @@ const PanelComponent = {
                                         <div id="pickup-box" class="group cursor-pointer">
                                             <span class="block text-[10px] font-bold text-black/40 uppercase tracking-tight mb-1">Pickup</span>
                                             <div class="flex items-center gap-2">
-                                                <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                                                <span id="pickup-label" class="text-xs font-semibold text-gray-500 group-hover:text-blue-600 transition-colors italic truncate">Set pickup...</span>
+                                                <div class="w-1.5 h-1.5 rounded-full bg-black/40"></div>
+                                                <span id="pickup-label" class="text-xs font-semibold text-black/40 group-hover:text-black transition-colors italic truncate">Set pickup...</span>
                                             </div>
                                         </div>
                                         <!-- Destination -->
                                         <div id="dest-box" class="group cursor-pointer">
                                             <span class="block text-[10px] font-bold text-black/40 uppercase tracking-tight mb-1">Destination</span>
                                             <div class="flex items-center gap-2">
-                                                <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-                                                <span id="dest-label" class="text-xs font-semibold text-gray-500 group-hover:text-red-600 transition-colors italic truncate">Set destination...</span>
+                                                <div class="w-1.5 h-1.5 rounded-full bg-black"></div>
+                                                <span id="dest-label" class="text-xs font-semibold text-black/40 group-hover:text-black transition-colors italic truncate">Set destination...</span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Follow Toggle -->
-                                <div class="flex items-center justify-between p-2 bg-white/50 rounded-lg border border-gray-200">
-                                    <span class="text-[10px] font-bold text-gray-700 uppercase">Follow Car</span>
-                                    <input type="checkbox" id="follow-toggle" checked class="w-3.5 h-3.5 rounded">
+                                <div class="flex items-center justify-between py-2 border-b border-black/[0.05]">
+                                    <span class="text-[10px] font-bold text-black/40 uppercase tracking-widest">Follow Car</span>
+                                    <input type="checkbox" id="follow-toggle" checked class="w-3.5 h-3.5 rounded accent-black">
                                 </div>
 
                                 <!-- Speed Control -->
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center">
                                         <span class="text-[10px] font-black text-black/25 uppercase tracking-widest">Speed</span>
-                                        <span id="speed-display" class="text-[11px] font-bold bg-black/5 px-2 py-0.5 rounded-md">Normal</span>
+                                        <span id="speed-display" class="text-[11px] font-bold text-black/60">Normal</span>
                                     </div>
-                                    <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-1 bg-gray-200 rounded-lg cursor-pointer">
+                                    <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-1 bg-black/5 rounded-lg cursor-pointer">
                                 </div>
 
-                                <!-- Control Buttons -->
-                                <div class="flex items-center justify-center gap-3 pt-2">
-                                    <button id="start-btn" disabled class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Start Trip">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8 5v14l11-7z"/>
-                                        </svg>
+                                <!-- Control Buttons — circular -->
+                                <div class="flex items-center justify-center gap-4 pt-2">
+                                    <button id="start-btn" disabled title="Start Trip"
+                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                     </button>
-                                    <button id="pause-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="Pause">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <rect x="6" y="4" width="4" height="16"/>
-                                            <rect x="14" y="4" width="4" height="16"/>
-                                        </svg>
+                                    <button id="pause-btn" disabled title="Pause"
+                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
                                     </button>
-                                    <button id="resume-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="Resume">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8 5v14l11-7z"/>
-                                        </svg>
+                                    <button id="resume-btn" disabled title="Resume"
+                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                     </button>
-                                    <button id="end-btn" class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-lg active:scale-95" title="End Trip">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <rect x="6" y="6" width="12" height="12"/>
-                                        </svg>
+                                    <button id="end-btn" title="End Trip"
+                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
                                     </button>
-                                    <button id="reset-planner-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg active:scale-95" title="Reset">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <button id="reset-planner-btn" title="Reset"
+                                        class="w-12 h-12 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
                                             <path d="M21 3v5h-5"/>
                                             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
@@ -143,57 +139,60 @@ const PanelComponent = {
 
                             <!-- RECORDER TAB -->
                             <div id="view-recorder" class="space-y-6 hidden">
-                                <!-- Status Badge -->
+                                <!-- Status (text only, no badge) -->
                                 <div class="flex items-center justify-between">
-                                    <span id="record-badge" class="bg-black/[0.03] text-black/60 text-[9px] px-2 py-0.5 rounded uppercase font-bold border border-black/[0.05]">Ready</span>
+                                    <span id="record-badge" class="text-[9px] font-bold text-black/30 uppercase tracking-widest">Ready</span>
                                     <div id="recording-indicator" class="hidden flex items-center gap-1.5">
-                                        <div class="w-1.5 h-1.5 bg-black rounded-full"></div>
-                                        <span class="text-[9px] font-bold text-black/60">RECORDING</span>
+                                        <div class="w-1.5 h-1.5 bg-black rounded-full recording-pulse"></div>
+                                        <span class="text-[9px] font-bold text-black/50 uppercase tracking-widest">Recording</span>
                                     </div>
                                 </div>
 
                                 <!-- Auto Focus Toggle -->
-                                <div class="flex items-center justify-between p-2 bg-white/50 rounded-lg border border-gray-200">
-                                    <span class="text-[10px] font-bold text-gray-700 uppercase">Auto Focus</span>
-                                    <input type="checkbox" id="auto-focus-toggle" class="w-3.5 h-3.5 rounded">
+                                <div class="flex items-center justify-between py-2 border-b border-black/[0.05]">
+                                    <span class="text-[10px] font-bold text-black/40 uppercase tracking-widest">Auto Focus</span>
+                                    <input type="checkbox" id="auto-focus-toggle" class="w-3.5 h-3.5 rounded accent-black">
                                 </div>
 
                                 <!-- Recording Stats -->
-                                <div class="bg-white/50 p-3 rounded-lg border border-gray-200">
-                                    <div class="grid grid-cols-2 gap-3 text-center">
-                                        <div>
-                                            <p class="text-[8px] text-gray-400 uppercase mb-0.5">Distance</p>
-                                            <p id="rec-distance" class="text-sm font-bold text-gray-900">0.0 km</p>
+                                <div class="py-4 bg-black/[0.02] rounded-[1.5rem] border border-black/[0.04] text-center space-y-3">
+                                    <div class="flex justify-center gap-8">
+                                        <div class="text-center">
+                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Distance</p>
+                                            <p id="rec-distance" class="text-sm font-bold text-black">0.0 km</p>
                                         </div>
-                                        <div>
-                                            <p class="text-[8px] text-gray-400 uppercase mb-0.5">Time</p>
-                                            <p id="rec-duration" class="text-sm font-bold text-gray-900">00:00</p>
+                                        <div class="w-[1px] bg-black/5"></div>
+                                        <div class="text-center">
+                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Time</p>
+                                            <p id="rec-duration" class="text-sm font-bold text-black">00:00</p>
                                         </div>
-                                        <div>
-                                            <p class="text-[8px] text-gray-400 uppercase mb-0.5">New</p>
-                                            <p id="rec-streets" class="text-sm font-bold text-blue-600">0</p>
+                                    </div>
+                                    <div class="flex justify-center gap-8">
+                                        <div class="text-center">
+                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">New</p>
+                                            <p id="rec-streets" class="text-sm font-bold text-black">0</p>
                                         </div>
-                                        <div>
-                                            <p class="text-[8px] text-gray-400 uppercase mb-0.5">Revisit</p>
-                                            <p id="rec-revisited" class="text-sm font-bold text-orange-600">0</p>
+                                        <div class="w-[1px] bg-black/5"></div>
+                                        <div class="text-center">
+                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Revisit</p>
+                                            <p id="rec-revisited" class="text-sm font-bold text-black">0</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Control Buttons -->
-                                <div class="flex items-center justify-center gap-3">
-                                    <button id="start-recording-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Start Recording">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8 5v14l11-7z"/>
-                                        </svg>
+                                <!-- Control Buttons — circular -->
+                                <div class="flex items-center justify-center gap-4">
+                                    <button id="start-recording-btn" title="Start Recording"
+                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                                     </button>
-                                    <button id="stop-recording-btn" disabled class="hidden w-[44px] h-[44px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-lg active:scale-95" title="Stop Recording">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                            <rect x="6" y="6" width="12" height="12"/>
-                                        </svg>
+                                    <button id="stop-recording-btn" disabled title="Stop Recording"
+                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
                                     </button>
-                                    <button id="reset-recorder-btn" class="w-[44px] h-[44px] flex items-center justify-center bg-gray-300 text-gray-700 rounded-xl hover:bg-gray-400 transition-all shadow-lg active:scale-95" title="Reset">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <button id="reset-recorder-btn" title="Reset"
+                                        class="w-12 h-12 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
                                             <path d="M21 3v5h-5"/>
                                             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
@@ -202,47 +201,222 @@ const PanelComponent = {
                                     </button>
                                 </div>
 
-                                <!-- Save Session Button -->
-                                <button id="save-session-btn" disabled class="hidden w-full bg-black text-white text-[11px] font-bold py-2.5 rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all shadow-md uppercase tracking-wide">
+                                <!-- Save Session — full-width pill button -->
+                                <button id="save-session-btn" disabled
+                                    class="hidden w-full bg-black text-white text-[11px] font-bold py-3 rounded-full hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all uppercase tracking-widest">
                                     Save Session
                                 </button>
                             </div>
 
                             <!-- LIVE TAB -->
-                            <div id="view-live" class="hidden">
-                                <div class="py-16 text-center">
-                                    <span class="text-[10px] font-bold text-black/20 uppercase tracking-[0.25em]">Live Tracking</span>
-                                    <p class="text-xs text-black/40 mt-2">Coming soon</p>
+                            <div id="view-live" class="hidden space-y-5">
+
+                                <!-- Header row -->
+                                <div class="flex items-center justify-between">
+                                    <p class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Prospecting</p>
+                                    <span id="live-stat-sites" class="text-[9px] font-bold text-black/30 uppercase tracking-widest">0 sites</span>
+                                </div>
+
+                                <!-- Session stats -->
+                                <div id="live-stats-row" class="hidden flex justify-center gap-8 py-3 bg-black/[0.02] rounded-[1.5rem] border border-black/[0.04]">
+                                    <div class="text-center">
+                                        <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Distance</p>
+                                        <p id="live-stat-dist" class="text-sm font-bold text-black">0.00 km</p>
+                                    </div>
+                                    <div class="w-[1px] bg-black/5"></div>
+                                    <div class="text-center">
+                                        <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Time</p>
+                                        <p id="live-stat-time" class="text-sm font-bold text-black">00:00</p>
+                                    </div>
+                                </div>
+
+                                <!-- Empty state -->
+                                <div id="live-empty-state" class="py-8 text-center">
+                                    <p class="text-[10px] font-bold text-black/20 uppercase tracking-[0.2em]">Start a session</p>
+                                    <p class="text-[9px] text-black/25 mt-1">GPS tracks your path · FAB drops site pins</p>
+                                </div>
+
+                                <!-- Station tree list -->
+                                <div id="live-station-list" class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1"></div>
+
+                                <!-- Start / Stop buttons -->
+                                <div class="flex items-center justify-center gap-4 pt-1">
+                                    <button id="live-start-btn" onclick="LiveProspect.startSession()" title="Start Session"
+                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
+                                    <button id="live-stop-btn" onclick="LiveProspect.stopSession()" title="End Session"
+                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- HISTORY TAB -->
                             <div id="view-history" class="hidden">
                                 <!-- Header with Action Buttons -->
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Sessions</span>
+                                <div class="flex items-center justify-between mb-5">
+                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Recent Logs</span>
                                     <div class="flex items-center gap-2">
                                         <!-- Stop Recording Button (only visible when recording) -->
-                                        <button id="history-stop-btn" onclick="window.stopRecording && window.stopRecording()" class="hidden w-[36px] h-[36px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md" title="Stop Recording">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                                <rect x="6" y="6" width="12" height="12"/>
-                                            </svg>
+                                        <button id="history-stop-btn" onclick="window.stopRecording && window.stopRecording()" title="Stop Recording"
+                                            class="hidden w-9 h-9 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
                                         </button>
                                         <!-- Maximize Button -->
-                                        <button onclick="HistoryModal.open()" class="w-[36px] h-[36px] flex items-center justify-center bg-black text-white rounded-xl hover:bg-gray-800 transition-all shadow-md" title="Maximize">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <button onclick="HistoryModal.open()" title="Maximize"
+                                            class="w-9 h-9 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
                                             </svg>
                                         </button>
                                     </div>
                                 </div>
                                 
-                                <div id="main-history-list" class="space-y-2 max-h-[300px] overflow-y-auto">
-                                    <p class="text-[10px] text-gray-400 italic text-center py-8">No recording sessions yet</p>
+                                <!-- Tree-structured history list -->
+                                <div id="main-history-list" class="space-y-4 max-h-[340px] overflow-y-auto custom-scrollbar pr-1">
+                                    <p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>
                                 </div>
                             </div>
 
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════ -->
+            <!-- LIVE PROSPECTING OVERLAYS (appended to body layer) -->
+            <!-- ═══════════════════════════════════════════════════ -->
+
+            <!-- FAB and photo input are injected into <body> by live.js to avoid overflow-hidden clipping -->
+
+            <!-- Lead Entry Form Modal -->
+            <div id="live-lead-overlay" class="hidden fixed inset-0 z-[3000] bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div class="live-modal-card scale-95 transition-transform duration-200 bg-white w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-y-auto max-h-[92vh]">
+
+                    <!-- Modal header -->
+                    <div class="sticky top-0 bg-white px-6 pt-5 pb-4 border-b border-black/[0.06] flex items-center justify-between z-10">
+                        <div>
+                            <p class="text-[8px] font-black text-black/25 uppercase tracking-widest mb-0.5">New Lead</p>
+                            <div class="flex items-center gap-2">
+                                <span id="lead-site-num" class="text-sm font-bold text-black">#—</span>
+                                <span class="text-[9px] text-black/30">·</span>
+                                <span id="lead-site-addr" class="text-[10px] text-black/40 italic truncate max-w-[180px]">Resolving…</span>
+                            </div>
+                        </div>
+                        <button onclick="LiveProspect.closeLeadForm()" class="w-9 h-9 flex items-center justify-center rounded-full bg-black/[0.04] text-black/40 hover:bg-black/10 transition-all">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Form body -->
+                    <div class="px-6 py-5 space-y-4">
+
+                        <!-- Name -->
+                        <div>
+                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Contact Name</label>
+                            <input id="lead-name" type="text" placeholder="e.g. Mohammed Al-Hassan"
+                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
+                        </div>
+
+                        <!-- Role -->
+                        <div>
+                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Role</label>
+                            <select id="lead-role"
+                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all text-black appearance-none">
+                                <option value="">Select role…</option>
+                                <option value="Foreman">Foreman</option>
+                                <option value="Architect">Architect</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="Owner">Owner / Developer</option>
+                                <option value="Contractor">Contractor</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Phones -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Phone</label>
+                                <input id="lead-phone" type="tel" placeholder="+966 5x …"
+                                    class="w-full px-3 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Phone 2</label>
+                                <input id="lead-phone2" type="tel" placeholder="optional"
+                                    class="w-full px-3 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div>
+                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Notes</label>
+                            <textarea id="lead-notes" rows="3" placeholder="Project type, stage, materials interest…"
+                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20 resize-none"></textarea>
+                        </div>
+
+                        <!-- Photos -->
+                        <div>
+                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-2">Site Photos</label>
+                            <div class="flex gap-2 overflow-x-auto pb-1" id="lead-photo-thumbs"></div>
+                            <button onclick="LiveProspect.triggerPhotoUpload()"
+                                class="mt-2 w-full py-3 border border-dashed border-black/15 rounded-xl text-[10px] font-bold text-black/30 uppercase tracking-widest hover:border-black/30 hover:text-black/50 transition-all flex items-center justify-center gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                Camera / Gallery
+                            </button>
+                        </div>
+
+                        <!-- Save -->
+                        <button onclick="LiveProspect.saveLeadForm()"
+                            class="w-full py-3.5 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-black/80 transition-all active:scale-95 shadow-lg shadow-black/20">
+                            Save Lead
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact View Modal -->
+            <div id="live-contact-overlay" class="hidden fixed inset-0 z-[3000] bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+                <div class="live-modal-card scale-95 transition-transform duration-200 bg-white w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-y-auto max-h-[85vh]">
+
+                    <div class="sticky top-0 bg-white px-6 pt-5 pb-4 border-b border-black/[0.06] flex items-center justify-between z-10">
+                        <div>
+                            <p class="text-[8px] font-black text-black/25 uppercase tracking-widest mb-0.5">Contact</p>
+                            <span id="contact-modal-num" class="text-sm font-bold text-black">Site #—</span>
+                        </div>
+                        <button onclick="LiveProspect.closeContactModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-black/[0.04] text-black/40 hover:bg-black/10 transition-all">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="px-6 py-5 space-y-4">
+                        <p id="contact-modal-addr" class="text-[10px] text-black/40 italic -mt-1"></p>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Name</p>
+                                <p id="contact-modal-name" class="text-sm font-bold text-black"></p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Role</p>
+                                <p id="contact-modal-role" class="text-sm font-bold text-black"></p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Phone</p>
+                                <p id="contact-modal-phone" class="text-sm font-bold text-black"></p>
+                            </div>
+                            <div>
+                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Phone 2</p>
+                                <p id="contact-modal-phone2" class="text-sm font-bold text-black"></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Notes</p>
+                            <p id="contact-modal-notes" class="text-xs text-black/60 leading-relaxed"></p>
+                        </div>
+
+                        <div id="contact-modal-photos" class="hidden space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -255,7 +429,7 @@ const PanelComponent = {
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
             @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
 
-            /* Enhanced Glassmorphism */
+            /* Glassmorphism */
             .glass {
                 background: rgba(255, 255, 255, 0.7);
                 backdrop-filter: blur(30px) saturate(190%);
@@ -354,8 +528,13 @@ const PanelComponent = {
 
             @keyframes pulse {
                 0%, 100% { opacity: 1; }
-                50% { opacity: .5; }
+                50% { opacity: .4; }
             }
+
+            /* Custom Scrollbar */
+            .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 10px; }
 
             /* Mobile Responsive */
             @media (max-width: 640px) {
@@ -412,6 +591,11 @@ const PanelComponent = {
 
         // Bind event handlers
         this.bindEvents();
+
+        // Init LiveProspect module
+        if (window.LiveProspect) {
+            window.LiveProspect.init(map);
+        }
 
         console.log('✅ Panel initialized');
 
@@ -566,12 +750,10 @@ const PanelComponent = {
                 startBtn.disabled = false;
             }
             
-            // Update badge to match original "Sim Ready" state
+            // Update badge to match original "Sim Ready" state (text only, no color badge)
             const badge = this.refs.elements['record-badge'];
             if (badge) {
                 badge.innerText = 'Sim Ready';
-                badge.classList.remove('bg-gray-100', 'text-gray-700', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
-                badge.classList.add('bg-yellow-100', 'text-yellow-700');
             }
             
             console.log('✅ Recorder tab ready - simulation mode enabled');
@@ -729,7 +911,7 @@ window.renderHistoryPanel = function() {
     console.log('allHistory:', allHistory);
 
     if (allHistory.length === 0) {
-        historyList.innerHTML = '<div class="text-center text-gray-400 text-xs py-8">No recording sessions yet</div>';
+        historyList.innerHTML = '<p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>';
         console.log('ℹ️ No recording sessions to display');
         return;
     }
@@ -751,17 +933,17 @@ window.renderHistoryPanel = function() {
     // Add pagination controls
     if (totalPages > 1) {
         const pagination = document.createElement('div');
-        pagination.className = 'flex items-center justify-between mt-4 pt-4 border-t border-gray-200';
+        pagination.className = 'flex items-center justify-between mt-4 pt-4 border-t border-black/[0.05]';
         pagination.innerHTML = `
-            <button id="prev-page" ${currentHistoryPage === 0 ? 'disabled' : ''} 
-                class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
-                ← Previous
+            <button id="prev-page" ${currentHistoryPage === 0 ? 'disabled' : ''}
+                class="px-3 py-1.5 text-[10px] font-bold text-black/40 uppercase tracking-widest hover:text-black disabled:opacity-20 disabled:cursor-not-allowed transition-all">
+                ← Prev
             </button>
-            <span class="text-xs text-gray-500">
+            <span class="text-[10px] text-black/25 font-bold">
                 ${currentHistoryPage + 1} / ${totalPages}
             </span>
-            <button id="next-page" ${currentHistoryPage >= totalPages - 1 ? 'disabled' : ''} 
-                class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+            <button id="next-page" ${currentHistoryPage >= totalPages - 1 ? 'disabled' : ''}
+                class="px-3 py-1.5 text-[10px] font-bold text-black/40 uppercase tracking-widest hover:text-black disabled:opacity-20 disabled:cursor-not-allowed transition-all">
                 Next →
             </button>
         `;
@@ -785,7 +967,7 @@ window.renderHistoryPanel = function() {
 
 function renderRecordingItem(session, container) {
     const item = document.createElement('div');
-    item.className = 'bg-white/50 rounded-2xl border border-gray-100 overflow-hidden';
+    item.className = 'group';
     
     const date = new Date(session.timestamp);
     const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -799,106 +981,98 @@ function renderRecordingItem(session, container) {
     const mapId = `route-preview-${session.id}`;
     
     item.innerHTML = `
-        <div>
-            <!-- Route Preview Map -->
-            <div id="${mapId}" class="w-full h-32 bg-gray-100 relative">
-                <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                    Loading map...
+        <!-- Session header row -->
+        <div onclick="toggleRecordingDetails(${session.id})"
+            class="flex items-center justify-between p-4 bg-black/[0.03] rounded-2xl hover:bg-black/[0.05] transition-all cursor-pointer">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-black/40 flex-shrink-0"></div>
+                <div>
+                    <p class="text-xs font-bold text-black">${dateStr}</p>
+                    <p class="text-[9px] font-bold text-black/30 uppercase tracking-widest mt-0.5">${session.distance.toFixed(1)} km · ${durationStr} min</p>
                 </div>
             </div>
-            
-            <div class="p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                        <span class="text-xs font-bold text-gray-700">RECORDING SESSION</span>
-                    </div>
-                    <span class="text-[9px] text-gray-400">${dateStr} • ${timeStr}</span>
+            <svg id="chevron-${session.id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-black/20 transition-transform duration-300">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </div>
+
+        <!-- Expandable detail tree -->
+        <div id="details-${session.id}" class="hidden mt-2 ml-4 pl-4 border-l border-black/[0.06] space-y-1 pb-2">
+            <!-- Route mini-map -->
+            <div id="${mapId}" class="w-full h-28 rounded-xl bg-black/[0.03] overflow-hidden mb-3 relative">
+                <div class="absolute inset-0 flex items-center justify-center text-[9px] text-black/25">Loading map...</div>
+            </div>
+
+            <!-- Start / End nodes -->
+            <div class="flex items-start gap-3 py-1">
+                <div class="w-1.5 h-1.5 rounded-full bg-black/30 mt-1 flex-shrink-0"></div>
+                <div>
+                    <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-0.5">Start</p>
+                    <p class="text-[11px] font-semibold text-black truncate">${session.startAddress}</p>
+                    <p class="text-[9px] text-black/30">${timeStr}</p>
                 </div>
-                
-                <div class="space-y-2 mb-3">
-                    <div class="flex items-start gap-2">
-                        <div class="w-2 h-2 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-[8px] text-gray-400 uppercase tracking-wide mb-0.5">Start</div>
-                            <div class="text-[10px] font-semibold text-gray-700 truncate">${session.startAddress}</div>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <div class="w-2 h-2 rounded-full bg-red-500 mt-1 flex-shrink-0"></div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-[8px] text-gray-400 uppercase tracking-wide mb-0.5">End</div>
-                            <div class="text-[10px] font-semibold text-gray-700 truncate">${session.endAddress}</div>
-                        </div>
-                    </div>
+            </div>
+            <div class="w-[1px] h-3 bg-black/[0.06] ml-[2px]"></div>
+            <div class="flex items-start gap-3 py-1">
+                <div class="w-1.5 h-1.5 rounded-full bg-black mt-1 flex-shrink-0"></div>
+                <div>
+                    <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-0.5">End</p>
+                    <p class="text-[11px] font-semibold text-black truncate">${session.endAddress}</p>
                 </div>
-                
-                <button onclick="toggleRecordingDetails(${session.id})" 
-                    class="w-full text-[9px] text-blue-600 hover:text-blue-700 font-medium py-2 border-t border-gray-100 transition-colors">
-                    View Details
+            </div>
+
+            <!-- Stations tree -->
+            ${session.stations && session.stations.length > 0 ? `
+                <div class="mt-3 pt-3 border-t border-black/[0.05] space-y-3">
+                    <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest">Sites Visited (${session.stations.length})</p>
+                    ${session.stations.map((station, idx) => {
+                        const arrivalTime = new Date(station.arrivalTime);
+                        const departureTime = station.departureTime ? new Date(station.departureTime) : null;
+                        const arrivalStr = arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                        const departureStr = departureTime ? departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'In Progress';
+                        const sDurationMin = station.duration ? Math.floor(station.duration / 60) : 0;
+                        const sDurationSec = station.duration ? station.duration % 60 : 0;
+
+                        return `
+                            <div class="flex items-start gap-3">
+                                <span class="text-[9px] font-bold text-black/25 mt-0.5 flex-shrink-0">#${station.number}</span>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[11px] font-bold text-black truncate">${station.address}</p>
+                                    <p class="text-[9px] text-black/30 italic">${arrivalStr} – ${departureStr} · ${sDurationMin}:${sDurationSec.toString().padStart(2, '0')} min</p>
+                                    <button onclick="addContactToStation(${session.id}, ${idx})"
+                                        class="mt-2 px-3 py-1.5 ${station.contact ? 'bg-black text-white' : 'bg-white border border-black/10 text-black'} rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                                        ${station.contact ? 'Edit Contact' : 'Add Lead Info'}
+                                    </button>
+                                    ${station.contact ? `<button onclick="viewStationContact(${session.id}, ${idx})"
+                                        class="mt-2 ml-1 px-3 py-1.5 border border-black/10 text-black rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all">
+                                        Show Contact
+                                    </button>` : ''}
+                                    <button onclick="deleteStationFromHistory(${session.id}, ${idx})"
+                                        class="mt-2 ml-1 px-3 py-1.5 border border-black/[0.08] text-black/30 rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('<div class="w-[1px] h-2 bg-black/[0.05] ml-[10px]"></div>')}
+                </div>
+            ` : ''}
+
+        <!-- Replay button — circular -->
+            <div class="flex justify-center gap-3 pt-3">
+                <button onclick="replayRecording(${session.id})"
+                    class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all shadow-md" title="Replay Recording">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                 </button>
-                
-                <div id="details-${session.id}" class="hidden mt-3 pt-3 border-t border-gray-100 space-y-2">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-gray-50 rounded-lg p-2 border border-gray-200">
-                            <div class="text-[8px] text-gray-500 uppercase tracking-wide mb-1">Distance</div>
-                            <div class="text-sm font-bold text-gray-900">${session.distance.toFixed(2)} <span class="text-[9px] font-normal">km</span></div>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-2 border border-gray-200">
-                            <div class="text-[8px] text-gray-500 uppercase tracking-wide mb-1">Duration</div>
-                            <div class="text-sm font-bold text-gray-900">${durationStr} <span class="text-[9px] font-normal">min</span></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Stations List -->
-                    ${session.stations && session.stations.length > 0 ? `
-                        <div class="mt-3 pt-3 border-t border-gray-100">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-[9px] font-bold text-gray-700 uppercase tracking-wide">Sites Visited (${session.stations.length})</span>
-                            </div>
-                            <div class="space-y-2 max-h-48 overflow-y-auto">
-                                ${session.stations.map((station, idx) => {
-                                    const arrivalTime = new Date(station.arrivalTime);
-                                    const departureTime = station.departureTime ? new Date(station.departureTime) : null;
-                                    const arrivalStr = arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                                    const departureStr = departureTime ? departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'In Progress';
-                                    const durationMin = station.duration ? Math.floor(station.duration / 60) : 0;
-                                    const durationSec = station.duration ? station.duration % 60 : 0;
-                                    
-                                    return `
-                                        <div class="bg-white rounded-lg p-2 border border-gray-200 hover:border-gray-300 transition-all">
-                                            <div class="flex items-start justify-between mb-1">
-                                                <span class="text-[9px] font-bold text-gray-700">Site #${station.number}</span>
-                                                <span class="text-[8px] text-gray-400">${durationMin}:${durationSec.toString().padStart(2, '0')} min</span>
-                                            </div>
-                                            <div class="text-[9px] text-gray-700 mb-1 truncate">${station.address}</div>
-                                            <div class="text-[8px] text-gray-400">${arrivalStr} - ${departureStr}</div>
-                                            <button onclick="addContactToStation(${session.id}, ${idx})" 
-                                                class="mt-2 w-full px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-[8px] font-medium rounded border border-gray-200 transition-all">
-                                                ${station.contact ? 'View Contact' : 'Add Lead Info'}
-                                            </button>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <button onclick="replayRecording(${session.id})" 
-                        class="w-full mt-2 px-3 py-2 bg-black text-white text-[10px] font-bold rounded-lg hover:bg-gray-800 transition-all shadow-sm">
-                        Replay Recording
-                    </button>
-                </div>
+                <button onclick="deleteSessionFromHistory(${session.id})"
+                    class="w-10 h-10 flex items-center justify-center border border-black/10 text-black/30 rounded-full hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all" title="Delete Session">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                </button>
             </div>
         </div>
     `;
     
     container.appendChild(item);
-    
-    // Initialize the preview map after DOM insertion
-    setTimeout(() => {
-        initializeRoutePreview(mapId, session);
-    }, 100);
 }
 
 function initializeRoutePreview(mapId, session) {
@@ -938,27 +1112,27 @@ function initializeRoutePreview(mapId, session) {
         if (session.path && session.path.length > 0) {
             const pathCoords = session.path.map(p => [p.lat, p.lng]);
             
-            // Draw the blue path
+            // Draw the path
             L.polyline(pathCoords, {
-                color: '#3b82f6',
-                weight: 3,
-                opacity: 0.8
+                color: '#000',
+                weight: 2.5,
+                opacity: 0.7
             }).addTo(previewMap);
             
             // Add start marker
             L.circleMarker([session.startLocation.lat, session.startLocation.lng], {
-                radius: 5,
-                fillColor: '#3b82f6',
+                radius: 4,
+                fillColor: '#000',
                 color: '#fff',
                 weight: 2,
                 opacity: 1,
-                fillOpacity: 1
+                fillOpacity: 0.4
             }).addTo(previewMap);
             
             // Add end marker
             L.circleMarker([session.path[session.path.length - 1].lat, session.path[session.path.length - 1].lng], {
-                radius: 5,
-                fillColor: '#ef4444',
+                radius: 4,
+                fillColor: '#000',
                 color: '#fff',
                 weight: 2,
                 opacity: 1,
@@ -971,39 +1145,94 @@ function initializeRoutePreview(mapId, session) {
         }
     } catch (error) {
         console.error('Error creating route preview:', error);
-        mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400 text-xs">Map unavailable</div>';
+        mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-[9px] text-black/25">Map unavailable</div>';
     }
 }
 
 window.toggleRecordingDetails = function(sessionId) {
     const details = document.getElementById(`details-${sessionId}`);
+    const chevron = document.getElementById(`chevron-${sessionId}`);
     if (details) {
+        const isHidden = details.classList.contains('hidden');
         details.classList.toggle('hidden');
-        const button = details.previousElementSibling;
-        if (button) {
-            button.innerHTML = details.classList.contains('hidden') 
-                ? 'View Details ↓' 
-                : 'Hide Details ↑';
+        if (chevron) {
+            chevron.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+        // Initialize the preview map after expanding
+        if (isHidden) {
+            const mapId = `route-preview-${sessionId}`;
+            const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+            if (session) {
+                setTimeout(() => initializeRoutePreview(mapId, session), 100);
+            }
         }
     }
 };
 
-// Placeholder function for adding contact to station
+// ── History station CRUD ──────────────────────────────────────────────────────
+
 window.addContactToStation = function(sessionId, stationIndex) {
-    console.log(`📝 Add contact to session ${sessionId}, station ${stationIndex}`);
-    alert(`Contact form will open here.\n\nSession ID: ${sessionId}\nStation #${stationIndex + 1}\n\nThis will be integrated with your contact form component.`);
-    
-    // TODO: Open contact form modal
-    // TODO: Save contact data to station.contact
-    // TODO: Re-render history panel to show updated contact
+    // Open LiveProspect lead form pre-loaded with this station's data
+    const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+    if (!session) return;
+    const station = session.stations && session.stations[stationIndex];
+    if (!station) return;
+
+    // Ensure station has an id so the form can find it
+    if (!station.id) station.id = Date.now();
+
+    // Temporarily register this station in LiveProspect so openLeadForm works
+    if (window.LiveProspect && window.LiveProspect._registerHistoryStation) {
+        window.LiveProspect._registerHistoryStation(station, session, stationIndex);
+    } else {
+        // Fallback: open contact modal read-only
+        viewStationContact(sessionId, stationIndex);
+    }
 };
 
+window.viewStationContact = function(sessionId, stationIndex) {
+    if (window.LiveProspect && window.LiveProspect.openContactModal) {
+        const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+        if (!session) return;
+        const station = session.stations && session.stations[stationIndex];
+        if (!station || !station.id) return;
+        window.LiveProspect.openContactModal(station.id);
+    }
+};
+
+window.deleteStationFromHistory = function(sessionId, stationIndex) {
+    if (!confirm('Delete this site entry?')) return;
+    const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+    if (!session || !session.stations) return;
+    session.stations.splice(stationIndex, 1);
+    // Re-number
+    session.stations.forEach((s, i) => { s.number = i + 1; });
+    // Persist
+    _persistHistoryToStorage();
+    window.renderHistoryPanel();
+};
+
+window.deleteSessionFromHistory = function(sessionId) {
+    if (window.LiveProspect && window.LiveProspect.deleteSession) {
+        window.LiveProspect.deleteSession(sessionId);
+    } else {
+        if (!confirm('Delete this entire session?')) return;
+        window.recordingHistory = (window.recordingHistory || []).filter(s => s.id !== sessionId);
+        _persistHistoryToStorage();
+        window.renderHistoryPanel();
+    }
+};
+
+function _persistHistoryToStorage() {
+    try {
+        const lp = JSON.parse(localStorage.getItem('lp_sessions') || '[]');
+        const updated = (window.recordingHistory || []).filter(s => s.type === 'live');
+        localStorage.setItem('lp_sessions', JSON.stringify(updated));
+    } catch(e) {}
+}
+
 window.replayRecording = function(sessionId) {
-    const session = window.recordingHistory.find(s => s.id === sessionId);
-    if (!session) return;
-    
     alert('Replay feature coming soon! This will animate the recorded path on the map.');
-    // TODO: Implement replay functionality
 };
 
 // Initialize history panel when it opens
