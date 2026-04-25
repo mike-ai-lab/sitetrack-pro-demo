@@ -1,0 +1,19 @@
+{
+  "name": "field-prospecting-lite",
+  "version": "1.0.0",
+  "description": "Lightweight field prospecting tool with GPS tracking and lead management",
+  "main": "public/index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "field-prospecting",
+    "gps-tracking",
+    "lead-management",
+    "leaflet",
+    "mapping"
+  ],
+  "author": "Studio Field",
+  "license": "MIT"
+}

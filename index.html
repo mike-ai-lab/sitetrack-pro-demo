@@ -440,21 +440,17 @@
                 const btn = document.getElementById('locate-btn');
                 btn.classList.remove('opacity-50');
                 
-                const radius = e.accuracy / 2;
-                L.circle(e.latlng, radius).addTo(map);
+                // Don't add blue circle - it pollutes the map
+                // const radius = e.accuracy / 2;
+                // L.circle(e.latlng, radius).addTo(map);
                 
+                // Remove old user location marker if exists
                 if (userLocationMarker) {
                     map.removeLayer(userLocationMarker);
+                    userLocationMarker = null;
                 }
                 
-                const locationIcon = L.divIcon({
-                    html: '<div style="width: 16px; height: 16px; background: #3b82f6; border: 3px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);"></div>',
-                    className: '',
-                    iconSize: [16, 16],
-                    iconAnchor: [8, 8]
-                });
-                
-                userLocationMarker = L.marker(e.latlng, { icon: locationIcon }).addTo(map);
+                // Just use the carMarker - no need for separate location marker
                 carMarker.setLatLng(e.latlng);
                 carMarker.setOpacity(1);
                 
@@ -566,6 +562,12 @@
             console.log('currentMode:', window.currentMode);
             console.log('simulationMode:', simulationMode);
             console.log('isRecording:', isRecording);
+            
+            // LIVE TAB ISOLATION: Block all map clicks when in Live mode
+            if (window.currentMode === 'live') {
+                console.log('🚫 Live mode active - map clicks disabled (use FAB button instead)');
+                return;
+            }
             
             // HISTORY TAB AUTO-RECORDING: If History tab is active, auto-switch to recorder mode
             if (window.currentMode === 'history') {
@@ -2020,6 +2022,12 @@
             
             // Initialize modular panel AFTER map (no CONFIG needed)
             Panel = initPanel(map);
+            
+            // Initialize LiveProspect module
+            if (window.LiveProspect && window.LiveProspect.init) {
+                window.LiveProspect.init(map);
+                console.log('✅ LiveProspect initialized');
+            }
             
             // NOW wire up the speed slider (after panel exists)
             const speedSlider = document.getElementById('speed-slider');

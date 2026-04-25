@@ -1,19 +1,18 @@
 /**
- * sw.js — Service Worker for LiveProspect background operation
+ * Service Worker for Field Prospecting Lite
  * Keeps the app alive in the background so GPS tracking continues
  * even when the browser tab is backgrounded on mobile.
  */
 
-const CACHE_NAME = 'streettrack-v1';
+const CACHE_NAME = 'field-prospecting-lite-v2';
 const PRECACHE = [
     '/',
     '/index.html',
-    '/panel.js',
-    '/live.js',
-    '/history-modal.js'
+    '/assets/app.js',
+    '/assets/styles.css'
 ];
 
-// ── Install: pre-cache app shell ─────────────────────────────────────────────
+// Install: pre-cache app shell
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
@@ -25,7 +24,7 @@ self.addEventListener('install', event => {
     self.skipWaiting();
 });
 
-// ── Activate: clean old caches ───────────────────────────────────────────────
+// Activate: clean old caches
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys =>
@@ -35,19 +34,22 @@ self.addEventListener('activate', event => {
     self.clients.claim();
 });
 
-// ── Fetch: serve from cache with network fallback ────────────────────────────
+// Fetch: serve from cache with network fallback
 self.addEventListener('fetch', event => {
-    // Let nominatim/tile requests go straight to network
     const url = event.request.url;
     
-    // Skip chrome-extension and other non-http(s) schemes
+    // Skip non-http(s) schemes
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
         return;
     }
     
-    if (url.includes('nominatim') || url.includes('google.com/vt') ||
-        url.includes('tile') || url.includes('osrm') || url.includes('router.project-osrm')) {
-        return; // don't intercept, fall through to network
+    // Skip external APIs (tiles, routing, geocoding)
+    if (url.includes('basemaps.cartocdn.com') || 
+        url.includes('router.project-osrm.org') ||
+        url.includes('nominatim') ||
+        url.includes('cdn.tailwindcss.com') ||
+        url.includes('unpkg.com')) {
+        return; // let these go straight to network
     }
 
     event.respondWith(
@@ -64,11 +66,10 @@ self.addEventListener('fetch', event => {
     );
 });
 
-// ── Background sync message from page ────────────────────────────────────────
+// Background sync message from page
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'KEEP_ALIVE') {
-        // Acknowledge — this keeps the SW active, which in turn keeps
-        // the page's GPS watchPosition running longer on mobile browsers
+        // Acknowledge - keeps SW active, which keeps GPS running on mobile
         event.ports && event.ports[0] && event.ports[0].postMessage({ ack: true });
     }
 });

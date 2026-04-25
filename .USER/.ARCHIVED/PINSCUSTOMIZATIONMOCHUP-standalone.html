@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Intelligence Map - Muhamad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        .map-grid {
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 40px 40px;
+        }
+
+        .pin-container {
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .pin-container:hover {
+            z-index: 50;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            background: #0f172a;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            z-index: 60;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pin-container:hover .tooltip {
+            display: block;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Status Styles */
+        .status-closed { opacity: 0.5; filter: grayscale(0.2); }
+        .status-onhold { border: 2px dashed white !important; }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+    <div id="app" class="relative w-full h-screen overflow-hidden">
+        <!-- Main Map Area -->
+        <div id="map" class="relative w-full h-full bg-slate-200 cursor-crosshair map-grid">
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10">
+                <h1 class="text-7xl md:text-8xl font-black uppercase tracking-tighter text-slate-500">Site Workspace</h1>
+            </div>
+            
+            <!-- Pins will be injected here -->
+            <div id="pins-layer"></div>
+
+            <!-- Dashboard Overlay -->
+            <div class="absolute top-6 left-6 bg-white/90 p-4 rounded-2xl shadow-xl border border-white max-w-xs pointer-events-none">
+                <h2 class="text-lg font-bold text-slate-900">Project Intelligence</h2>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Muhamad's Site Dashboard</p>
+                <div class="mt-4 pt-3 border-t border-slate-200 flex flex-wrap gap-2">
+                    <span class="flex items-center gap-1 text-[9px] font-black"><span class="w-2 h-2 rounded-full bg-red-500"></span> CRITICAL</span>
+                    <span class="flex items-center gap-1 text-[9px] font-black"><span class="w-2 h-2 rounded-full bg-orange-500"></span> HIGH</span>
+                    <span class="flex items-center gap-1 text-[9px] font-black"><span class="w-2 h-2 rounded-full bg-blue-500"></span> NORMAL</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Modal -->
+        <div id="modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 hidden">
+            <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                
+                <!-- Modal Header -->
+                <div class="p-6 bg-slate-50 border-b flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div id="modal-preview-pin"></div>
+                        <div>
+                            <h3 id="modal-title" class="text-lg font-bold text-slate-900">Specify Lead Pin</h3>
+                            <p id="modal-subtitle" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">New Entry</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x"></i></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-5 overflow-y-auto flex-1 custom-scroll">
+                    <!-- Priority (Color) -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Urgency (Pin Color)</label>
+                        <div class="grid grid-cols-4 gap-2" id="priority-options">
+                            <!-- JS injected buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Workflow Style</label>
+                        <div class="flex gap-2" id="status-options">
+                            <!-- JS injected buttons -->
+                        </div>
+                    </div>
+
+                    <!-- Personnel Info -->
+                    <div class="p-4 bg-slate-50 rounded-2xl space-y-4 border border-slate-100">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Role (Icon)</label>
+                                <select id="input-role" onchange="updatePreview()" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none"></select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Phase (Label)</label>
+                                <select id="input-phase" onchange="updatePreview()" class="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm font-bold outline-none"></select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Assignee</label>
+                            <input type="text" id="input-name" placeholder="Muhamad..." class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm outline-none">
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Saudi Phone</label>
+                                <span id="phone-error" class="text-[10px] text-red-500 font-bold hidden">INVALID FORMAT</span>
+                            </div>
+                            <div id="phone-container" class="flex items-center bg-white border border-slate-200 rounded-lg px-3 transition-colors">
+                                <i data-lucide="phone" class="w-4 h-4 text-slate-400"></i>
+                                <input type="text" id="input-phone" oninput="validatePhone()" placeholder="05XXXXXXXX" class="w-full p-2.5 bg-transparent text-sm outline-none font-mono">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Photo Section -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Site Photo</label>
+                        <div id="photo-container">
+                            <button onclick="simulateUpload()" class="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
+                                <i data-lucide="camera" class="w-8 h-8"></i>
+                                <span class="text-[10px] font-black uppercase mt-2">Capture or Upload</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Notes</label>
+                        <textarea id="input-notes" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none h-24 resize-none focus:bg-white transition-colors" placeholder="Additional site intelligence..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="p-4 bg-slate-50 border-t flex items-center gap-3">
+                    <button id="btn-delete" onclick="handleDelete()" class="hidden p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                    <button onclick="closeModal()" class="flex-1 py-3 text-xs font-black uppercase text-slate-400 hover:text-slate-600 transition-colors">Cancel</button>
+                    <button onclick="handleSave()" class="flex-[2] py-4 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-xl hover:bg-slate-800 transition-all active:scale-95">Place Pin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let pins = [];
+        let editingId = null;
+        let selectedLocation = { x: 0, y: 0 };
+        let currentFormData = {
+            priority: 'Normal',
+            status: 'Active',
+            role: 'Owner',
+            phase: 'ST',
+            photo: null
+        };
+
+        const priorities = [
+            { label: 'Critical', color: '#ef4444' },
+            { label: 'High', color: '#f97316' },
+            { label: 'Normal', color: '#3b82f6' },
+            { label: 'Low', color: '#94a3b8' }
+        ];
+
+        const roles = [
+            { label: 'Owner', icon: 'star' },
+            { label: 'Client', icon: 'star' },
+            { label: 'Consultant', icon: 'square' },
+            { label: 'Contractor', icon: 'triangle' },
+            { label: 'Foreman', icon: 'circle' }
+        ];
+
+        const phases = ['ST', 'INT', 'FD', 'EX', 'CL'];
+        const statuses = ['New', 'Active', 'On Hold', 'Closed'];
+
+        // Initialization
+        window.onload = () => {
+            initFormOptions();
+            lucide.createIcons();
+            
+            document.getElementById('map').addEventListener('click', (e) => {
+                if (e.target.closest('.pin-container')) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                selectedLocation = {
+                    x: ((e.clientX - rect.left) / rect.width) * 100,
+                    y: ((e.clientY - rect.top) / rect.height) * 100
+                };
+                openModal();
+            });
+        };
+
+        function initFormOptions() {
+            // Priority Buttons
+            const prioContainer = document.getElementById('priority-options');
+            priorities.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = `priority-btn py-2 rounded-lg text-[10px] font-black transition-all border-2 border-transparent opacity-60 text-white`;
+                btn.style.backgroundColor = p.color;
+                btn.innerText = p.label.toUpperCase();
+                btn.onclick = () => setPriority(p.label);
+                btn.id = `prio-${p.label}`;
+                prioContainer.appendChild(btn);
+            });
+
+            // Status Buttons
+            const statusContainer = document.getElementById('status-options');
+            statuses.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = `status-btn flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all bg-white text-slate-500 border-slate-200`;
+                btn.innerText = s;
+                btn.onclick = () => setStatus(s);
+                btn.id = `status-${s}`;
+                statusContainer.appendChild(btn);
+            });
+
+            // Selects
+            const roleSelect = document.getElementById('input-role');
+            roles.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.label;
+                opt.innerText = r.label;
+                roleSelect.appendChild(opt);
+            });
+
+            const phaseSelect = document.getElementById('input-phase');
+            phases.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.innerText = p;
+                phaseSelect.appendChild(opt);
+            });
+        }
+
+        function openModal(pinId = null) {
+            editingId = pinId;
+            const modal = document.getElementById('modal');
+            modal.classList.remove('hidden');
+
+            if (pinId) {
+                const pin = pins.find(p => p.id === pinId);
+                currentFormData = { ...pin };
+                document.getElementById('modal-title').innerText = "Edit Pin Details";
+                document.getElementById('modal-subtitle').innerText = `Pin #${pin.index}`;
+                document.getElementById('input-name').value = pin.name;
+                document.getElementById('input-phone').value = pin.phone;
+                document.getElementById('input-notes').value = pin.notes;
+                document.getElementById('btn-delete').classList.remove('hidden');
+            } else {
+                currentFormData = { priority: 'Normal', status: 'Active', role: 'Owner', phase: 'ST', photo: null };
+                document.getElementById('modal-title').innerText = "Specify Lead Pin";
+                document.getElementById('modal-subtitle').innerText = `Pin #${pins.length + 1}`;
+                document.getElementById('input-name').value = '';
+                document.getElementById('input-phone').value = '';
+                document.getElementById('input-notes').value = '';
+                document.getElementById('btn-delete').classList.add('hidden');
+            }
+
+            setPriority(currentFormData.priority);
+            setStatus(currentFormData.status);
+            document.getElementById('input-role').value = currentFormData.role;
+            document.getElementById('input-phase').value = currentFormData.phase;
+            renderPhoto();
+            updatePreview();
+            validatePhone();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        function setPriority(label) {
+            currentFormData.priority = label;
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.toggle('border-slate-900', btn.id === `prio-${label}`);
+                btn.classList.toggle('ring-2', btn.id === `prio-${label}`);
+                btn.classList.toggle('scale-105', btn.id === `prio-${label}`);
+                btn.classList.toggle('opacity-100', btn.id === `prio-${label}`);
+                btn.classList.toggle('opacity-60', btn.id !== `prio-${label}`);
+            });
+            updatePreview();
+        }
+
+        function setStatus(label) {
+            currentFormData.status = label;
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                const active = btn.id === `status-${label}`;
+                btn.className = `status-btn flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${active ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-500 border-slate-200'}`;
+            });
+            updatePreview();
+        }
+
+        function validatePhone() {
+            const val = document.getElementById('input-phone').value;
+            const isInvalid = val.length > 0 && !/^05\d{8}$/.test(val);
+            document.getElementById('phone-error').classList.toggle('hidden', !isInvalid);
+            const container = document.getElementById('phone-container');
+            container.classList.toggle('border-red-400', isInvalid);
+            container.classList.toggle('bg-red-50', isInvalid);
+        }
+
+        function updatePreview() {
+            const role = document.getElementById('input-role').value;
+            const phase = document.getElementById('input-phase').value;
+            const prio = currentFormData.priority;
+            const status = currentFormData.status;
+            const index = editingId ? pins.find(p => p.id === editingId).index : pins.length + 1;
+
+            const previewDiv = document.getElementById('modal-preview-pin');
+            previewDiv.innerHTML = createPinHTML({ role, priority: prio, phase, status, index, id: 'preview' }, 40, false);
+            lucide.createIcons();
+        }
+
+        function simulateUpload() {
+            currentFormData.photo = `https://picsum.photos/seed/${Math.random()}/400/300`;
+            renderPhoto();
+        }
+
+        function renderPhoto() {
+            const container = document.getElementById('photo-container');
+            if (currentFormData.photo) {
+                container.innerHTML = `
+                    <div class="relative rounded-xl overflow-hidden group">
+                        <img src="${currentFormData.photo}" class="w-full h-40 object-cover" />
+                        <button onclick="removePhoto()" class="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>`;
+            } else {
+                container.innerHTML = `
+                    <button onclick="simulateUpload()" class="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center text-slate-400 hover:bg-slate-50 transition-colors">
+                        <i data-lucide="camera" class="w-8 h-8"></i>
+                        <span class="text-[10px] font-black uppercase mt-2">Capture or Upload</span>
+                    </button>`;
+            }
+            lucide.createIcons();
+        }
+
+        function removePhoto() {
+            currentFormData.photo = null;
+            renderPhoto();
+        }
+
+        function handleSave() {
+            const name = document.getElementById('input-name').value;
+            const phone = document.getElementById('input-phone').value;
+            const notes = document.getElementById('input-notes').value;
+            const role = document.getElementById('input-role').value;
+            const phase = document.getElementById('input-phase').value;
+
+            const pinData = {
+                ...currentFormData,
+                name, phone, notes, role, phase
+            };
+
+            if (editingId) {
+                const idx = pins.findIndex(p => p.id === editingId);
+                pins[idx] = { ...pinData, id: editingId, x: pins[idx].x, y: pins[idx].y, index: pins[idx].index };
+            } else {
+                pins.push({
+                    ...pinData,
+                    id: Date.now(),
+                    x: selectedLocation.x,
+                    y: selectedLocation.y,
+                    index: pins.length + 1
+                });
+            }
+
+            renderPins();
+            closeModal();
+        }
+
+        function handleDelete() {
+            pins = pins.filter(p => p.id !== editingId);
+            renderPins();
+            closeModal();
+        }
+
+        function renderPins() {
+            const layer = document.getElementById('pins-layer');
+            layer.innerHTML = '';
+            pins.forEach(pin => {
+                const pinEl = document.createElement('div');
+                pinEl.className = 'absolute pin-container';
+                pinEl.style.left = `${pin.x}%`;
+                pinEl.style.top = `${pin.y}%`;
+                pinEl.onclick = (e) => { e.stopPropagation(); openModal(pin.id); };
+                pinEl.innerHTML = createPinHTML(pin);
+                layer.appendChild(pinEl);
+            });
+            lucide.createIcons();
+        }
+
+        function createPinHTML(pin, size = 32, withTooltip = true) {
+            const prioObj = priorities.find(p => p.label === pin.priority);
+            const roleObj = roles.find(r => r.label === pin.role);
+            const isClosed = pin.status === 'Closed';
+            const isOnHold = pin.status === 'On Hold';
+
+            return `
+                <div class="relative flex items-center justify-center">
+                    ${withTooltip ? `
+                    <div class="tooltip">
+                        <div class="flex items-center gap-2 mb-1 border-b border-slate-700 pb-1">
+                            <span style="color: ${prioObj.color}">●</span>
+                            <span class="font-bold uppercase tracking-wider">${pin.priority}</span>
+                        </div>
+                        <p class="opacity-80 font-medium">${pin.role} • ${pin.phase}</p>
+                        <p class="mt-1 font-bold">${pin.status}</p>
+                    </div>` : ''}
+                    
+                    <div class="absolute -left-6 bg-white border border-slate-200 text-slate-900 font-black text-[10px] px-1 rounded shadow-sm">#${pin.index}</div>
+                    
+                    <div class="p-2 rounded-full shadow-lg flex items-center justify-center ${isOnHold ? 'status-onhold' : ''} ${isClosed ? 'status-closed' : ''}" 
+                         style="background-color: ${prioObj.color}; color: white; border: 2px solid transparent;">
+                        <i data-lucide="${roleObj.icon}" class="w-5 h-5" fill="currentColor"></i>
+                    </div>
+                    
+                    <div class="absolute -top-1 -right-4 bg-slate-900 text-white text-[10px] font-black px-1 rounded border border-white shadow-sm">${pin.phase}</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

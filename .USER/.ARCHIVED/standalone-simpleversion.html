@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Studiø Field Prospecting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; background: #fff; }
+        h1, h2, .serif { font-family: 'Playfair Display', serif; }
+
+        #map { height: 100vh; width: 100vw; z-index: 1; background: #f8f8f8; cursor: crosshair; }
+
+        .fab {
+            position: fixed; bottom: 30px; left: 24px; width: 64px; height: 64px;
+            background: black; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 100;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .modal-content {
+            background: white; width: 100%; max-width: 450px;
+            max-height: 85vh; border-radius: 24px; overflow-y: auto;
+            position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .photo-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;
+        }
+
+        .photo-preview {
+            width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px;
+            background: #f0f0f0; border: 1px solid #eee;
+        }
+
+        .pin-label {
+            background: white; color: black; border: 1px solid black;
+            border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: 600;
+        }
+
+        .pin-container {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .pin-container:hover {
+            z-index: 50;
+            transform: scale(1.1);
+        }
+
+        .tooltip {
+            display: none;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            background: #0f172a;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            z-index: 60;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pin-container:hover .tooltip {
+            display: block;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .status-closed { opacity: 0.5; filter: grayscale(0.2); }
+        .status-onhold { border: 2px dashed white !important; }
+
+        .leaflet-control-zoom { display: none !important; }
+        .leaflet-routing-container { display: none !important; } 
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <button class="fab" id="addPinBtn">
+        <i data-lucide="map-pin"></i>
+    </button>
+
+    <div class="fixed top-6 left-6 right-6 z-[100] flex justify-between items-start pointer-events-none">
+        <div class="bg-white p-5 rounded-2xl shadow-2xl pointer-events-auto border border-gray-100 flex items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold italic leading-tight">Studiø Field</h1>
+                <div id="sessionStats" class="text-[10px] text-gray-400 uppercase tracking-tighter mt-0.5">
+                    Standby • 0 Leads • 0.0km
+                </div>
+            </div>
+            <div class="h-8 w-[1px] bg-gray-100"></div>
+            <button id="toggleSessionBtn" class="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-xs font-bold transition-all active:scale-95">
+                <i id="sessionIcon" data-lucide="play" class="w-3 h-3 fill-current"></i>
+                <span id="sessionText">START SESSION</span>
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <button id="simToggleBtn" class="bg-white px-4 py-3 rounded-2xl shadow-xl pointer-events-auto border border-gray-100 text-[10px] font-black tracking-tighter flex items-center gap-2 transition-colors">
+                <div id="simIndicator" class="w-2 h-2 rounded-full bg-gray-300"></div>
+                SIM MODE
+            </button>
+            <button id="exportBtn" class="bg-white p-4 rounded-2xl shadow-xl pointer-events-auto border border-gray-100 hover:bg-gray-50 transition-colors">
+                <i data-lucide="share-2" class="w-5 h-5"></i>
+            </button>
+            <button id="centerBtn" class="bg-white p-4 rounded-2xl shadow-xl pointer-events-auto border border-gray-100 hover:bg-gray-50 active:bg-gray-200">
+                <i data-lucide="navigation" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 bg-gray-50 border-b flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div id="modal-preview-pin"></div>
+                    <div>
+                        <h3 id="modal-title" class="text-lg font-bold text-gray-900">Specify Lead Pin</h3>
+                        <p id="modal-subtitle" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">New Entry</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x"></i></button>
+            </div>
+
+            <div class="p-6 space-y-5 overflow-y-auto flex-1 custom-scroll">
+                <input type="hidden" id="currentPinId">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Urgency (Pin Color)</label>
+                    <div class="grid grid-cols-4 gap-2" id="priority-options"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Workflow Status</label>
+                    <div class="flex gap-2" id="status-options"></div>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-2xl space-y-4 border border-gray-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-gray-400 uppercase">Role (Icon)</label>
+                            <select id="contactRole" onchange="updatePreview()" class="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none"></select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black text-gray-400 uppercase">Phase (Label)</label>
+                            <select id="projectPhase" onchange="updatePreview()" class="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none"></select>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-black text-gray-400 uppercase">Contact Name</label>
+                        <input type="text" id="contactName" placeholder="Name..." class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none">
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-black text-gray-400 uppercase">Saudi Phone</label>
+                            <span id="phone-error" class="text-[10px] text-red-500 font-bold hidden">INVALID FORMAT</span>
+                        </div>
+                        <div id="phone-container" class="flex items-center bg-white border border-gray-200 rounded-lg px-3 transition-colors">
+                            <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+                            <input type="text" id="contactPhone" oninput="validatePhone()" placeholder="05XXXXXXXX" class="w-full p-2.5 bg-transparent text-sm outline-none font-mono">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Site Documentation</label>
+                    <div id="photo-container">
+                        <label class="w-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:bg-gray-50 transition-colors">
+                            <i data-lucide="camera" class="w-8 h-8 text-gray-300 mb-2"></i>
+                            <span class="text-xs text-gray-400">Capture Site Photo</span>
+                            <input type="file" id="photoInput" multiple accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                    <div id="photoPreviewContainer" class="photo-grid"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Observation Notes</label>
+                    <textarea id="siteNotes" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none h-24 resize-none focus:bg-white transition-colors" placeholder="Specific site requirements..."></textarea>
+                </div>
+            </div>
+
+            <div class="p-4 bg-gray-50 border-t flex items-center gap-3">
+                <button id="btn-delete" onclick="deletePin()" class="hidden p-3 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors">
+                    <i data-lucide="trash-2"></i>
+                </button>
+                <button onclick="closeModal()" class="flex-1 py-3 text-xs font-black uppercase text-gray-400 hover:text-gray-600 transition-colors">Cancel</button>
+                <button onclick="saveLead(event)" class="flex-[2] py-4 bg-gray-900 text-white rounded-xl text-xs font-black uppercase tracking-[0.2em] shadow-xl hover:bg-gray-800 transition-all active:scale-95">Update Record</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="exportModal" class="modal-overlay">
+        <div class="modal-content p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold italic">Session Data</h2>
+                <button onclick="document.getElementById('exportModal').style.display='none'" class="p-2"><i data-lucide="x"></i></button>
+            </div>
+            <div id="analyticsSummary" class="bg-gray-50 p-5 rounded-2xl mb-6 text-sm font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border border-gray-100 text-gray-600"></div>
+            <button id="copyMarkdownBtn" class="w-full p-5 bg-black text-white rounded-2xl font-bold flex items-center justify-center gap-3">
+                <i data-lucide="copy" class="w-5 h-5"></i> Copy Markdown Table
+            </button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    
+    <script>
+        let map, userMarker, pathPolyline, routingControl;
+        let isRecording = false;
+        let isSimulationMode = false;
+        let pins = []; 
+        let pathPoints = []; 
+        let userLocation = null;
+        let totalDistance = 0;
+        let watchId = null;
+        let currentFormData = { priority: 'Normal', status: 'Active', role: 'Owner', phase: 'ST' };
+
+        const priorities = [
+            { label: 'Critical', color: '#ef4444' },
+            { label: 'High', color: '#f97316' },
+            { label: 'Normal', color: '#3b82f6' },
+            { label: 'Low', color: '#94a3b8' }
+        ];
+
+        const roles = [
+            { label: 'Owner', icon: 'star' },
+            { label: 'Client', icon: 'star' },
+            { label: 'Consultant', icon: 'square' },
+            { label: 'Contractor', icon: 'triangle' },
+            { label: 'Foreman', icon: 'circle' }
+        ];
+
+        const phases = ['ST', 'INT', 'FD', 'EX', 'CL'];
+        const statuses = ['New', 'Active', 'On Hold', 'Closed'];
+
+        window.onload = function() {
+            lucide.createIcons();
+            initMap();
+            initFormOptions();
+            
+            document.getElementById('centerBtn').onclick = () => { if (!isSimulationMode) requestLocation(); };
+            document.getElementById('toggleSessionBtn').onclick = toggleSession;
+            document.getElementById('simToggleBtn').onclick = toggleSimulation;
+            document.getElementById('addPinBtn').onclick = dropPinAtUser;
+            document.getElementById('photoInput').onchange = handlePhotos;
+            document.getElementById('exportBtn').onclick = showExport;
+            document.getElementById('copyMarkdownBtn').onclick = copyMarkdown;
+
+            map.on('click', (e) => {
+                if (isSimulationMode) calculateSimulatedRoute(e.latlng.lat, e.latlng.lng);
+            });
+
+            requestLocation();
+        };
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false, maxZoom: 22 }).setView([24.7136, 46.6753], 15);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO', maxZoom: 22 }).addTo(map);
+            pathPolyline = L.polyline([], { color: '#007AFF', weight: 5, opacity: 0.8, lineCap: 'round' }).addTo(map);
+        }
+
+        function toggleSimulation() {
+            isSimulationMode = !isSimulationMode;
+            const btn = document.getElementById('simToggleBtn');
+            const dot = document.getElementById('simIndicator');
+            
+            if (isSimulationMode) {
+                if (watchId) navigator.geolocation.clearWatch(watchId);
+                btn.classList.add('bg-black', 'text-white');
+                dot.classList.replace('bg-gray-300', 'bg-green-400');
+            } else {
+                btn.classList.remove('bg-black', 'text-white');
+                dot.classList.replace('bg-green-400', 'bg-gray-300');
+                if (routingControl) { map.removeControl(routingControl); routingControl = null; }
+                requestLocation();
+            }
+        }
+
+        function calculateSimulatedRoute(lat, lng) {
+            if (!userLocation) {
+                updateLocation({ coords: { latitude: lat, longitude: lng } });
+                return;
+            }
+
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [L.latLng(userLocation[0], userLocation[1]), L.latLng(lat, lng)],
+                routeWhileDragging: false,
+                addWaypoints: false,
+                createMarker: () => null,
+                lineOptions: { styles: [{ color: 'transparent', opacity: 0, weight: 0 }] },
+                show: false,
+                fitSelectedRoutes: false
+            });
+
+            routingControl.on('routesfound', (e) => {
+                const coordinates = e.routes[0].coordinates;
+                animateRoute(coordinates);
+            });
+
+            routingControl.addTo(map);
+        }
+
+        async function animateRoute(coordinates) {
+            if (!coordinates || coordinates.length === 0) return;
+            
+            const stepSize = Math.max(1, Math.ceil(coordinates.length / 40));
+            
+            for (let i = 0; i < coordinates.length; i += stepSize) {
+                const point = coordinates[i];
+                // Update user location state
+                const currentPos = [point.lat, point.lng];
+                
+                // If recording, we must push EVERY segment coordinate to the path 
+                // to prevent straight lines between sparse animation frames
+                if (isRecording) {
+                    pathPoints.push(currentPos);
+                    pathPolyline.setLatLngs(pathPoints);
+                    
+                    if (pathPoints.length > 1) {
+                        const prev = pathPoints[pathPoints.length - 2];
+                        totalDistance += map.distance(prev, currentPos) / 1000;
+                        updateStats();
+                    }
+                }
+                
+                // Update marker visually
+                if (!userMarker) {
+                    userMarker = L.circleMarker(currentPos, { radius: 10, fillColor: "#007AFF", color: "white", weight: 4, fillOpacity: 1 }).addTo(map);
+                } else {
+                    userMarker.setLatLng(currentPos);
+                }
+                userLocation = currentPos;
+
+                await new Promise(r => setTimeout(r, 20));
+            }
+
+            // Ensure we hit the exact final coordinate
+            const final = coordinates[coordinates.length - 1];
+            userLocation = [final.lat, final.lng];
+            userMarker.setLatLng(userLocation);
+            if (isRecording) {
+                pathPoints.push(userLocation);
+                pathPolyline.setLatLngs(pathPoints);
+            }
+        }
+
+        function updateLocation(position) {
+            const { latitude, longitude } = position.coords;
+            const prevLoc = userLocation;
+            userLocation = [latitude, longitude];
+
+            if (!userMarker) {
+                userMarker = L.circleMarker(userLocation, { radius: 10, fillColor: "#007AFF", color: "white", weight: 4, fillOpacity: 1 }).addTo(map);
+                map.flyTo(userLocation, 17);
+            } else {
+                userMarker.setLatLng(userLocation);
+            }
+
+            if (isRecording) {
+                pathPoints.push(userLocation);
+                pathPolyline.setLatLngs(pathPoints);
+                if (prevLoc) totalDistance += map.distance(prevLoc, userLocation) / 1000;
+                updateStats();
+            }
+        }
+
+        function toggleSession() {
+            isRecording = !isRecording;
+            const icon = document.getElementById('sessionIcon');
+            const text = document.getElementById('sessionText');
+            const btn = document.getElementById('toggleSessionBtn');
+
+            if (isRecording) {
+                pathPoints = userLocation ? [userLocation] : [];
+                totalDistance = 0;
+                pathPolyline.setLatLngs(pathPoints);
+                btn.classList.replace('bg-black', 'bg-red-500');
+                text.innerText = "STOP SESSION";
+                icon.setAttribute('data-lucide', 'square');
+            } else {
+                btn.classList.replace('bg-red-500', 'bg-black');
+                text.innerText = "START SESSION";
+                icon.setAttribute('data-lucide', 'play');
+                showExport();
+            }
+            lucide.createIcons();
+            updateStats();
+        }
+
+        function handleGPSError(err) { if (!isSimulationMode) console.warn("GPS:", err.message); }
+
+        function requestLocation() {
+            if (isSimulationMode || !navigator.geolocation) return;
+            const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+            navigator.geolocation.getCurrentPosition(updateLocation, handleGPSError, options);
+            if (watchId) navigator.geolocation.clearWatch(watchId);
+            watchId = navigator.geolocation.watchPosition(updateLocation, handleGPSError, options);
+        }
+
+        function dropPinAtUser() {
+            if (!userLocation) return;
+            const pinId = Date.now();
+            const newPin = {
+                id: pinId, lat: userLocation[0], lng: userLocation[1],
+                index: pins.length + 1, priority: 'Normal', status: 'Active',
+                role: 'Owner', phase: 'ST', data: { name: '', phone: '', notes: '', photos: [] }
+            };
+            pins.push(newPin);
+            renderPin(newPin);
+            openForm(pinId);
+            updateStats();
+        }
+
+        function renderPin(pinObj) {
+            const marker = L.marker([pinObj.lat, pinObj.lng], {
+                icon: L.divIcon({
+                    className: 'pin-container',
+                    html: createPinHTML(pinObj),
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                })
+            }).addTo(map);
+            marker.on('click', () => openForm(pinObj.id));
+            pinObj.marker = marker;
+            setTimeout(() => lucide.createIcons(), 0);
+        }
+
+        function createPinHTML(pin, size = 24, withTooltip = true) {
+            const prioObj = priorities.find(p => p.label === pin.priority);
+            const roleObj = roles.find(r => r.label === pin.role);
+            const isClosed = pin.status === 'Closed';
+            const isOnHold = pin.status === 'On Hold';
+
+            return `
+                <div class="relative flex items-center justify-center">
+                    ${withTooltip ? `
+                    <div class="tooltip">
+                        <div class="flex items-center gap-2 mb-1 border-b border-slate-700 pb-1">
+                            <span style="color: ${prioObj.color}">●</span>
+                            <span class="font-bold uppercase tracking-wider">${pin.priority}</span>
+                        </div>
+                        <p class="opacity-80 font-medium">${pin.role} • ${pin.phase}</p>
+                        <p class="mt-1 font-bold">${pin.status}</p>
+                    </div>` : ''}
+                    <div class="absolute -left-5 bg-white border border-gray-200 text-gray-900 font-black text-[9px] px-0.5 rounded shadow-sm">#${pin.index}</div>
+                    <div class="p-1.5 rounded-full shadow-lg flex items-center justify-center ${isOnHold ? 'status-onhold' : ''} ${isClosed ? 'status-closed' : ''}" 
+                         style="background-color: ${prioObj.color}; color: white; border: 2px solid white;">
+                        <i data-lucide="${roleObj.icon}" class="w-4 h-4" fill="currentColor"></i>
+                    </div>
+                    <div class="absolute -top-0.5 -right-3 bg-gray-900 text-white text-[9px] font-black px-0.5 rounded border border-white shadow-sm">${pin.phase}</div>
+                </div>
+            `;
+        }
+
+        function initFormOptions() {
+            const prioContainer = document.getElementById('priority-options');
+            priorities.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = `priority-btn py-2 rounded-lg text-[10px] font-black transition-all border-2 border-transparent opacity-60 text-white`;
+                btn.style.backgroundColor = p.color;
+                btn.innerText = p.label.toUpperCase();
+                btn.onclick = (e) => { e.preventDefault(); setPriority(p.label); };
+                btn.id = `prio-${p.label}`;
+                prioContainer.appendChild(btn);
+            });
+
+            const statusContainer = document.getElementById('status-options');
+            statuses.forEach(s => {
+                const btn = document.createElement('button');
+                btn.className = `status-btn flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all bg-white text-gray-500 border-gray-200`;
+                btn.innerText = s;
+                btn.onclick = (e) => { e.preventDefault(); setStatus(s); };
+                btn.id = `status-${s}`;
+                statusContainer.appendChild(btn);
+            });
+
+            const roleSelect = document.getElementById('contactRole');
+            roles.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.label; opt.innerText = r.label;
+                roleSelect.appendChild(opt);
+            });
+
+            const phaseSelect = document.getElementById('projectPhase');
+            phases.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p; opt.innerText = p;
+                phaseSelect.appendChild(opt);
+            });
+        }
+
+        function setPriority(label) {
+            currentFormData.priority = label;
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                const active = btn.id === `prio-${label}`;
+                btn.classList.toggle('border-gray-900', active);
+                btn.classList.toggle('ring-2', active);
+                btn.classList.toggle('opacity-100', active);
+                btn.classList.toggle('opacity-60', !active);
+            });
+            updatePreview();
+        }
+
+        function setStatus(label) {
+            currentFormData.status = label;
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                const active = btn.id === `status-${label}`;
+                btn.className = `status-btn flex-1 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${active ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200'}`;
+            });
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const role = document.getElementById('contactRole').value;
+            const phase = document.getElementById('projectPhase').value;
+            const prio = currentFormData.priority;
+            const status = currentFormData.status;
+            const pinId = document.getElementById('currentPinId').value;
+            const pin = pins.find(p => p.id == pinId);
+            const index = pin ? pin.index : pins.length + 1;
+
+            const previewDiv = document.getElementById('modal-preview-pin');
+            previewDiv.innerHTML = createPinHTML({ role, priority: prio, phase, status, index, id: 'preview' }, 40, false);
+            lucide.createIcons();
+        }
+
+        function validatePhone() {
+            const val = document.getElementById('contactPhone').value;
+            const isInvalid = val.length > 0 && !/^05\d{8}$/.test(val);
+            document.getElementById('phone-error').classList.toggle('hidden', !isInvalid);
+            const container = document.getElementById('phone-container');
+            container.classList.toggle('border-red-400', isInvalid);
+            container.classList.toggle('bg-red-50', isInvalid);
+        }
+
+        function openForm(id) {
+            const pin = pins.find(p => p.id === id);
+            const isNew = !pin.data.name && !pin.data.phone;
+            document.getElementById('currentPinId').value = id;
+            document.getElementById('modal-title').innerText = isNew ? "Specify Lead Pin" : "Edit Pin Details";
+            document.getElementById('modal-subtitle').innerText = `Pin #${pin.index}`;
+            document.getElementById('contactName').value = pin.data.name;
+            document.getElementById('contactPhone').value = pin.data.phone;
+            document.getElementById('siteNotes').value = pin.data.notes;
+            document.getElementById('btn-delete').classList.toggle('hidden', isNew);
+            setPriority(pin.priority);
+            setStatus(pin.status);
+            document.getElementById('contactRole').value = pin.role;
+            document.getElementById('projectPhase').value = pin.phase;
+            const container = document.getElementById('photoPreviewContainer');
+            container.innerHTML = '';
+            pin.data.photos.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src; img.className = 'photo-preview';
+                container.appendChild(img);
+            });
+            validatePhone();
+            updatePreview();
+            document.getElementById('formModal').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
+
+        function saveLead(e) {
+            if (e) e.preventDefault();
+            const id = parseInt(document.getElementById('currentPinId').value);
+            const idx = pins.findIndex(p => p.id === id);
+            pins[idx].priority = currentFormData.priority;
+            pins[idx].status = currentFormData.status;
+            pins[idx].role = document.getElementById('contactRole').value;
+            pins[idx].phase = document.getElementById('projectPhase').value;
+            pins[idx].data = {
+                ...pins[idx].data,
+                name: document.getElementById('contactName').value,
+                phone: document.getElementById('contactPhone').value,
+                notes: document.getElementById('siteNotes').value
+            };
+            if (pins[idx].marker) map.removeLayer(pins[idx].marker);
+            renderPin(pins[idx]);
+            closeModal();
+            updateStats();
+        }
+
+        function deletePin() {
+            const id = parseInt(document.getElementById('currentPinId').value);
+            const idx = pins.findIndex(p => p.id === id);
+            if (pins[idx].marker) map.removeLayer(pins[idx].marker);
+            pins.splice(idx, 1);
+            pins.forEach((p, i) => {
+                p.index = i + 1;
+                if (p.marker) { map.removeLayer(p.marker); renderPin(p); }
+            });
+            closeModal();
+            updateStats();
+        }
+
+        function handlePhotos(e) {
+            const files = Array.from(e.target.files);
+            const id = parseInt(document.getElementById('currentPinId').value);
+            const pin = pins.find(p => p.id === id);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    pin.data.photos.push(event.target.result);
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.className = 'photo-preview';
+                    document.getElementById('photoPreviewContainer').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('sessionStats').innerText = `${isRecording ? 'Recording' : 'Standby'} • ${pins.length} Leads • ${totalDistance.toFixed(1)}km`;
+        }
+
+        function showExport() {
+            let text = `Field Report:\nTotal Leads: ${pins.length}\nDistance: ${totalDistance.toFixed(2)} km\n`;
+            pins.forEach((p, i) => { text += `${i+1}. ${p.data.name || 'N/A'} [${p.priority}] - ${p.status}\n`; });
+            document.getElementById('analyticsSummary').innerText = text;
+            document.getElementById('exportModal').style.display = 'flex';
+        }
+
+        function copyMarkdown() {
+            let md = `### Field Session Report\n| # | Lead | Role | Phase | Priority | Status | Location |\n|---|---|---|---|---|---|---|\n`;
+            pins.forEach((p, i) => {
+                md += `| ${i+1} | ${p.data.name || '-'} | ${p.role} | ${p.phase} | ${p.priority} | ${p.status} | [Map](https://www.google.com/maps?q=${p.lat},${p.lng}) |\n`;
+            });
+            navigator.clipboard.writeText(md).then(() => alert("Markdown report copied!"));
+        }
+    </script>
+</body>
+</html>

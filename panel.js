@@ -584,7 +584,16 @@ const PanelComponent = {
         // Inject HTML
         const container = document.createElement('div');
         container.innerHTML = this.getTemplate();
-        document.body.appendChild(container.firstElementChild);
+        
+        // Append ALL elements from template (panel + modals)
+        let elementCount = 0;
+        while (container.firstElementChild) {
+            const el = container.firstElementChild;
+            document.body.appendChild(el);
+            elementCount++;
+            console.log(`📦 Appended element ${elementCount}:`, el.id || el.tagName);
+        }
+        console.log(`✅ Total elements appended: ${elementCount}`);
 
         // Cache element references
         this.cacheElements();
@@ -679,6 +688,14 @@ const PanelComponent = {
         const previousTab = this.state.currentTab;
         
         console.log(`🔄 Switching from ${previousTab} to ${tab}`);
+        
+        // BLOCK SWITCHING TO REC/PLAN IF LIVE IS ACTIVE
+        if (window.LiveProspect && window.LiveProspect.isActive && window.LiveProspect.isActive()) {
+            if (tab === 'planner' || tab === 'recorder') {
+                console.log('🚫 Cannot switch to ' + tab + ' - Live session is active');
+                return; // Block the switch
+            }
+        }
         
         // COMPLETE ISOLATION: Clean up previous tab before switching
         if (previousTab === 'planner' && tab !== 'planner') {

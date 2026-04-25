@@ -65,7 +65,8 @@ const LiveProspect = (() => {
         window.LiveProspect = { openContactModal, openLeadForm, removePhoto,
             startSession, stopSession, capturePin, closeLeadForm, saveLeadForm,
             triggerPhotoUpload, onPhotosSelected, closeContactModal,
-            deleteStation, deleteSession, init };
+            deleteStation, deleteSession, _registerHistoryStation, init,
+            isActive: () => isActive };
     }
 
     // ─── Inject FAB + photo input at body level (avoids overflow-hidden clipping) ─
@@ -200,6 +201,11 @@ const LiveProspect = (() => {
             pathCoords   = (s.pathCoords || []).map(p => L.latLng(p.lat, p.lng));
             isActive     = true;
 
+            // Hide the global carMarker (used by Planner/Recorder)
+            if (window.carMarker) {
+                window.carMarker.setOpacity(0);
+            }
+
             // Restore path on map
             if (pathCoords.length > 1) {
                 pathLine = L.polyline(pathCoords, { color:'#000', weight:3, opacity:0.35, lineCap:'round' }).addTo(map);
@@ -225,6 +231,9 @@ const LiveProspect = (() => {
             refreshStationList();
             sessionTimer = setInterval(tickTimer, 1000);
 
+            // Disable Rec/Plan tab buttons
+            _updateTabButtonStates();
+
             console.log('♻️ LiveProspect session restored');
         } catch (e) {
             localStorage.removeItem(ACTIVE_KEY);
@@ -243,6 +252,14 @@ const LiveProspect = (() => {
         pathCoords   = [];
         lastPos      = null;
         pathLine     = null;
+
+        // Hide the global carMarker (used by Planner/Recorder)
+        if (window.carMarker) {
+            window.carMarker.setOpacity(0);
+        }
+
+        // Disable Rec/Plan tab buttons visually
+        _updateTabButtonStates();
 
         hide('live-start-btn');
         show('live-stop-btn');
@@ -271,11 +288,52 @@ const LiveProspect = (() => {
         persistSessionToHistory();
         localStorage.removeItem(ACTIVE_KEY);
 
+        // Hide the red car
+        if (userDot) {
+            map.removeLayer(userDot);
+            userDot = null;
+        }
+
+        // Re-enable Rec/Plan tab buttons
+        _updateTabButtonStates();
+
         show('live-start-btn');
         hide('live-stop-btn');
         hide('live-fab');
 
         console.log('🔴 LiveProspect session stopped');
+    }
+
+    // ─── Update tab button states ─────────────────────────────────────────────
+    function _updateTabButtonStates() {
+        const plannerBtn = $('btn-planner');
+        const recorderBtn = $('btn-recorder');
+        
+        if (isActive) {
+            // Disable Rec/Plan buttons
+            if (plannerBtn) {
+                plannerBtn.style.opacity = '0.3';
+                plannerBtn.style.cursor = 'not-allowed';
+                plannerBtn.style.pointerEvents = 'none';
+            }
+            if (recorderBtn) {
+                recorderBtn.style.opacity = '0.3';
+                recorderBtn.style.cursor = 'not-allowed';
+                recorderBtn.style.pointerEvents = 'none';
+            }
+        } else {
+            // Re-enable Rec/Plan buttons
+            if (plannerBtn) {
+                plannerBtn.style.opacity = '';
+                plannerBtn.style.cursor = '';
+                plannerBtn.style.pointerEvents = '';
+            }
+            if (recorderBtn) {
+                recorderBtn.style.opacity = '';
+                recorderBtn.style.cursor = '';
+                recorderBtn.style.pointerEvents = '';
+            }
+        }
     }
 
     // ─── GPS ──────────────────────────────────────────────────────────────────
@@ -298,11 +356,23 @@ const LiveProspect = (() => {
     function onGPS(pos) {
         const pt = L.latLng(pos.coords.latitude, pos.coords.longitude);
 
-        // User dot
+        // User car marker (red)
         if (!userDot) {
+            const carHtml = `
+                <div class="car-icon-inner" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="40" height="40" viewBox="0 0 100 100" style="display: block;">
+                        <rect x="25" y="10" width="50" height="80" rx="15" fill="#ef4444" />
+                        <rect x="30" y="22" width="40" height="18" rx="4" fill="#7f1d1d" />
+                        <rect x="30" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
+                        <rect x="62" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
+                    </svg>
+                </div>
+            `;
             const icon = L.divIcon({
-                html: '<div style="width:14px;height:14px;background:#000;border:3px solid #fff;border-radius:50%;box-shadow:0 0 8px rgba(0,0,0,.35);"></div>',
-                className: '', iconSize:[14,14], iconAnchor:[7,7]
+                html: carHtml,
+                className: 'car-marker-icon', 
+                iconSize: [40, 40], 
+                iconAnchor: [20, 20]
             });
             userDot = L.marker(pt, { icon, zIndexOffset:900 }).addTo(map);
         } else {
@@ -395,6 +465,11 @@ const LiveProspect = (() => {
         const st = stations.find(s => s.id === stationId);
         if (!st) return;
         const overlay = $('live-lead-overlay');
+        if (!overlay) {
+            console.error('❌ live-lead-overlay element not found in DOM!');
+            console.log('Available elements:', Array.from(document.querySelectorAll('[id^="live-"]')).map(e => e.id));
+            return;
+        }
         overlay.setAttribute('data-station-id', stationId);
         const c = st.contact || {};
         $('lead-name').value   = c.name   || '';
@@ -430,6 +505,11 @@ const LiveProspect = (() => {
         _refreshPin(st);
         saveActiveState();
         closeLeadForm();
+        
+        // If this was a history edit, call the temp save handler
+        if (window._tempHistorySave) {
+            window._tempHistorySave();
+        }
     }
 
     // ─── Photos ───────────────────────────────────────────────────────────────
@@ -530,6 +610,11 @@ const LiveProspect = (() => {
         if (!st) return;
         const c = st.contact || {};
         const overlay = $('live-contact-overlay');
+        if (!overlay) {
+            console.error('❌ live-contact-overlay element not found in DOM!');
+            console.log('Available elements:', Array.from(document.querySelectorAll('[id^="live-"]')).map(e => e.id));
+            return;
+        }
         overlay.setAttribute('data-station-id', stId);
         $('contact-modal-num').textContent    = `Site #${st.number}`;
         $('contact-modal-addr').textContent   = st.address || '—';
@@ -582,6 +667,58 @@ const LiveProspect = (() => {
             .filter(s => s.id !== sessionId);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(allSessions));
         if (window.renderHistoryPanel) window.renderHistoryPanel();
+    }
+
+    // ─── Register history station for editing ─────────────────────────────────
+    function _registerHistoryStation(station, session, stationIndex) {
+        // Temporarily add this station to the active stations array so openLeadForm can find it
+        // This allows editing contacts from history
+        const tempStation = {
+            ...station,
+            id: station.id || Date.now(),
+            number: station.number || stationIndex + 1,
+            _isHistoryEdit: true,
+            _historySession: session,
+            _historyIndex: stationIndex
+        };
+        
+        // Check if already in stations array
+        const existing = stations.find(s => s.id === tempStation.id);
+        if (!existing) {
+            stations.push(tempStation);
+        }
+        
+        // Set up the save handler
+        window._tempHistorySave = () => {
+            // Update the history session
+            if (session && session.stations && session.stations[stationIndex]) {
+                const updated = stations.find(s => s.id === tempStation.id);
+                if (updated) {
+                    session.stations[stationIndex] = { 
+                        ...updated,
+                        // Remove temp flags
+                        _isHistoryEdit: undefined,
+                        _historySession: undefined,
+                        _historyIndex: undefined
+                    };
+                    // Persist to localStorage
+                    const allSessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    const idx = allSessions.findIndex(s => s.id === session.id);
+                    if (idx !== -1) {
+                        allSessions[idx] = session;
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(allSessions));
+                    }
+                    if (window.renderHistoryPanel) window.renderHistoryPanel();
+                }
+            }
+            // Remove temp station from active array
+            const tempIdx = stations.findIndex(s => s.id === tempStation.id);
+            if (tempIdx !== -1) stations.splice(tempIdx, 1);
+            window._tempHistorySave = null;
+        };
+        
+        // Open the lead form
+        openLeadForm(tempStation.id);
     }
 
     // ─── Stats ────────────────────────────────────────────────────────────────
@@ -673,7 +810,8 @@ const LiveProspect = (() => {
         openLeadForm, closeLeadForm, saveLeadForm,
         triggerPhotoUpload, onPhotosSelected, removePhoto,
         openContactModal, closeContactModal,
-        deleteStation, deleteSession
+        deleteStation, deleteSession, _registerHistoryStation,
+        isActive: () => isActive
     };
 
 })();
