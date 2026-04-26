@@ -4,23 +4,29 @@
  * even when the browser tab is backgrounded on mobile.
  */
 
-const CACHE_NAME = 'streettrack-v1';
+const CACHE_NAME = 'streettrack-v2.1';
 const PRECACHE = [
     '/',
     '/index.html',
     '/panel.js',
     '/live.js',
-    '/history-modal.js'
+    '/leads.js',
+    '/leads.css'
 ];
 
 // ── Install: pre-cache app shell ─────────────────────────────────────────────
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(PRECACHE).catch(err => {
-                console.warn('[SW] Pre-cache partial failure:', err);
-            });
-        })
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                return cache.addAll(PRECACHE).catch(err => {
+                    console.warn('[SW] Pre-cache partial failure:', err);
+                });
+            })
+            .catch(err => {
+                console.error('[SW] Cache open failed:', err);
+                // Continue anyway - app will work without cache
+            })
     );
     self.skipWaiting();
 });
@@ -28,9 +34,17 @@ self.addEventListener('install', event => {
 // ── Activate: clean old caches ───────────────────────────────────────────────
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-        )
+        caches.keys()
+            .then(keys =>
+                Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => 
+                    caches.delete(k).catch(err => {
+                        console.warn('[SW] Failed to delete cache:', k, err);
+                    })
+                ))
+            )
+            .catch(err => {
+                console.error('[SW] Cache cleanup failed:', err);
+            })
     );
     self.clients.claim();
 });
@@ -51,16 +65,25 @@ self.addEventListener('fetch', event => {
     }
 
     event.respondWith(
-        caches.match(event.request).then(cached => {
-            return cached || fetch(event.request).then(response => {
-                // Cache successful GET responses for app files
-                if (event.request.method === 'GET' && response.status === 200) {
-                    const clone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-                }
-                return response;
-            }).catch(() => cached); // offline fallback
-        })
+        caches.match(event.request)
+            .then(cached => {
+                return cached || fetch(event.request).then(response => {
+                    // Cache successful GET responses for app files
+                    if (event.request.method === 'GET' && response.status === 200) {
+                        const clone = response.clone();
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.put(event.request, clone))
+                            .catch(err => {
+                                console.warn('[SW] Cache put failed:', err);
+                            });
+                    }
+                    return response;
+                }).catch(() => cached); // offline fallback
+            })
+            .catch(err => {
+                console.warn('[SW] Fetch failed:', err);
+                return fetch(event.request); // fallback to network
+            })
     );
 });
 

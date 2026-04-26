@@ -6,10 +6,7 @@
 const PanelComponent = {
     // State
     state: {
-        isExpanded: true,
-        currentTab: 'recorder',
-        isRecording: false,
-        isDriving: false
+        isExpanded: true
     },
 
     // References
@@ -39,167 +36,21 @@ const PanelComponent = {
                     <!-- Collapsible Content -->
                     <div id="panel-content" class="content-visible">
                     
-                        <!-- Segmented Control (3 Tabs) -->
+                        <!-- Single Tab Header (Session Logs) -->
                         <div class="px-5 pb-5">
-                            <div class="flex bg-black/[0.04] p-1.5 rounded-[1.6rem] relative h-12 items-center">
-                                <button id="btn-recorder" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-active">
-                                    Rec
-                                </button>
-                                <button id="btn-history" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
-                                    History
-                                </button>
-                                <button id="btn-session-data" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
-                                    Data
-                                </button>
-                                <!-- Animated Pill Indicator -->
-                                <div id="pill" class="absolute h-[38px] w-[calc(33.333%-8px)] bg-black rounded-[1.3rem] transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-xl shadow-black/30" style="transform: translateX(0px);"></div>
+                            <div class="flex bg-black/[0.04] p-1.5 rounded-[1.6rem] relative h-12 items-center justify-center">
+                                <span class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-black">Session Logs</span>
                             </div>
                         </div>
 
                         <!-- Tab Content Area -->
                         <div class="px-8 pb-10">
 
-                            <!-- RECORDER TAB -->
-                            <div id="view-recorder" class="space-y-6">
-                                <!-- Status (text only, no badge) -->
-                                <div class="flex items-center justify-between">
-                                    <span id="record-badge" class="text-[9px] font-bold text-black/30 uppercase tracking-widest">Ready</span>
-                                    <div id="recording-indicator" class="hidden flex items-center gap-1.5">
-                                        <div class="w-1.5 h-1.5 bg-black rounded-full recording-pulse"></div>
-                                        <span class="text-[9px] font-bold text-black/50 uppercase tracking-widest">Recording</span>
-                                    </div>
-                                </div>
-
-                                <!-- Auto Focus Toggle -->
-                                <div class="flex items-center justify-between py-2 border-b border-black/[0.05]">
-                                    <span class="text-[10px] font-bold text-black/40 uppercase tracking-widest">Auto Focus</span>
-                                    <input type="checkbox" id="auto-focus-toggle" class="w-3.5 h-3.5 rounded accent-black">
-                                </div>
-
-                                <!-- Recording Stats -->
-                                <div class="py-4 bg-black/[0.02] rounded-[1.5rem] border border-black/[0.04] text-center space-y-3">
-                                    <div class="flex justify-center gap-8">
-                                        <div class="text-center">
-                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Distance</p>
-                                            <p id="rec-distance" class="text-sm font-bold text-black">0.0 km</p>
-                                        </div>
-                                        <div class="w-[1px] bg-black/5"></div>
-                                        <div class="text-center">
-                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Time</p>
-                                            <p id="rec-duration" class="text-sm font-bold text-black">00:00</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-center gap-8">
-                                        <div class="text-center">
-                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">New</p>
-                                            <p id="rec-streets" class="text-sm font-bold text-black">0</p>
-                                        </div>
-                                        <div class="w-[1px] bg-black/5"></div>
-                                        <div class="text-center">
-                                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Revisit</p>
-                                            <p id="rec-revisited" class="text-sm font-bold text-black">0</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Control Buttons — circular -->
-                                <div class="flex items-center justify-center gap-4">
-                                    <button id="start-recording-btn" title="Start Recording"
-                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    </button>
-                                    <button id="stop-recording-btn" disabled title="Stop Recording"
-                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
-                                    </button>
-                                    <button id="reset-recorder-btn" title="Reset"
-                                        class="w-12 h-12 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                                            <path d="M21 3v5h-5"/>
-                                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                                            <path d="M3 21v-5h5"/>
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <!-- Save Session — full-width pill button -->
-                                <button id="save-session-btn" disabled
-                                    class="hidden w-full bg-black text-white text-[11px] font-bold py-3 rounded-full hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all uppercase tracking-widest">
-                                    Save Session
-                                </button>
-                            </div>
-
-                            <!-- HISTORY TAB -->
-                            <div id="view-history" class="hidden">
-                                <!-- Header with Action Buttons -->
-                                <div class="flex items-center justify-between mb-5">
-                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Recent Logs</span>
-                                    <div class="flex items-center gap-2">
-                                        <!-- Stop Recording Button (only visible when recording) -->
-                                        <button id="history-stop-btn" onclick="window.stopRecording && window.stopRecording()" title="Stop Recording"
-                                            class="hidden w-9 h-9 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
-                                        </button>
-                                        <!-- Maximize Button -->
-                                        <button onclick="HistoryModal.open()" title="Maximize"
-                                            class="w-9 h-9 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Tree-structured history list -->
-                                <div id="main-history-list" class="space-y-4 max-h-[340px] overflow-y-auto custom-scrollbar pr-1">
-                                    <p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>
-                                </div>
-                            </div>
-
-                            <!-- SESSION DATA TAB -->
-                            <div id="view-session-data" class="hidden">
-                                <!-- Header with Export Buttons -->
-                                <div class="flex items-center justify-between mb-5">
-                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Session Leads</span>
-                                    <div class="flex items-center gap-2">
-                                        <!-- Export PDF Button -->
-                                        <button id="export-pdf-btn" onclick="window.ExportUtils && window.ExportUtils.exportToPDF()" title="Export to PDF"
-                                            class="w-9 h-9 flex items-center justify-center bg-red-600 text-white rounded-full hover:bg-red-700 transition-all">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                <polyline points="14 2 14 8 20 8"/>
-                                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                                <polyline points="10 9 9 9 8 9"/>
-                                            </svg>
-                                        </button>
-                                        <!-- Export Markdown Button -->
-                                        <button id="export-md-btn" onclick="window.ExportUtils && window.ExportUtils.exportToMarkdown()" title="Export to Markdown"
-                                            class="w-9 h-9 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                                <polyline points="14 2 14 8 20 8"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Lead List -->
-                                <div id="session-leads-list" class="space-y-3 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
-                                    <p class="text-[10px] text-black/25 italic text-center py-8">No leads captured yet<br><span class="text-[9px]">Click the pin button to add leads</span></p>
-                                </div>
-                                
-                                <!-- Session Summary -->
-                                <div class="mt-5 p-4 bg-black/[0.02] rounded-xl border border-black/[0.04]">
-                                    <div class="flex justify-between text-xs mb-2">
-                                        <span class="text-black/40 uppercase tracking-wider font-bold text-[10px]">Total Leads</span>
-                                        <span id="total-leads-count" class="font-bold text-black">0</span>
-                                    </div>
-                                    <div class="flex justify-between text-xs">
-                                        <span class="text-black/40 uppercase tracking-wider font-bold text-[10px]">Distance</span>
-                                        <span id="session-distance" class="font-bold text-black">0.0 km</span>
-                                    </div>
+                            <!-- SESSION LOGS TAB (Always Visible) -->
+                            <div id="view-session-data" class="space-y-5">
+                                <!-- Session History List -->
+                                <div id="session-leads-list" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                                    <p class="text-[10px] text-black/25 italic text-center py-8">No sessions recorded yet</p>
                                 </div>
                             </div>
 
@@ -212,138 +63,9 @@ const PanelComponent = {
             <!-- LIVE PROSPECTING OVERLAYS (appended to body layer) -->
             <!-- ═══════════════════════════════════════════════════ -->
 
-            <!-- FAB and photo input are injected into <body> by live.js to avoid overflow-hidden clipping -->
-
-            <!-- Lead Entry Form Modal -->
-            <div id="live-lead-overlay" class="hidden fixed inset-0 z-[3000] bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-                <div class="live-modal-card scale-95 transition-transform duration-200 bg-white w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-y-auto max-h-[92vh]">
-
-                    <!-- Modal header -->
-                    <div class="sticky top-0 bg-white px-6 pt-5 pb-4 border-b border-black/[0.06] flex items-center justify-between z-10">
-                        <div>
-                            <p class="text-[8px] font-black text-black/25 uppercase tracking-widest mb-0.5">New Lead</p>
-                            <div class="flex items-center gap-2">
-                                <span id="lead-site-num" class="text-sm font-bold text-black">#—</span>
-                                <span class="text-[9px] text-black/30">·</span>
-                                <span id="lead-site-addr" class="text-[10px] text-black/40 italic truncate max-w-[180px]">Resolving…</span>
-                            </div>
-                        </div>
-                        <button onclick="LiveProspect.closeLeadForm()" class="w-9 h-9 flex items-center justify-center rounded-full bg-black/[0.04] text-black/40 hover:bg-black/10 transition-all">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                    </div>
-
-                    <!-- Form body -->
-                    <div class="px-6 py-5 space-y-4">
-
-                        <!-- Name -->
-                        <div>
-                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Contact Name</label>
-                            <input id="lead-name" type="text" placeholder="e.g. Mohammed Al-Hassan"
-                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
-                        </div>
-
-                        <!-- Role -->
-                        <div>
-                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Role</label>
-                            <select id="lead-role"
-                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all text-black appearance-none">
-                                <option value="">Select role…</option>
-                                <option value="Foreman">Foreman</option>
-                                <option value="Architect">Architect</option>
-                                <option value="Engineer">Engineer</option>
-                                <option value="Owner">Owner / Developer</option>
-                                <option value="Contractor">Contractor</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-
-                        <!-- Phones -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Phone</label>
-                                <input id="lead-phone" type="tel" placeholder="+966 5x …"
-                                    class="w-full px-3 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Phone 2</label>
-                                <input id="lead-phone2" type="tel" placeholder="optional"
-                                    class="w-full px-3 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20">
-                            </div>
-                        </div>
-
-                        <!-- Notes -->
-                        <div>
-                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-1.5">Notes</label>
-                            <textarea id="lead-notes" rows="3" placeholder="Project type, stage, materials interest…"
-                                class="w-full px-4 py-3 text-sm bg-black/[0.03] border border-black/[0.06] rounded-xl focus:outline-none focus:border-black/20 transition-all placeholder:text-black/20 resize-none"></textarea>
-                        </div>
-
-                        <!-- Photos -->
-                        <div>
-                            <label class="text-[9px] font-bold text-black/30 uppercase tracking-widest block mb-2">Site Photos</label>
-                            <div class="flex gap-2 overflow-x-auto pb-1" id="lead-photo-thumbs"></div>
-                            <button onclick="LiveProspect.triggerPhotoUpload()"
-                                class="mt-2 w-full py-3 border border-dashed border-black/15 rounded-xl text-[10px] font-bold text-black/30 uppercase tracking-widest hover:border-black/30 hover:text-black/50 transition-all flex items-center justify-center gap-2">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                                Camera / Gallery
-                            </button>
-                        </div>
-
-                        <!-- Save -->
-                        <button onclick="LiveProspect.saveLeadForm()"
-                            class="w-full py-3.5 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-full hover:bg-black/80 transition-all active:scale-95 shadow-lg shadow-black/20">
-                            Save Lead
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact View Modal -->
-            <div id="live-contact-overlay" class="hidden fixed inset-0 z-[3000] bg-black/30 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-                <div class="live-modal-card scale-95 transition-transform duration-200 bg-white w-full sm:max-w-sm rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-y-auto max-h-[85vh]">
-
-                    <div class="sticky top-0 bg-white px-6 pt-5 pb-4 border-b border-black/[0.06] flex items-center justify-between z-10">
-                        <div>
-                            <p class="text-[8px] font-black text-black/25 uppercase tracking-widest mb-0.5">Contact</p>
-                            <span id="contact-modal-num" class="text-sm font-bold text-black">Site #—</span>
-                        </div>
-                        <button onclick="LiveProspect.closeContactModal()" class="w-9 h-9 flex items-center justify-center rounded-full bg-black/[0.04] text-black/40 hover:bg-black/10 transition-all">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                    </div>
-
-                    <div class="px-6 py-5 space-y-4">
-                        <p id="contact-modal-addr" class="text-[10px] text-black/40 italic -mt-1"></p>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Name</p>
-                                <p id="contact-modal-name" class="text-sm font-bold text-black"></p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Role</p>
-                                <p id="contact-modal-role" class="text-sm font-bold text-black"></p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Phone</p>
-                                <p id="contact-modal-phone" class="text-sm font-bold text-black"></p>
-                            </div>
-                            <div>
-                                <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Phone 2</p>
-                                <p id="contact-modal-phone2" class="text-sm font-bold text-black"></p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Notes</p>
-                            <p id="contact-modal-notes" class="text-xs text-black/60 leading-relaxed"></p>
-                        </div>
-
-                        <div id="contact-modal-photos" class="hidden space-y-2"></div>
-                    </div>
-                </div>
-            </div>
+            <!-- OLD MODALS REMOVED - Will be replaced with new pin system -->
+            <!-- FAB button, Lead Entry Form Modal, and Contact View Modal have been disabled -->
+            <!-- New implementation coming soon -->
         `;
     },
 
@@ -515,9 +237,7 @@ const PanelComponent = {
             const el = container.firstElementChild;
             document.body.appendChild(el);
             elementCount++;
-            console.log(` Appended element ${elementCount}:`, el.id || el.tagName);
         }
-        console.log(` Total elements appended: ${elementCount}`);
 
         // Cache element references
         this.cacheElements();
@@ -530,21 +250,14 @@ const PanelComponent = {
             window.LiveProspect.init(map);
         }
 
-        console.log(' Panel initialized');
-
         return this.getAPI();
     },
 
     // Cache DOM elements
     cacheElements() {
         const ids = [
-            'main-panel', 'panel-header', 'panel-content', 'pill',
-            'btn-recorder', 'btn-history', 'btn-session-data',
-            'view-recorder', 'view-history', 'view-session-data',
-            'record-badge', 'recording-indicator', 'auto-focus-toggle',
-            'rec-distance', 'rec-duration', 'rec-streets', 'rec-revisited',
-            'start-recording-btn', 'stop-recording-btn', 'reset-recorder-btn', 'save-session-btn',
-            'history-list', 'history-stop-btn',
+            'main-panel', 'panel-header', 'panel-content',
+            'view-session-data',
             'session-leads-list', 'total-leads-count', 'session-distance',
             'export-pdf-btn', 'export-md-btn'
         ];
@@ -560,17 +273,6 @@ const PanelComponent = {
 
         // Header collapse/expand
         el['panel-header'].onclick = () => this.togglePanel();
-
-        // Tab switching
-        el['btn-recorder'].onclick = () => this.switchTab('recorder');
-        el['btn-history'].onclick = () => this.switchTab('history');
-        el['btn-session-data'].onclick = () => this.switchTab('session-data');
-
-        // Recorder controls
-        el['start-recording-btn'].onclick = () => window.startRecording && window.startRecording();
-        el['stop-recording-btn'].onclick = () => window.stopRecording && window.stopRecording();
-        el['reset-recorder-btn'].onclick = () => window.resetRecorder && window.resetRecorder();
-        el['save-session-btn'].onclick = () => window.saveSession && window.saveSession();
     },
 
     // Toggle panel expand/collapse
@@ -593,212 +295,44 @@ const PanelComponent = {
         }
     },
 
-    // Switch between tabs
-    switchTab(tab) {
-        const previousTab = this.state.currentTab;
-        
-        console.log(`🔄 Switching from ${previousTab} to ${tab}`);
-        
-        // SIMPLIFIED: 3 tabs now (recorder, history, session-data)
-        
-        // Clean up previous tab before switching
-        if (previousTab === 'recorder' && tab !== 'recorder') {
-            // DON'T reset recorder when switching to other tabs
-            if (tab === 'history' || tab === 'session-data') {
-                console.log(` Switching to ${tab} tab - keeping recorder session active`);
-            }
-        }
-        
-        if (previousTab === 'history' && tab !== 'history') {
-            // DON'T reset recorder when switching from history
-            if (tab === 'recorder' || tab === 'session-data') {
-                console.log(` Switching to ${tab} tab - keeping session active`);
-            }
-        }
-        
-        if (previousTab === 'session-data' && tab !== 'session-data') {
-            // DON'T reset when switching from session-data
-            console.log(` Switching to ${tab} tab - keeping session active`);
-        }
-
-        // Update tab state
-        this.state.currentTab = tab;
-        this.state.isRecording = false;
-        
-        // Update global currentMode for backward compatibility
-        if (window.currentMode !== undefined) {
-            window.currentMode = tab;
-        }
-        
-        // AUTO-ENABLE simulation mode when switching to recorder tab
-        if (tab === 'recorder' && window.simulationMode !== undefined) {
-            window.simulationMode = true;
-            window.isLocationFound = true; // Mark as found so recording can start
-            
-            // Enable the start recording button
-            const startBtn = this.refs.elements['start-recording-btn'];
-            if (startBtn) {
-                startBtn.disabled = false;
-            }
-            
-            // Update badge to match original "Sim Ready" state (text only, no color badge)
-            const badge = this.refs.elements['record-badge'];
-            if (badge) {
-                badge.innerText = 'Sim Ready';
-            }
-            
-            console.log(' Recorder tab ready - simulation mode enabled');
-        }
-        
-        // Render session data when switching to session-data tab
-        if (tab === 'session-data' && window.LeadManager) {
-            console.log(' Switching to session-data tab, rendering leads...');
-            setTimeout(() => window.LeadManager.renderLeadsList(), 50);
-        }
-        
-        const el = this.refs.elements;
-
-        // Hide all views
-        el['view-recorder'].classList.add('hidden');
-        el['view-history'].classList.add('hidden');
-        el['view-session-data'].classList.add('hidden');
-
-        // Reset all buttons
-        el['btn-recorder'].classList.remove('tab-active');
-        el['btn-recorder'].classList.add('tab-inactive');
-        el['btn-history'].classList.remove('tab-active');
-        el['btn-history'].classList.add('tab-inactive');
-        el['btn-session-data'].classList.remove('tab-active');
-        el['btn-session-data'].classList.add('tab-inactive');
-
-        // Calculate pill position (33.333% width for 3 tabs)
-        const offset = el['btn-recorder'].offsetWidth;
-        const positions = {
-            'recorder': 0,
-            'history': offset,
-            'session-data': offset * 2
-        };
-
-        // Animate pill and show active tab
-        el['pill'].style.transform = `translateX(${positions[tab]}px)`;
-        el[`view-${tab}`].classList.remove('hidden');
-        el[`btn-${tab}`].classList.remove('tab-inactive');
-        el[`btn-${tab}`].classList.add('tab-active');
-
-        // Render history panel when switching to history tab
-        if (tab === 'history' && window.renderHistoryPanel) {
-            console.log(' Switching to history tab, rendering history...');
-            setTimeout(() => window.renderHistoryPanel(), 50);
-        }
-
-        // Update map cursor
-        if (this.refs.map) {
-            this.refs.map.getContainer().style.cursor = 'default';
-        }
-
-        // Ensure panel is expanded when switching
-        if (!this.state.isExpanded) {
-            this.togglePanel();
-        }
-    },
-    
-    // Show/hide history recording controls
-    showHistoryRecordingControls() {
-        const stopBtn = this.refs.elements['history-stop-btn'];
-        if (stopBtn) {
-            stopBtn.classList.remove('hidden');
-        }
-    },
-    
-    hideHistoryRecordingControls() {
-        const stopBtn = this.refs.elements['history-stop-btn'];
-        if (stopBtn) {
-            stopBtn.classList.add('hidden');
-        }
-    },
-
     // Public API
     getAPI() {
         return {
             toggle: () => this.togglePanel(),
-            switchTab: (tab) => this.switchTab(tab),
-            showHistoryRecordingControls: () => this.showHistoryRecordingControls(),
-            hideHistoryRecordingControls: () => this.hideHistoryRecordingControls(),
-            updateBadge: (text, color) => {
-                this.refs.elements['trip-badge'].innerText = text;
-                // Update colors as needed
-            },
-            updateStats: (stats) => {
-                if (stats.distance) this.refs.elements['rec-distance'].innerText = `${stats.distance} km`;
-                if (stats.duration) this.refs.elements['rec-duration'].innerText = stats.duration;
-                if (stats.streets) this.refs.elements['rec-streets'].innerText = stats.streets;
-                if (stats.revisited) this.refs.elements['rec-revisited'].innerText = stats.revisited;
-            },
-            setDrivingState: (isDriving) => {
-                this.state.isDriving = isDriving;
-                // Sync with global state
-                if (window.isDriving !== undefined) window.isDriving = isDriving;
-            },
-            setRecordingState: (isRecording) => {
-                this.state.isRecording = isRecording;
-                // Sync with global state
-                if (window.isRecording !== undefined) window.isRecording = isRecording;
-            },
             getElements: () => this.refs.elements,
-            getState: () => this.state
+            getState: () => this.state,
+            refreshSessionLogs: () => this.refreshSessionLogs()
         };
+    },
+    
+    // Refresh session logs display
+    refreshSessionLogs() {
+        // Call the existing renderHistoryPanel function
+        if (window.renderHistoryPanel) {
+            window.renderHistoryPanel();
+        }
     }
 };
 
 // Export initialization function (no config needed)
 window.initPanel = (map) => PanelComponent.init(map);
 
-
-// Expose panel functions globally for onclick handlers
-// Note: Most functions already exist in index.html, so we just ensure they're accessible
-
-// Only wrap handleStart since it's a special case
-window.handleStart = function() {
-    if (window.startTrip) window.startTrip();
-};
-
-// All other functions are already defined in index.html:
-// - togglePause (already exists)
-// - endTrip (already exists)
-// - resetPlanner (already exists)
-// - startEditingPoint (already exists)
-// - startRecording (already exists)
-// - stopRecording (already exists)
-// - resetRecorder (already exists)
-// - saveSession (already exists)
-
-
-
 // Recording History Management
 let currentHistoryPage = 0;
 const ITEMS_PER_PAGE = 1;
 
 window.renderHistoryPanel = function() {
-    console.log('🎨 RENDER HISTORY PANEL CALLED');
-    
-    const historyList = document.getElementById('main-history-list');
+    const historyList = document.getElementById('session-leads-list');
     if (!historyList) {
-        console.log(' main-history-list element not found');
         return;
     }
-
-    console.log('window.recordingHistory:', window.recordingHistory);
 
     // Only show recording sessions (not trip plans)
     const allHistory = (window.recordingHistory || [])
         .sort((a, b) => b.id - a.id);
 
-    console.log('📊 Total recording sessions:', allHistory.length);
-    console.log('allHistory:', allHistory);
-
     if (allHistory.length === 0) {
-        historyList.innerHTML = '<p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>';
-        console.log(' No recording sessions to display');
+        historyList.innerHTML = '<p class="text-[10px] font-bold text-black/25 uppercase tracking-[0.25em] text-center py-8">No sessions recorded yet</p>';
         return;
     }
 
@@ -807,12 +341,9 @@ window.renderHistoryPanel = function() {
     const endIdx = startIdx + ITEMS_PER_PAGE;
     const pageItems = allHistory.slice(startIdx, endIdx);
 
-    console.log(`📄 Showing page ${currentHistoryPage + 1}/${totalPages}, items:`, pageItems.length);
-
     historyList.innerHTML = '';
 
     pageItems.forEach(item => {
-        console.log('🔨 Rendering recording session:', item);
         renderRecordingItem(item, historyList);
     });
 
@@ -855,59 +386,62 @@ function renderRecordingItem(session, container) {
     const item = document.createElement('div');
     item.className = 'group';
     
-    const date = new Date(session.timestamp);
-    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const date = new Date(session.date || session.timestamp);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     
     const durationMin = Math.floor(session.duration / 60);
     const durationSec = session.duration % 60;
-    const durationStr = `${durationMin}:${durationSec.toString().padStart(2, '0')}`;
     
-    // Create unique ID for this map
-    const mapId = `route-preview-${session.id}`;
+    // Get location name from start address or coordinates
+    let locationName = 'Unknown Location';
+    if (session.startAddress) {
+        locationName = session.startAddress.split(',')[0]; // First part of address
+    } else if (session.path && session.path.length > 0) {
+        const lat = session.path[0].lat.toFixed(2);
+        const lng = session.path[0].lng.toFixed(2);
+        locationName = `Location ${lat}, ${lng}`;
+    }
     
     item.innerHTML = `
-        <!-- Session header row -->
-        <div onclick="toggleRecordingDetails(${session.id})"
-            class="flex items-center justify-between p-4 bg-black/[0.03] rounded-2xl hover:bg-black/[0.05] transition-all cursor-pointer">
+        <!-- Session Header -->
+        <div class="flex items-center justify-between p-4 bg-black/[0.03] rounded-2xl hover:bg-black/[0.05] transition-all cursor-pointer">
             <div class="flex items-center gap-3">
-                <div class="w-1.5 h-1.5 rounded-full bg-black/40 flex-shrink-0"></div>
+                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
                 <div>
-                    <p class="text-xs font-bold text-black">${dateStr}</p>
-                    <p class="text-[9px] font-bold text-black/30 uppercase tracking-widest mt-0.5">${session.distance.toFixed(1)} km · ${durationStr} min</p>
+                    <p class="text-xs font-bold text-black">${dateStr}, ${locationName}</p>
+                    <p class="text-[9px] font-medium text-black/30 uppercase">${session.distance.toFixed(1)} KM • ${durationMin} MIN</p>
                 </div>
             </div>
-            <svg id="chevron-${session.id}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-black/20 transition-transform duration-300">
+            <svg class="chevron-icon opacity-20 transition-transform duration-300" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                 <path d="M9 18l6-6-6-6"/>
             </svg>
         </div>
-
-        <!-- Expandable detail tree -->
-        <div id="details-${session.id}" class="hidden mt-2 ml-4 pl-4 border-l border-black/[0.06] space-y-1 pb-2">
-            <!-- Route mini-map -->
-            <div id="${mapId}" class="w-full h-28 rounded-xl bg-black/[0.03] overflow-hidden mb-3 relative">
-                <div class="absolute inset-0 flex items-center justify-center text-[9px] text-black/25">Loading map...</div>
-            </div>
-
-            <!-- Start / End nodes -->
+        
+        <!-- Expandable Details -->
+        <div class="session-details hidden mt-2 ml-4 pl-4 border-l border-black/[0.05] space-y-3">
+            <!-- Start Location -->
             <div class="flex items-start gap-3 py-1">
                 <div class="w-1.5 h-1.5 rounded-full bg-black/30 mt-1 flex-shrink-0"></div>
                 <div>
                     <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-0.5">Start</p>
-                    <p class="text-[11px] font-semibold text-black truncate">${session.startAddress}</p>
+                    <p class="text-[11px] font-semibold text-black">${session.startAddress || 'Start Location'}</p>
                     <p class="text-[9px] text-black/30">${timeStr}</p>
                 </div>
             </div>
+            
             <div class="w-[1px] h-3 bg-black/[0.06] ml-[2px]"></div>
+            
+            <!-- End Location -->
             <div class="flex items-start gap-3 py-1">
                 <div class="w-1.5 h-1.5 rounded-full bg-black mt-1 flex-shrink-0"></div>
                 <div>
                     <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-0.5">End</p>
-                    <p class="text-[11px] font-semibold text-black truncate">${session.endAddress}</p>
+                    <p class="text-[11px] font-semibold text-black">${session.endAddress || 'End Location'}</p>
                 </div>
             </div>
-
-            <!-- Stations tree -->
+            
+            <!-- Sites Visited -->
             ${session.stations && session.stations.length > 0 ? `
                 <div class="mt-3 pt-3 border-t border-black/[0.05] space-y-3">
                     <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest">Sites Visited (${session.stations.length})</p>
@@ -918,47 +452,401 @@ function renderRecordingItem(session, container) {
                         const departureStr = departureTime ? departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'In Progress';
                         const sDurationMin = station.duration ? Math.floor(station.duration / 60) : 0;
                         const sDurationSec = station.duration ? station.duration % 60 : 0;
-
+                        
                         return `
                             <div class="flex items-start gap-3">
-                                <span class="text-[9px] font-bold text-black/25 mt-0.5 flex-shrink-0">#${station.number}</span>
+                                <span class="text-[9px] font-bold text-black/25 mt-0.5 flex-shrink-0">#${station.number || idx + 1}</span>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-[11px] font-bold text-black truncate">${station.address}</p>
+                                    <p class="text-[11px] font-bold text-black truncate">${station.address || station.name || 'Unknown Location'}</p>
                                     <p class="text-[9px] text-black/30 italic">${arrivalStr} – ${departureStr} · ${sDurationMin}:${sDurationSec.toString().padStart(2, '0')} min</p>
-                                    <button onclick="addContactToStation(${session.id}, ${idx})"
-                                        class="mt-2 px-3 py-1.5 ${station.contact ? 'bg-black text-white' : 'bg-white border border-black/10 text-black'} rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all">
-                                        ${station.contact ? 'Edit Contact' : 'Add Lead Info'}
-                                    </button>
-                                    ${station.contact ? `<button onclick="viewStationContact(${session.id}, ${idx})"
-                                        class="mt-2 ml-1 px-3 py-1.5 border border-black/10 text-black rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all">
-                                        Show Contact
-                                    </button>` : ''}
-                                    <button onclick="deleteStationFromHistory(${session.id}, ${idx})"
-                                        class="mt-2 ml-1 px-3 py-1.5 border border-black/[0.08] text-black/30 rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all">
-                                        Delete
-                                    </button>
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        ${station.leadId ? `
+                                            <button class="view-lead-btn px-3 py-1.5 bg-black text-white rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black/80 transition-all" data-lead-id="${station.leadId}">
+                                                View Contact
+                                            </button>
+                                        ` : `
+                                            <button class="add-lead-btn px-3 py-1.5 bg-white border border-black/10 rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all" data-station-lat="${station.lat}" data-station-lng="${station.lng}">
+                                                Add Lead Info
+                                            </button>
+                                        `}
+                                        <button class="show-on-map-btn px-3 py-1.5 bg-blue-500 text-white rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-blue-600 transition-all" data-session-id="${session.id}" data-station-index="${idx}">
+                                            📍 Show on Map
+                                        </button>
+                                        <button class="delete-station-btn px-3 py-1.5 border border-black/[0.08] text-black/30 rounded-lg text-[8px] font-bold uppercase tracking-widest hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all" data-session-id="${session.id}" data-station-index="${idx}">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     }).join('<div class="w-[1px] h-2 bg-black/[0.05] ml-[10px]"></div>')}
                 </div>
-            ` : ''}
-
-        <!-- Replay button — circular -->
-            <div class="flex justify-center gap-3 pt-3">
-                <button onclick="replayRecording(${session.id})"
-                    class="w-10 h-10 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all shadow-md" title="Replay Recording">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                </button>
-                <button onclick="deleteSessionFromHistory(${session.id})"
-                    class="w-10 h-10 flex items-center justify-center border border-black/10 text-black/30 rounded-full hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all" title="Delete Session">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-                </button>
-            </div>
+            ` : '<p class="text-[9px] text-black/30 italic mt-3 pt-3 border-t border-black/[0.05]">No sites visited</p>'}
         </div>
     `;
     
     container.appendChild(item);
+    
+    // Add click handler for session header
+    const header = item.querySelector('.flex.items-center.justify-between');
+    const details = item.querySelector('.session-details');
+    const chevron = item.querySelector('.chevron-icon');
+    
+    header.addEventListener('click', () => {
+        const isHidden = details.classList.contains('hidden');
+        details.classList.toggle('hidden');
+        if (chevron) {
+            chevron.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+    });
+    
+    // Add click handlers for "View Contact" buttons
+    const viewLeadButtons = item.querySelectorAll('.view-lead-btn');
+    viewLeadButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const leadId = parseInt(btn.getAttribute('data-lead-id'));
+            if (window.LeadSystem && window.LeadSystem.openLeadDetails) {
+                window.LeadSystem.openLeadDetails(leadId);
+            }
+        });
+    });
+    
+    // Add click handlers for "Add Lead Info" buttons
+    const addLeadButtons = item.querySelectorAll('.add-lead-btn');
+    addLeadButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const lat = parseFloat(btn.getAttribute('data-station-lat'));
+            const lng = parseFloat(btn.getAttribute('data-station-lng'));
+            if (window.LeadSystem && window.LeadSystem.addLeadPin) {
+                window.LeadSystem.addLeadPin(lat, lng);
+            }
+        });
+    });
+    
+    // Add click handlers for "Delete" buttons
+    const deleteButtons = item.querySelectorAll('.delete-station-btn');
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sessionId = parseInt(btn.getAttribute('data-session-id'));
+            const stationIndex = parseInt(btn.getAttribute('data-station-index'));
+            if (confirm('Delete this station?')) {
+                deleteStationFromSession(sessionId, stationIndex);
+            }
+        });
+    });
+    
+    // Add click handlers for "Show on Map" buttons
+    const showOnMapButtons = item.querySelectorAll('.show-on-map-btn');
+    showOnMapButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sessionId = parseInt(btn.getAttribute('data-session-id'));
+            const stationIndex = parseInt(btn.getAttribute('data-station-index'));
+            openStationMapModal(sessionId, stationIndex);
+        });
+    });
+}
+
+// Delete station from session
+function deleteStationFromSession(sessionId, stationIndex) {
+    const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+    if (!session || !session.stations) return;
+    
+    session.stations.splice(stationIndex, 1);
+    
+    // Re-number stations
+    session.stations.forEach((s, i) => {
+        s.number = i + 1;
+    });
+    
+    // Save to localStorage
+    try {
+        localStorage.setItem('lp_sessions', JSON.stringify(window.recordingHistory));
+    } catch (e) {
+        console.error('Failed to save after deleting station:', e);
+    }
+    
+    // Refresh panel
+    window.renderHistoryPanel();
+}
+
+// Open station map modal
+function openStationMapModal(sessionId, stationIndex) {
+    const session = (window.recordingHistory || []).find(s => s.id === sessionId);
+    if (!session || !session.stations || !session.stations[stationIndex]) return;
+    
+    const station = session.stations[stationIndex];
+    const prevStation = stationIndex > 0 ? session.stations[stationIndex - 1] : null;
+    const nextStation = stationIndex < session.stations.length - 1 ? session.stations[stationIndex + 1] : null;
+    
+    // Get lead photos if available
+    let leadPhotos = [];
+    if (station.leadId && window.LeadSystem) {
+        const allPins = window.LeadSystem.getAllPins();
+        const leadPin = allPins.find(p => p.id === station.leadId);
+        if (leadPin && leadPin.images) {
+            leadPhotos = leadPin.images;
+        }
+    }
+    
+    // Create modal if it doesn't exist
+    let modal = document.getElementById('stationMapModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'stationMapModal';
+        modal.className = 'modal-overlay';
+        modal.style.zIndex = '10002'; // Higher than lead details modal
+        modal.innerHTML = `
+            <div class="modal-content flex flex-col" style="max-width: 700px; max-height: 85vh;">
+                <div class="p-6 bg-black/[0.02] border-b border-black/[0.06] flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-black">Station Location</h3>
+                        <p id="station-modal-subtitle" class="text-[10px] font-bold text-black/40 uppercase tracking-widest">Station #1</p>
+                    </div>
+                    <button onclick="closeStationMapModal()" class="w-10 h-10 bg-black/[0.05] text-black rounded-full flex items-center justify-center hover:bg-black/[0.1] transition-all active:scale-90">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto custom-scroll">
+                    <!-- Map Container -->
+                    <div id="station-mini-map" class="w-full h-80 bg-black/[0.03]"></div>
+                    
+                    <!-- Station Details -->
+                    <div id="station-modal-content" class="p-6 space-y-4">
+                        <!-- Content will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Click outside to close
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeStationMapModal();
+            }
+        });
+    }
+    
+    // Update modal content
+    document.getElementById('station-modal-subtitle').innerText = `Station #${station.number || stationIndex + 1}`;
+    
+    const content = document.getElementById('station-modal-content');
+    const arrivalTime = new Date(station.arrivalTime);
+    const departureTime = station.departureTime ? new Date(station.departureTime) : null;
+    const arrivalStr = arrivalTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const departureStr = departureTime ? departureTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'In Progress';
+    const durationMin = station.duration ? Math.floor(station.duration / 60) : 0;
+    const durationSec = station.duration ? station.duration % 60 : 0;
+    
+    content.innerHTML = `
+        <div class="space-y-4">
+            <div>
+                <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-1">Address</p>
+                <p class="font-bold text-black">${station.address || station.name || 'Unknown Location'}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-1">Arrival</p>
+                    <p class="font-bold text-black">${arrivalStr}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-1">Departure</p>
+                    <p class="font-bold text-black">${departureStr}</p>
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-1">Duration</p>
+                <p class="font-bold text-black">${durationMin}:${durationSec.toString().padStart(2, '0')} min</p>
+            </div>
+            
+            ${leadPhotos.length > 0 ? `
+                <div>
+                    <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-2">Photos (${leadPhotos.length})</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        ${leadPhotos.map(img => `
+                            <img src="${img}" class="w-full h-24 object-cover rounded-xl border border-black/10 cursor-pointer hover:opacity-80" onclick="window.open('${img}', '_blank')">
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${prevStation || nextStation ? `
+                <div class="pt-4 border-t border-black/[0.06]">
+                    <p class="text-[10px] font-black text-black/40 uppercase tracking-widest mb-3">Context</p>
+                    <div class="space-y-2">
+                        ${prevStation ? `
+                            <div class="flex items-center gap-2 text-[10px]">
+                                <span class="text-black/40">← Previous:</span>
+                                <span class="font-bold text-black">${prevStation.address || prevStation.name || 'Unknown'}</span>
+                            </div>
+                        ` : ''}
+                        ${nextStation ? `
+                            <div class="flex items-center gap-2 text-[10px]">
+                                <span class="text-black/40">Next →</span>
+                                <span class="font-bold text-black">${nextStation.address || nextStation.name || 'Unknown'}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Initialize map after a short delay
+    setTimeout(() => {
+        initStationMiniMap(station, prevStation, nextStation);
+    }, 100);
+}
+
+// Initialize mini map for station
+function initStationMiniMap(station, prevStation, nextStation) {
+    const mapContainer = document.getElementById('station-mini-map');
+    if (!mapContainer) return;
+    
+    // Remove existing map if any
+    if (window.stationMiniMapInstance) {
+        window.stationMiniMapInstance.remove();
+        window.stationMiniMapInstance = null;
+    }
+    
+    // Create new map
+    const miniMap = L.map('station-mini-map', {
+        zoomControl: true,
+        attributionControl: false
+    }).setView([station.lat, station.lng], 16);
+    
+    // Add tile layer (match main map style)
+    const layerType = window.currentMapLayer || 'default';
+    if (layerType === 'satellite') {
+        L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(miniMap);
+    } else {
+        L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(miniMap);
+    }
+    
+    // Add previous station marker (if exists)
+    if (prevStation) {
+        L.circleMarker([prevStation.lat, prevStation.lng], {
+            radius: 8,
+            fillColor: '#94a3b8',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.6
+        }).addTo(miniMap).bindPopup(`<b>Previous Station</b><br>${prevStation.address || 'Unknown'}`);
+    }
+    
+    // Add current station marker (highlighted)
+    const currentMarker = L.circleMarker([station.lat, station.lng], {
+        radius: 12,
+        fillColor: '#3b82f6',
+        color: '#fff',
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.9
+    }).addTo(miniMap);
+    
+    // Pulsing animation for current station
+    let pulseSize = 12;
+    let growing = true;
+    setInterval(() => {
+        if (growing) {
+            pulseSize += 0.5;
+            if (pulseSize >= 15) growing = false;
+        } else {
+            pulseSize -= 0.5;
+            if (pulseSize <= 12) growing = true;
+        }
+        currentMarker.setRadius(pulseSize);
+    }, 100);
+    
+    currentMarker.bindPopup(`<b>Current Station</b><br>${station.address || station.name || 'Unknown'}`).openPopup();
+    
+    // Add next station marker (if exists)
+    if (nextStation) {
+        L.circleMarker([nextStation.lat, nextStation.lng], {
+            radius: 8,
+            fillColor: '#94a3b8',
+            color: '#fff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.6
+        }).addTo(miniMap).bindPopup(`<b>Next Station</b><br>${nextStation.address || 'Unknown'}`);
+    }
+    
+    // Draw path lines
+    if (prevStation) {
+        L.polyline([
+            [prevStation.lat, prevStation.lng],
+            [station.lat, station.lng]
+        ], {
+            color: '#94a3b8',
+            weight: 3,
+            opacity: 0.5,
+            dashArray: '5, 10'
+        }).addTo(miniMap);
+    }
+    
+    if (nextStation) {
+        L.polyline([
+            [station.lat, station.lng],
+            [nextStation.lat, nextStation.lng]
+        ], {
+            color: '#94a3b8',
+            weight: 3,
+            opacity: 0.5,
+            dashArray: '5, 10'
+        }).addTo(miniMap);
+    }
+    
+    // Fit bounds to show all markers
+    const bounds = [];
+    if (prevStation) bounds.push([prevStation.lat, prevStation.lng]);
+    bounds.push([station.lat, station.lng]);
+    if (nextStation) bounds.push([nextStation.lat, nextStation.lng]);
+    
+    if (bounds.length > 1) {
+        miniMap.fitBounds(bounds, { padding: [50, 50] });
+    }
+    
+    // Store map instance
+    window.stationMiniMapInstance = miniMap;
+}
+
+// Close station map modal
+window.closeStationMapModal = function() {
+    const modal = document.getElementById('stationMapModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Clean up map
+    if (window.stationMiniMapInstance) {
+        window.stationMiniMapInstance.remove();
+        window.stationMiniMapInstance = null;
+    }
+};
+
+// Remove old toggle function - no longer needed
+if (window.toggleSessionDetails) {
+    delete window.toggleSessionDetails;
 }
 
 function initializeRoutePreview(mapId, session) {
@@ -1035,27 +923,9 @@ function initializeRoutePreview(mapId, session) {
     }
 }
 
-window.toggleRecordingDetails = function(sessionId) {
-    const details = document.getElementById(`details-${sessionId}`);
-    const chevron = document.getElementById(`chevron-${sessionId}`);
-    if (details) {
-        const isHidden = details.classList.contains('hidden');
-        details.classList.toggle('hidden');
-        if (chevron) {
-            chevron.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
-        }
-        // Initialize the preview map after expanding
-        if (isHidden) {
-            const mapId = `route-preview-${sessionId}`;
-            const session = (window.recordingHistory || []).find(s => s.id === sessionId);
-            if (session) {
-                setTimeout(() => initializeRoutePreview(mapId, session), 100);
-            }
-        }
-    }
-};
-
 // ── History station CRUD ──────────────────────────────────────────────────────
+// Note: These functions are kept for backward compatibility but may not be used
+// in the new <details>-based UI since stations now link directly to leads
 
 window.addContactToStation = function(sessionId, stationIndex) {
     // Open LiveProspect lead form pre-loaded with this station's data

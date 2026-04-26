@@ -1,245 +1,116 @@
-00:49:24.684 (index):1450 ✅ START RECORDING CALLED
-00:49:24.685 (index):1451 simulationMode: true
-00:49:24.685 (index):1452 isLocationFound: false
-00:49:24.685 (index):1453 navigator.geolocation: Geolocation {}
-00:49:24.685 (index):1468 Checks passed, starting recording...
-00:49:24.686 (index):1482 Recording state set, updating UI...
-00:49:24.686 (index):1514 Recording started (Simulation Mode - Click map to move car)
-00:49:24.686 (index):1515 Now click on the map to simulate car movement!
-00:49:25.415 (index):550  MAP CLICKED at: v {lat: 24.71408860131256, lng: 46.681723594665534}
-00:49:25.415 (index):551 currentMode: recorder
-00:49:25.416 (index):552 simulationMode: true
-00:49:25.416 (index):553 isRecording: true
-00:49:25.416 (index):612 Calling simulateMovement...
-00:49:25.418 (index):907 🎯 SIMPLE simulateMovement called with latlng: v {lat: 24.71408860131256, lng: 46.681723594665534}
-00:49:25.419 (index):1641 ✅ SIMPLE onPositionUpdate - newPoint: v {lat: 24.71408860131256, lng: 46.681723594665534} recordedPath.length: 0
-00:49:25.419 (index):1645 ✅ Added point! recordedPath.length now: 1
-00:49:25.420 (index):1679 ✅ First point added
-00:49:25.866 (index):654 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.71408860131256&lon=46.681723594665534&zoom=18&addressdetails=1".
-getAddressFromCoords @ (index):654
-onMapClick @ (index):632
+11:17:14.389 live.js:118  SW registered http://localhost:8247/
+11:17:14.390 live.js:118  SW registered http://localhost:8247/
+11:17:14.390 leads.js:36 ✅ Map instance connected
+11:17:25.501 (index):1193 ✅ Session started at: v {lat: 24.606356854843774, lng: 46.52765689806091}
+11:17:25.502 (index):1256 ✅ Session started
+11:17:25.978 (index):1243 📍 GPS Update: v {lat: 24.606356854843774, lng: 46.52765689806091} Distance: 0.00 km
+11:17:26.525 (index):1416 🎮 Simulation mode ENABLED
+11:17:28.232 (index):673 🗺️ Map clicked at: v {lat: 24.605293807198198, lng: 46.52169227600098}
+11:17:28.233 (index):686 🎮 Planning route to: v {lat: 24.605293807198198, lng: 46.52169227600098}
+11:17:30.348 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.52765689806091,24.606356854843774;46.52169227600098,24.605293807198198?overview=false&alternatives=true&steps=true&hints=;".
+corslite @ leaflet-routing-machine.js:88
+route @ leaflet-routing-machine.js:17977
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401
 o @ DomEvent.js:108
-00:49:26.094 (index):550  MAP CLICKED at: v {lat: 24.70761700106618, lng: 46.67172431945801}
-00:49:26.095 (index):551 currentMode: recorder
-00:49:26.095 (index):552 simulationMode: true
-00:49:26.095 (index):553 isRecording: true
-00:49:26.095 (index):612 Calling simulateMovement...
-00:49:26.096 (index):907 🎯 SIMPLE simulateMovement called with latlng: v {lat: 24.70761700106618, lng: 46.67172431945801}
-00:49:26.097 (index):939 🗺️ Calculating route from v {lat: 24.71408860131256, lng: 46.681723594665534} to v {lat: 24.70761700106618, lng: 46.67172431945801}
-00:49:26.097 leaflet-routing-machine.js:17932 You are using OSRM's demo server. Please note that it is **NOT SUITABLE FOR PRODUCTION USE**.
-Refer to the demo server's usage policy: https://github.com/Project-OSRM/osrm-backend/wiki/Api-usage-policy
-
-To change, set the serviceUrl option.
-
-Please do not report issues with this server to neither Leaflet Routing Machine or OSRM - it's for
-demo only, and will sometimes not be available, or work in unexpected ways.
-
-Please set up your own OSRM server, or use a paid service provider for production.
-initialize @ leaflet-routing-machine.js:17932
-e @ Class.js:24
-osrmv1 @ leaflet-routing-machine.js:16604
-calculateAndAnimateRoute @ (index):950
-simulateMovement @ (index):935
-onMapClick @ (index):645
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:26.693 (index):654 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.70761700106618&lon=46.67172431945801&zoom=18&addressdetails=1".
-getAddressFromCoords @ (index):654
-onMapClick @ (index):632
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:27.894 (index):550  MAP CLICKED at: v {lat: 24.705667657968885, lng: 46.68185234069824}
-00:49:27.894 (index):551 currentMode: recorder
-00:49:27.894 (index):552 simulationMode: true
-00:49:27.894 (index):553 isRecording: true
-00:49:27.894 (index):612 Calling simulateMovement...
-00:49:27.895 (index):907 🎯 SIMPLE simulateMovement called with latlng: v {lat: 24.705667657968885, lng: 46.68185234069824}
-00:49:27.895 (index):939 🗺️ Calculating route from v {lat: 24.71408860131256, lng: 46.681723594665534} to v {lat: 24.705667657968885, lng: 46.68185234069824}
-00:49:27.896 leaflet-routing-machine.js:17932 You are using OSRM's demo server. Please note that it is **NOT SUITABLE FOR PRODUCTION USE**.
-Refer to the demo server's usage policy: https://github.com/Project-OSRM/osrm-backend/wiki/Api-usage-policy
-
-To change, set the serviceUrl option.
-
-Please do not report issues with this server to neither Leaflet Routing Machine or OSRM - it's for
-demo only, and will sometimes not be available, or work in unexpected ways.
-
-Please set up your own OSRM server, or use a paid service provider for production.
-initialize @ leaflet-routing-machine.js:17932
-e @ Class.js:24
-osrmv1 @ leaflet-routing-machine.js:16604
-calculateAndAnimateRoute @ (index):950
-simulateMovement @ (index):935
-onMapClick @ (index):645
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:28.400 (index):654 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.705667657968885&lon=46.68185234069824&zoom=18&addressdetails=1".
-getAddressFromCoords @ (index):654
-onMapClick @ (index):632
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:32.965 (index):957 📍 Route found with 69 points
-00:49:32.966 (index):984 🎬 Animating along route with 69 points
-00:49:32.967 leaflet-routing-machine.js:15868 Routing error: {status: -3, message: "TypeError: Cannot read properties of undefined (reading 'lat')"}
-defaultErrorHandler @ leaflet-routing-machine.js:15868
-fire @ Events.js:195
-(anonymous) @ leaflet-routing-machine.js:16166
-(anonymous) @ leaflet-routing-machine.js:18004
+11:17:30.997 leads.js:231 🎯 FAB button clicked - addLeadAtMapCenter called
+11:17:30.998 leads.js:245 📍 Using car marker position: v {lat: 24.60523, lng: 46.52146}
+11:17:30.998 leads.js:203 📍 addLeadPin called with: 24.60523 46.52146
+11:17:30.998 leads.js:220 ✅ Pin added to array, total pins: 1
+11:17:31.001 leads.js:223 ✅ Pin rendered on map
+11:17:31.001 leads.js:404 📝 openForm called for pin ID: 1777191450998
+11:17:31.002 leads.js:412 ✅ Pin found: {id: 1777191450998, lat: 24.60523, lng: 46.52146, index: 1, priority: 'Normal', …}
+11:17:31.002 leads.js:421 ✅ formModal element found
+11:17:31.007 leads.js:439 ✅ Form modal displayed
+11:17:31.007 leads.js:226 ✅ Opening form for pin: 1777191450998
+11:17:31.437 (index):1108 📍 Station recorded: {number: 1, lat: 24.60523, lng: 46.52146, address: 'No. 385', arrivalTime: '2026-04-26T08:17:29.774Z', …}
+11:17:31.507 (index):694 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.60523&lon=46.52146&zoom=18&addressdetails=1".
+getAddressFromCoords @ (index):694
+processQueue @ (index):1079
+await in processQueue
+flushRoutes @ (index):1009
+(anonymous) @ (index):977
+_routeDone @ leaflet-routing-machine.js:18053
+(anonymous) @ leaflet-routing-machine.js:17987
 loaded @ leaflet-routing-machine.js:46
 XMLHttpRequest.send
 corslite @ leaflet-routing-machine.js:88
 route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401
 o @ DomEvent.js:108
-00:49:32.967 (index):972 ❌ Routing error: {error: {…}, type: 'routingerror', target: e, sourceTarget: e}
-00:49:32.967 (index):1024 📍 Direct movement to v {lat: 24.70761700106618, lng: 46.67172431945801}
-00:49:32.968 (index):1641 ✅ SIMPLE onPositionUpdate - newPoint: v {lat: 24.70761700106618, lng: 46.67172431945801} recordedPath.length: 1
-00:49:32.968 (index):1645 ✅ Added point! recordedPath.length now: 2
-00:49:32.969 (index):1653 ✅ Drawing segment from v {lat: 24.71408860131256, lng: 46.681723594665534} to v {lat: 24.70761700106618, lng: 46.67172431945801} distance: 1240.1797732388172
-00:49:32.969 (index):1712 DEBUG: drawPathSegment called - start: v {lat: 24.71408860131256, lng: 46.681723594665534} end: v {lat: 24.70761700106618, lng: 46.67172431945801}
-00:49:32.970 (index):1734 DEBUG: Drawing polyline from v {lat: 24.71408860131256, lng: 46.681723594665534} to v {lat: 24.70761700106618, lng: 46.67172431945801} color: #3b82f6
-00:49:33.039 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.681723594665534,24.71408860131256;46.67172431945801,24.70761700106618?overview=false&alternatives=true&steps=true&hints=;".
+11:17:32.223 (index):673 🗺️ Map clicked at: v {lat: 24.607420299002264, lng: 46.52276515960694}
+11:17:32.223 (index):686 🎮 Planning route to: v {lat: 24.607420299002264, lng: 46.52276515960694}
+11:17:32.494 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.52169227600098,24.605293807198198;46.52276515960694,24.607420299002264?overview=false&alternatives=true&steps=true&hints=;".
 corslite @ leaflet-routing-machine.js:88
 route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401
 o @ DomEvent.js:108
-00:49:33.262 (index):550  MAP CLICKED at: v {lat: 24.71545305240017, lng: 46.686444282531745}
-00:49:33.262 (index):551 currentMode: recorder
-00:49:33.262 (index):552 simulationMode: true
-00:49:33.263 (index):553 isRecording: true
-00:49:33.263 (index):612 Calling simulateMovement...
-00:49:33.264 (index):907 🎯 SIMPLE simulateMovement called with latlng: v {lat: 24.71545305240017, lng: 46.686444282531745}
-00:49:33.264 (index):939 🗺️ Calculating route from v {lat: 24.70761700106618, lng: 46.67172431945801} to v {lat: 24.71545305240017, lng: 46.686444282531745}
-00:49:33.265 leaflet-routing-machine.js:17932 You are using OSRM's demo server. Please note that it is **NOT SUITABLE FOR PRODUCTION USE**.
-Refer to the demo server's usage policy: https://github.com/Project-OSRM/osrm-backend/wiki/Api-usage-policy
-
-To change, set the serviceUrl option.
-
-Please do not report issues with this server to neither Leaflet Routing Machine or OSRM - it's for
-demo only, and will sometimes not be available, or work in unexpected ways.
-
-Please set up your own OSRM server, or use a paid service provider for production.
-initialize @ leaflet-routing-machine.js:17932
-e @ Class.js:24
-osrmv1 @ leaflet-routing-machine.js:16604
-calculateAndAnimateRoute @ (index):950
-simulateMovement @ (index):935
-onMapClick @ (index):645
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:33.536 (index):654 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.71545305240017&lon=46.686444282531745&zoom=18&addressdetails=1".
-getAddressFromCoords @ (index):654
-onMapClick @ (index):632
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:33.973 (index):957 📍 Route found with 53 points
-00:49:33.973 (index):984 🎬 Animating along route with 53 points
-00:49:33.974 leaflet-routing-machine.js:15868 Routing error: {status: -3, message: "TypeError: Cannot read properties of undefined (reading 'lat')"}
-defaultErrorHandler @ leaflet-routing-machine.js:15868
-fire @ Events.js:195
-(anonymous) @ leaflet-routing-machine.js:16166
-(anonymous) @ leaflet-routing-machine.js:18004
+11:17:32.949 (index):1108 📍 Station recorded: {number: 2, lat: 24.60729, lng: 46.52283, address: 'No. 98', arrivalTime: '2026-04-26T08:17:32.628Z', …}
+11:17:33.025 (index):694 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.60729&lon=46.52283&zoom=18&addressdetails=1".
+getAddressFromCoords @ (index):694
+processQueue @ (index):1079
+await in processQueue
+flushRoutes @ (index):1009
+(anonymous) @ (index):977
+_routeDone @ leaflet-routing-machine.js:18053
+(anonymous) @ leaflet-routing-machine.js:17987
 loaded @ leaflet-routing-machine.js:46
 XMLHttpRequest.send
 corslite @ leaflet-routing-machine.js:88
 route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401
 o @ DomEvent.js:108
-00:49:33.974 (index):972 ❌ Routing error: {error: {…}, type: 'routingerror', target: e, sourceTarget: e}
-00:49:33.975 (index):1024 📍 Direct movement to v {lat: 24.705667657968885, lng: 46.68185234069824}
-00:49:33.975 (index):1641 ✅ SIMPLE onPositionUpdate - newPoint: v {lat: 24.705667657968885, lng: 46.68185234069824} recordedPath.length: 2
-00:49:33.975 (index):1645 ✅ Added point! recordedPath.length now: 3
-00:49:33.976 (index):1653 ✅ Drawing segment from v {lat: 24.70761700106618, lng: 46.67172431945801} to v {lat: 24.705667657968885, lng: 46.68185234069824} distance: 1045.802848467336
-00:49:33.976 (index):1712 DEBUG: drawPathSegment called - start: v {lat: 24.70761700106618, lng: 46.67172431945801} end: v {lat: 24.705667657968885, lng: 46.68185234069824}
-00:49:33.977 (index):1734 DEBUG: Drawing polyline from v {lat: 24.70761700106618, lng: 46.67172431945801} to v {lat: 24.705667657968885, lng: 46.68185234069824} color: #3b82f6
-00:49:33.999 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.681723594665534,24.71408860131256;46.68185234069824,24.705667657968885?overview=false&alternatives=true&steps=true&hints=;".
+11:17:33.354 leads.js:231 🎯 FAB button clicked - addLeadAtMapCenter called
+11:17:33.354 leads.js:245 📍 Using car marker position: v {lat: 24.60729, lng: 46.52283}
+11:17:33.354 leads.js:203 📍 addLeadPin called with: 24.60729 46.52283
+11:17:33.355 leads.js:220 ✅ Pin added to array, total pins: 2
+11:17:33.357 leads.js:223 ✅ Pin rendered on map
+11:17:33.357 leads.js:404 📝 openForm called for pin ID: 1777191453355
+11:17:33.357 leads.js:412 ✅ Pin found: {id: 1777191453355, lat: 24.60729, lng: 46.52283, index: 2, priority: 'Normal', …}
+11:17:33.357 leads.js:421 ✅ formModal element found
+11:17:33.361 leads.js:439 ✅ Form modal displayed
+11:17:33.362 leads.js:226 ✅ Opening form for pin: 1777191453355
+11:17:37.151 (index):673 🗺️ Map clicked at: v {lat: 24.60624975752711, lng: 46.520190238952644}
+11:17:37.151 (index):686 🎮 Planning route to: v {lat: 24.60624975752711, lng: 46.520190238952644}
+11:17:37.718 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.52276515960694,24.607420299002264;46.520190238952644,24.60624975752711?overview=false&alternatives=true&steps=true&hints=;".
 corslite @ leaflet-routing-machine.js:88
 route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401
 o @ DomEvent.js:108
-00:49:34.999 (index):957 📍 Route found with 76 points
-00:49:35.000 (index):984 🎬 Animating along route with 76 points
-00:49:35.000 leaflet-routing-machine.js:15868 Routing error: {status: -3, message: "TypeError: Cannot read properties of undefined (reading 'lat')"}
-defaultErrorHandler @ leaflet-routing-machine.js:15868
-fire @ Events.js:195
-(anonymous) @ leaflet-routing-machine.js:16166
-(anonymous) @ leaflet-routing-machine.js:18004
+11:17:38.753 (index):1108 📍 Station recorded: {number: 3, lat: 24.60635, lng: 46.52011, address: 'No. 92', arrivalTime: '2026-04-26T08:17:37.949Z', …}
+11:17:38.754 (index):694 Fetch finished loading: GET "https://nominatim.openstreetmap.org/reverse?format=json&lat=24.60635&lon=46.52011&zoom=18&addressdetails=1".
+getAddressFromCoords @ (index):694
+processQueue @ (index):1079
+await in processQueue
+flushRoutes @ (index):1009
+(anonymous) @ (index):977
+_routeDone @ leaflet-routing-machine.js:18053
+(anonymous) @ leaflet-routing-machine.js:17987
 loaded @ leaflet-routing-machine.js:46
 XMLHttpRequest.send
 corslite @ leaflet-routing-machine.js:88
 route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
-fire @ Events.js:195
-_fireDOMEvent @ Map.js:1452
-_handleDOMEvent @ Map.js:1401
-o @ DomEvent.js:108
-00:49:35.001 (index):972 ❌ Routing error: {error: {…}, type: 'routingerror', target: e, sourceTarget: e}
-00:49:35.001 (index):1024 📍 Direct movement to v {lat: 24.71545305240017, lng: 46.686444282531745}
-00:49:35.001 (index):1641 ✅ SIMPLE onPositionUpdate - newPoint: v {lat: 24.71545305240017, lng: 46.686444282531745} recordedPath.length: 3
-00:49:35.002 (index):1645 ✅ Added point! recordedPath.length now: 4
-00:49:35.002 (index):1653 ✅ Drawing segment from v {lat: 24.705667657968885, lng: 46.68185234069824} to v {lat: 24.71545305240017, lng: 46.686444282531745} distance: 1182.8289302223764
-00:49:35.002 (index):1712 DEBUG: drawPathSegment called - start: v {lat: 24.705667657968885, lng: 46.68185234069824} end: v {lat: 24.71545305240017, lng: 46.686444282531745}
-00:49:35.003 (index):1734 DEBUG: Drawing polyline from v {lat: 24.705667657968885, lng: 46.68185234069824} to v {lat: 24.71545305240017, lng: 46.686444282531745} color: #3b82f6
-00:49:35.069 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.67172431945801,24.70761700106618;46.686444282531745,24.71545305240017?overview=false&alternatives=true&steps=true&hints=;".
-corslite @ leaflet-routing-machine.js:88
-route @ leaflet-routing-machine.js:17977
-route @ leaflet-routing-machine.js:16151
-onAdd @ leaflet-routing-machine.js:15919
-addTo @ Control.js:70
-calculateAndAnimateRoute @ (index):980
-simulateMovement @ (index):935
-onMapClick @ (index):645
+planRoute @ (index):974
+onMapClick @ (index):689
 fire @ Events.js:195
 _fireDOMEvent @ Map.js:1452
 _handleDOMEvent @ Map.js:1401

@@ -72,30 +72,20 @@ const LiveProspect = (() => {
 
     // ─── Inject FAB + photo input at body level (avoids overflow-hidden clipping) ─
     function _injectBodyElements() {
-        if (document.getElementById('live-fab')) return; // already injected
-
-        // FAB button — placed at bottom-left
+        // DISABLED: Old FAB implementation - will be replaced with new pin system
+        console.log('⚠️ Old FAB button disabled - awaiting new pin implementation');
+        
+        /* OLD FAB CODE - DISABLED
+        if (document.getElementById('live-fab')) return;
         const fab = document.createElement('button');
         fab.id = 'live-fab';
         fab.title = 'Add Lead';
         fab.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
         fab.style.cssText = [
-            'display:flex',          // Always visible
-            'position:fixed',
-            'bottom:32px',           // Bottom-left position
-            'left:32px',
-            'z-index:999',
-            'width:64px',
-            'height:64px',
-            'background:#000',
-            'color:#fff',
-            'border:none',
-            'border-radius:50%',
-            'box-shadow:0 10px 30px rgba(0,0,0,.3)',
-            'cursor:pointer',
-            'align-items:center',
-            'justify-content:center',
-            'transition:transform .15s,opacity .2s',
+            'display:flex', 'position:fixed', 'bottom:32px', 'left:32px', 'z-index:999',
+            'width:64px', 'height:64px', 'background:#000', 'color:#fff', 'border:none',
+            'border-radius:50%', 'box-shadow:0 10px 30px rgba(0,0,0,.3)', 'cursor:pointer',
+            'align-items:center', 'justify-content:center', 'transition:transform .15s,opacity .2s',
             'pointer-events:auto'
         ].join(';');
         fab.addEventListener('click', capturePin);
@@ -104,8 +94,10 @@ const LiveProspect = (() => {
         fab.addEventListener('touchstart', () => fab.style.transform='scale(.92)', { passive:true });
         fab.addEventListener('touchend',   () => fab.style.transform='scale(1)',   { passive:true });
         document.body.appendChild(fab);
+        */
 
-        // Hidden photo input
+        // Hidden photo input (keep for potential reuse)
+        if (document.getElementById('live-photo-input')) return;
         const photoInput = document.createElement('input');
         photoInput.id = 'live-photo-input';
         photoInput.type = 'file';

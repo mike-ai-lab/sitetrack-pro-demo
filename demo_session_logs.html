@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session Logs UI Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+  <div class="max-w-5xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold">Session Logs</h1>
+        <button class="px-4 py-2 rounded-xl bg-black text-white">Export</button>
+      </div>
+
+      <div class="space-y-4">
+        <details open class="border rounded-2xl p-5 bg-gray-50">
+          <summary class="cursor-pointer list-none flex justify-between items-center">
+            <div>
+              <h2 class="font-semibold text-lg">Apr 26, 2026 - Al Wuroud District</h2>
+              <p class="text-sm text-gray-600">2.0 km · 2:40 min</p>
+            </div>
+            <span class="text-sm text-gray-500">Expand</span>
+          </summary>
+
+          <div class="mt-6 space-y-6">
+            <div class="w-full h-44 rounded-xl bg-gray-200 flex items-center justify-center text-gray-500">
+              Session Map Thumbnail
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="border rounded-xl p-4">
+                <h3 class="font-semibold mb-2">Start</h3>
+                <p>Al Olaya Street, Al Wuroud District</p>
+                <p class="text-sm text-gray-500 mt-1">07:39 AM</p>
+              </div>
+
+              <div class="border rounded-xl p-4">
+                <h3 class="font-semibold mb-2">End</h3>
+                <p>Zaat Alslasal, Al Ulayya</p>
+                <p class="text-sm text-gray-500 mt-1">10:19 AM</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-semibold text-lg mb-4">Sites Visited (4)</h3>
+
+              <div class="space-y-4">
+                <div class="border rounded-xl p-4">
+                  <p class="font-medium">#1 King Fahd Road, Al Wuroud District</p>
+                  <p class="text-sm text-gray-500">07:39 AM – 07:39 AM · 0:00 min</p>
+                </div>
+
+                <div class="border rounded-xl p-4">
+                  <p class="font-medium">#2 Qotbuddin</p>
+                  <p class="text-sm text-gray-500 mb-3">07:39 AM – 07:39 AM · 0:00 min</p>
+                  <button class="px-4 py-2 rounded-lg border">Show Lead Info</button>
+                </div>
+
+                <div class="border rounded-xl p-4">
+                  <p class="font-medium">#3 Abi Al Fateh Al Thaqafi, As Sulaymaniyah District</p>
+                  <p class="text-sm text-gray-500 mb-3">07:39 AM – 07:40 AM · 0:01 min</p>
+                  <button class="px-4 py-2 rounded-lg border">Show Lead Info</button>
+                </div>
+
+                <div class="border rounded-xl p-4">
+                  <p class="font-medium">#4 Zaat Alslasal, Al Ulayya</p>
+                  <p class="text-sm text-gray-500 mb-3">07:39 AM – 07:41 AM · 0:02 min</p>
+                  <button class="px-4 py-2 rounded-lg border">Show Lead Info</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

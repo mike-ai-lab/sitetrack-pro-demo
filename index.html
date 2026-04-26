@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Real Street Tracker - Riyadh</title>
     
     <!-- Favicon (data URI to avoid 404 error) -->
@@ -12,11 +12,25 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="leads.css">
     <script>
         // No API keys needed - using Google Maps tiles
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            touch-action: none;
+            overscroll-behavior: none;
+            -webkit-text-size-adjust: 100%;
+        }
+        
         #map { 
             height: 100vh; 
             width: 100vw; 
@@ -42,7 +56,7 @@
         }
 
         .history-expanded {
-            width: 340px !important;
+            width: 950px !important;
             height: auto !important;
             border-radius: 2.8rem !important;
         }
@@ -173,7 +187,7 @@
             /* History panel mobile */
             .history-expanded {
                 width: calc(100vw - 32px) !important;
-                max-width: 340px !important;
+                max-width: calc(100vw - 32px) !important;
             }
             
             .history-collapsed {
@@ -205,6 +219,55 @@
                 height: 48px !important;
             }
         }
+
+        /* Modal styles moved to leads.css */
+        /* FAB button styles moved to leads.css */
+
+        .pin-container { transition: all 0.2s ease; cursor: pointer; }
+        .pin-container:hover { z-index: 50; transform: scale(1.1); }
+
+        .tooltip {
+            display: none; position: absolute; bottom: 120%; left: 50%;
+            transform: translateX(-50%); width: 180px; background: #0f172a;
+            color: white; padding: 12px; border-radius: 8px; font-size: 11px;
+            z-index: 60; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .pin-container:hover .tooltip { display: block; }
+
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .status-closed { opacity: 0.5; filter: grayscale(0.2); }
+
+        .export-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+        .export-table th { padding: 12px 8px; border-bottom: 2px solid #f1f5f9; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
+        .export-table td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .export-table .pin-container { position: relative; display: inline-flex; }
+
+        .image-cell { position: relative; width: 60px; }
+        .thumb-preview { 
+            width: 40px; height: 40px; border-radius: 8px; object-fit: cover; 
+            border: 1px solid #e2e8f0; cursor: zoom-in; transition: transform 0.2s;
+        }
+        .image-cell:hover .hover-zoom { 
+            display: block; position: absolute; bottom: 100%; left: 0; 
+            z-index: 100; width: 150px; height: 150px; border-radius: 12px;
+            object-fit: cover; border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .hover-zoom { display: none; pointer-events: none; }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; z-index: 2000;
+            background: #0f172a; color: white; padding: 16px 24px;
+            border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 12px;
+            font-size: 14px; font-weight: 600;
+            transform: translateY(150%); opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="bg-gray-100 overflow-hidden">
@@ -244,6 +307,18 @@
             </div>
         </div>
         
+        <!-- START/STOP Session Button -->
+        <button id="session-btn" onclick="toggleSession()" class="bg-black text-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border-2 border-white hover:bg-gray-800 transition-all mb-3" title="Start Session">
+            <svg id="session-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        </button>
+        
+        <!-- Session Timer -->
+        <div id="session-timer" class="bg-white text-black text-xs font-bold px-3 py-2 rounded-full shadow-lg border border-gray-200 mb-3 hidden" title="Session Duration">
+            0min
+        </div>
+        
         <!-- Locate Me Button -->
         <button id="locate-btn" onclick="locateUser()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Find My Location">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -263,46 +338,107 @@
         </button>
     </div>
 
-    <!-- History Toggle Button (Top Right) -->
+    <!-- Session Summary Toggle Button (Top Right) -->
     <div class="fixed top-5 right-5 z-[999] pointer-events-auto">
-        <button id="history-btn" onclick="toggleHistory()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Trip History">
+        <button id="history-btn" onclick="toggleHistory()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Session Summary">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Simulation Mode Toggle (Below History) -->
+    <div class="fixed top-[85px] right-5 z-[999] pointer-events-auto">
+        <button id="sim-mode-btn" onclick="toggleSimulationMode()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Simulation Mode">
+            <svg id="sim-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Undo/Redo Buttons (Below Simulation Toggle) -->
+    <div class="fixed top-[150px] right-5 z-[999] pointer-events-auto flex flex-col gap-2">
+        <button id="undo-btn" onclick="undoAction()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed" title="Undo" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 7v6h6"/>
+                <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/>
+            </svg>
+        </button>
+        <button id="redo-btn" onclick="redoAction()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed" title="Redo" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 7v6h-6"/>
+                <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/>
             </svg>
         </button>
     </div>
 
     <!-- History Panel -->
+    <!-- Session Summary Panel (Repurposed from Trip History) -->
     <div id="history-panel" class="fixed top-5 right-5 z-[1000] pointer-events-auto hidden">
-        <div id="history-panel-inner" class="glass flex flex-col rounded-[2.8rem] shadow-[0_30px_90px_-10px_rgba(0,0,0,0.2)] w-[340px] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] history-expanded">
+        <div id="history-panel-inner" class="glass flex flex-col rounded-[2.8rem] shadow-[0_30px_90px_-10px_rgba(0,0,0,0.2)] w-[950px] max-w-[calc(100vw-40px)] max-h-[calc(100vh-40px)] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] history-expanded">
             
-            <!-- Header (Clickable) -->
-            <div id="history-header" class="flex items-center justify-between px-8 py-6 cursor-pointer select-none active:scale-[0.98] transition-all" onclick="toggleHistory()">
-                <h2 class="text-[14px] font-bold tracking-[0.2em] text-black uppercase" style="font-family: 'Playfair Display', serif;">
-                    TRIP<span class="font-light opacity-30">HISTORY</span>
-                </h2>
-                <div class="flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span class="text-[10px] font-black text-blue-700 uppercase tracking-widest">History</span>
+            <!-- Header (Clickable) - REDUCED HEIGHT -->
+            <div id="history-header" class="flex items-center justify-between px-6 py-4 cursor-pointer select-none active:scale-[0.98] transition-all bg-gray-50 border-b" onclick="toggleHistory()">
+                <div>
+                    <h2 class="text-[16px] font-bold text-black" style="font-family: 'Playfair Display', serif;">
+                        Session Summary
+                    </h2>
+                    <p id="session-summary-subtitle" class="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-0.5">0 Leads • 0.0 km</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <!-- Export PDF Button -->
+                    <button onclick="event.stopPropagation(); window.SessionSummary && window.SessionSummary.exportPDF()" class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition-all active:scale-90" title="Export as PDF">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </button>
+                    <!-- Copy Markdown Button -->
+                    <button onclick="event.stopPropagation(); window.SessionSummary && window.SessionSummary.copyMarkdown()" class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-all active:scale-90" title="Copy markdown table">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                    <!-- Close Button -->
+                    <button onclick="event.stopPropagation(); toggleHistory()" class="w-10 h-10 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center hover:bg-gray-200 transition-all active:scale-90">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
             
             <!-- Content -->
-            <div id="history-content" class="content-visible">
-                <div class="px-8 pb-8">
-                    <div id="history-list" class="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                        <p class="text-[10px] text-gray-400 italic text-center py-8">No recent trips</p>
-                    </div>
+            <div id="history-content" class="content-visible flex-1 overflow-x-auto overflow-y-auto custom-scroll">
+                <div class="p-6">
+                    <table class="export-table w-full">
+                        <thead>
+                            <tr>
+                                <th>Pin</th>
+                                <th>#</th>
+                                <th>Photos</th>
+                                <th>Contact</th>
+                                <th>Role</th>
+                                <th>Phase</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Notes</th>
+                                <th>Map</th>
+                            </tr>
+                        </thead>
+                        <tbody id="session-summary-table">
+                            <tr>
+                                <td colspan="10" class="text-center text-gray-400 italic py-8">No leads captured yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- History Toggle Button -->
     <!-- Analytics Window (Live Telemetry) -->
     <div id="analytics" class="fixed top-5 left-1/2 -translate-x-1/2 z-[500] pointer-events-none opacity-0 transition-opacity duration-500">
         <div class="bg-white backdrop-blur-md px-4 py-2 rounded-full shadow-lg h-[56px] border border-gray-200 pointer-events-auto flex items-center gap-3">
@@ -373,6 +509,9 @@
                 dragging: true
             }).setView([24.7115, 46.6744], 15);
             
+            // Expose map globally for other modules
+            window.leafletMap = map;
+            
             console.log('Map created at zoom level:', map.getZoom());
             
             // Google Maps tiles - no API key needed
@@ -382,13 +521,7 @@
                 attribution: 'Google'
             });
             
-            initialLayer.on('loading', () => console.log('Initial tiles loading...'));
-            initialLayer.on('load', () => console.log('Initial tiles loaded successfully'));
-            initialLayer.on('tileerror', (e) => console.error(' Initial tile error:', e));
-            initialLayer.on('tileload', (e) => console.log('Tile loaded:', e.coords));
-            
             initialLayer.addTo(map);
-            console.log('Initial tile layer added to map');
 
             // Google Traffic Layer - using r,traffic with style=15
             // Note: This includes road outlines which may appear white, but it's the only way traffic works
@@ -427,9 +560,24 @@
             });
             carMarker = L.marker([24.7115, 46.6744], { 
                 icon: icon, 
-                opacity: 0,
+                opacity: 0,  // Start invisible until location found
                 zIndexOffset: 1000
             }).addTo(map);
+            
+            // Expose carMarker globally for other modules
+            window.carMarker = carMarker;
+            
+            // Automatically get user location on app load
+            console.log('🔍 Requesting user location...');
+            setTimeout(() => {
+                map.locate({
+                    setView: true, 
+                    maxZoom: 16,
+                    enableHighAccuracy: false,
+                    timeout: 10000,
+                    maximumAge: 30000
+                });
+            }, 1000); // Wait 1 second for map to fully initialize
 
             map.on('click', onMapClick);
             
@@ -454,17 +602,16 @@
                 
                 isLocationFound = true;
                 
-                if (window.currentMode === 'recorder') {
-                    document.getElementById('start-recording-btn').disabled = false;
-                    document.getElementById('record-badge').innerText = 'Ready';
-                    document.getElementById('record-badge').classList.remove('bg-gray-100', 'text-gray-700');
-                    document.getElementById('record-badge').classList.add('bg-green-100', 'text-green-700');
-                }
+                // OLD RECORDER UI REMOVED - No longer needed
+                // if (window.currentMode === 'recorder') {
+                //     document.getElementById('start-recording-btn').disabled = false;
+                //     document.getElementById('record-badge').innerText = 'Ready';
+                // }
             });
 
             map.on('locationerror', (e) => {
                 const btn = document.getElementById('locate-btn');
-                btn.classList.remove('opacity-50');
+                if (btn) btn.classList.remove('opacity-50');
                 console.warn("Location access denied or unavailable:", e.message);
                 alert('Unable to get location: ' + e.message);
             });
@@ -556,106 +703,23 @@
         });
 
         function onMapClick(e) {
-            console.log(' MAP CLICKED at:', e.latlng);
-            console.log('currentMode:', window.currentMode);
-            console.log('simulationMode:', simulationMode);
-            console.log('isRecording:', isRecording);
+            console.log('🗺️ Map clicked at:', e.latlng);
             
-            // HISTORY TAB AUTO-RECORDING: If History tab is active, auto-switch to recorder mode
-            if (window.currentMode === 'history') {
-                console.log('History tab active - auto-switching to recorder mode');
-                
-                // Switch to recorder tab
-                if (window.Panel && window.Panel.switchTab) {
-                    window.Panel.switchTab('recorder');
-                }
-                
-                // Enable simulation mode
-                simulationMode = true;
-                window.simulationMode = true;
-                
-                // Start recording if not already recording
-                if (!isRecording) {
-                    console.log('Auto-starting recording from history tab');
-                    startRecording();
-                }
-                
-                // Now simulate movement with the clicked point
-                // Add as a station with detailed tracking
-                const stationNumber = recordingStations.length + 1;
-                const arrivalTime = new Date();
-                
-                const station = {
-                    number: stationNumber,
-                    location: e.latlng,
-                    arrivalTime: arrivalTime,
-                    departureTime: null, // Will be set when moving to next station
-                    duration: null,
-                    address: 'Loading...',
-                    contact: null // Placeholder for contact details
-                };
-                
-                recordingStations.push(station);
-                recordingWaypoints.push(e.latlng);
-                
-                // Get address for this station
-                getAddressFromCoords(e.latlng.lat, e.latlng.lng).then(addr => {
-                    station.address = addr;
-                }).catch(() => {
-                    station.address = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-                });
-                
-                // Set departure time for previous station
-                if (recordingStations.length > 1) {
-                    const prevStation = recordingStations[recordingStations.length - 2];
-                    prevStation.departureTime = arrivalTime;
-                    prevStation.duration = Math.floor((arrivalTime - prevStation.arrivalTime) / 1000); // seconds
-                }
-                
-                simulateMovement(e.latlng);
+            // Only process clicks in simulation mode
+            if (!isSimulationMode) {
+                console.log('⚠️ Simulation mode is OFF - click ignored');
                 return;
             }
             
-            // Simulation mode for recording (AUTO-ENABLED)
-            if (window.currentMode === 'recorder' && simulationMode && isRecording) {
-                console.log('Calling simulateMovement...');
-                
-                // Add as a station with detailed tracking
-                const stationNumber = recordingStations.length + 1;
-                const arrivalTime = new Date();
-                
-                const station = {
-                    number: stationNumber,
-                    location: e.latlng,
-                    arrivalTime: arrivalTime,
-                    departureTime: null,
-                    duration: null,
-                    address: 'Loading...',
-                    contact: null
-                };
-                
-                recordingStations.push(station);
-                recordingWaypoints.push(e.latlng);
-                
-                // Get address
-                getAddressFromCoords(e.latlng.lat, e.latlng.lng).then(addr => {
-                    station.address = addr;
-                }).catch(() => {
-                    station.address = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-                });
-                
-                // Set departure time for previous station
-                if (recordingStations.length > 1) {
-                    const prevStation = recordingStations[recordingStations.length - 2];
-                    prevStation.departureTime = arrivalTime;
-                    prevStation.duration = Math.floor((arrivalTime - prevStation.arrivalTime) / 1000);
-                }
-                
-                simulateMovement(e.latlng);
-                return;
+            if (!isSessionActive) {
+                console.log('⚠️ Session not active - starting session automatically');
+                startSession();
             }
             
-            console.log('Not in recording simulation mode');
+            console.log('🎮 Planning route to:', e.latlng);
+            
+            // Use routing system to follow roads!
+            planRoute(e.latlng);
         }
 
         async function getAddressFromCoords(lat, lng) {
@@ -909,7 +973,6 @@
         // Queue system for multiple waypoints
         // Queue-based routing system (from working version)
         let navQueue = [];
-        let plannedPoints = [];
         let lastQueuedLocation = null;
         let routeSeq = 0;
         let routePending = {};
@@ -954,26 +1017,30 @@
                 const coords = routePending[routeNextFlush];
                 delete routePending[routeNextFlush];
                 routeNextFlush++;
-                
-                // Add to planned points for dashed line
-                plannedPoints = plannedPoints.concat(coords.map(c => [c.lat, c.lng]));
-                
-                // Update planned polyline (dashed)
+                navQueue.push(coords);
+            }
+            
+            // Calculate full planned route from queue
+            const allPlannedPoints = navQueue.flat().map(c => [c.lat, c.lng]);
+            
+            // Update planned polyline (dashed blue line showing all queued routes)
+            if (allPlannedPoints.length > 0) {
                 if (!plannedPolyline) {
-                    plannedPolyline = L.polyline(plannedPoints, {
+                    plannedPolyline = L.polyline(allPlannedPoints, {
                         color: '#007AFF',
                         weight: 4,
                         opacity: 0.4,
                         dashArray: '10, 10'
                     }).addTo(map);
                 } else {
-                    plannedPolyline.setLatLngs(plannedPoints);
+                    plannedPolyline.setLatLngs(allPlannedPoints);
                 }
-                
-                // Add to navigation queue
-                navQueue.push(coords);
             }
-            processQueue();
+            
+            // Only start processing if not already moving
+            if (!isMoving) {
+                processQueue();
+            }
         }
 
         async function processQueue() {
@@ -981,46 +1048,102 @@
             
             isMoving = true;
             
-            while (navQueue.length > 0 && isRecording) {
-                const segment = navQueue.shift();
+            while (navQueue.length > 0 && (isSessionActive || isSimulationMode)) {
+                const segment = navQueue[0]; // Peek at first segment
                 
-                for (let i = 0; i < segment.length; i += 3) {
-                    if (!isRecording) break;
+                // Animate through EVERY point (no skipping!)
+                for (let i = 0; i < segment.length; i++) {
+                    if (!isSessionActive && !isSimulationMode) break;
                     
                     const point = segment[i];
-                    const prevLoc = recordedPath.length > 0 
-                        ? recordedPath[recordedPath.length - 1]
-                        : null;
-                    
                     const newLocation = { lat: point.lat, lng: point.lng };
+                    const newPos = L.latLng(point.lat, point.lng);
                     
                     // Update car marker
                     if (carMarker) {
                         carMarker.setLatLng(newLocation);
                     }
                     
-                    // Update position (adds to path)
-                    onPositionUpdate({
-                        coords: {
-                            latitude: point.lat,
-                            longitude: point.lng
+                    // Update session tracking if active
+                    if (isSessionActive) {
+                        // Calculate distance
+                        if (sessionPath.length > 0) {
+                            const lastPos = sessionPath[sessionPath.length - 1];
+                            sessionDistance += map.distance(lastPos, newPos) / 1000;
                         }
-                    });
-                    
-                    // Remove from planned points as we move
-                    if (plannedPoints.length > 0) {
-                        plannedPoints.splice(0, 3);
-                        if (plannedPolyline) {
-                            plannedPolyline.setLatLngs(plannedPoints);
+                        
+                        sessionPath.push(newPos);
+                        if (window.sessionPolyline) {
+                            window.sessionPolyline.setLatLngs(sessionPath);
+                        }
+                        
+                        // Update session summary display
+                        if (window.SessionSummary) {
+                            window.SessionSummary.updateTable();
                         }
                     }
                     
-                    await new Promise(r => setTimeout(r, 20));
+                    // Update planned polyline to show remaining route
+                    const remainingPoints = navQueue.slice(0).map((seg, idx) => {
+                        if (idx === 0) {
+                            return seg.slice(i + 1); // Remaining points in current segment
+                        }
+                        return seg;
+                    }).flat().map(c => [c.lat, c.lng]);
+                    
+                    if (plannedPolyline && remainingPoints.length > 0) {
+                        plannedPolyline.setLatLngs(remainingPoints);
+                    }
+                    
+                    await new Promise(r => setTimeout(r, 10)); // 10ms for smooth animation
+                }
+                
+                // Remove completed segment - this means we reached a destination!
+                navQueue.shift();
+                
+                // Record this as a station/stop if session is active
+                if (isSessionActive && segment.length > 0) {
+                    const destination = segment[segment.length - 1];
+                    const arrivalTime = new Date();
+                    
+                    // Get address for this stop
+                    let address = `${destination.lat.toFixed(4)}, ${destination.lng.toFixed(4)}`;
+                    try {
+                        address = await getAddressFromCoords(destination.lat, destination.lng);
+                    } catch (e) {
+                        console.warn('Could not get address for station');
+                    }
+                    
+                    // Create station record
+                    const station = {
+                        number: recordingStations.length + 1,
+                        lat: destination.lat,
+                        lng: destination.lng,
+                        address: address,
+                        arrivalTime: arrivalTime.toISOString(),
+                        departureTime: null, // Will be set when leaving or session ends
+                        duration: 0,
+                        leadId: null, // Can be linked to a lead later
+                        contact: null
+                    };
+                    
+                    // Set departure time for previous station
+                    if (recordingStations.length > 0) {
+                        const prevStation = recordingStations[recordingStations.length - 1];
+                        if (!prevStation.departureTime) {
+                            prevStation.departureTime = arrivalTime.toISOString();
+                            const arrival = new Date(prevStation.arrivalTime);
+                            prevStation.duration = Math.floor((arrivalTime - arrival) / 1000);
+                        }
+                    }
+                    
+                    recordingStations.push(station);
+                    console.log('📍 Station recorded:', station);
                 }
             }
             
             // Clear planned polyline when done
-            if (plannedPoints.length === 0 && plannedPolyline) {
+            if (navQueue.length === 0 && plannedPolyline) {
                 map.removeLayer(plannedPolyline);
                 plannedPolyline = null;
             }
@@ -1030,7 +1153,6 @@
 
         function clearWaypointQueue() {
             navQueue = [];
-            plannedPoints = [];
             lastQueuedLocation = null;
             routeSeq = 0;
             routePending = {};
@@ -1065,6 +1187,588 @@
                 maximumAge: 30000           // Use cached location up to 30 seconds old
             });
         }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // SESSION MANAGEMENT (NEW)
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        let isSessionActive = false;
+        let isSimulationMode = false;
+        let sessionStartTime = null;
+        let sessionDistance = 0;
+        let sessionPath = [];
+        let gpsWatchId = null;
+        let sessionTimerInterval = null;
+        
+        // Undo/Redo System
+        let actionHistory = [];
+        let actionHistoryIndex = -1;
+        const MAX_HISTORY = 50;
+        
+        // Timer update function
+        function updateSessionTimer() {
+            if (!isSessionActive || !sessionStartTime) return;
+            
+            const elapsed = Date.now() - sessionStartTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const hours = Math.floor(minutes / 60);
+            
+            const timerEl = document.getElementById('session-timer');
+            if (!timerEl) return;
+            
+            if (hours > 0) {
+                const remainingMinutes = minutes % 60;
+                timerEl.textContent = `${hours}.${remainingMinutes.toString().padStart(2, '0')}h`;
+            } else {
+                timerEl.textContent = `${minutes}min`;
+            }
+        }
+        
+        function recordAction(action) {
+            // Remove any actions after current index (when undoing then doing new action)
+            actionHistory = actionHistory.slice(0, actionHistoryIndex + 1);
+            
+            // Add new action
+            actionHistory.push(action);
+            actionHistoryIndex++;
+            
+            // Limit history size
+            if (actionHistory.length > MAX_HISTORY) {
+                actionHistory.shift();
+                actionHistoryIndex--;
+            }
+            
+            updateUndoRedoButtons();
+        }
+        
+        function undoAction() {
+            if (actionHistoryIndex < 0) return;
+            
+            const action = actionHistory[actionHistoryIndex];
+            
+            // Perform undo based on action type
+            switch(action.type) {
+                case 'addPin':
+                    // Remove the pin
+                    if (window.LeadSystem) {
+                        const pins = window.LeadSystem.getAllPins();
+                        const pin = pins.find(p => p.id === action.data.pinId);
+                        if (pin && pin.marker && window.leafletMap) {
+                            window.leafletMap.removeLayer(pin.marker);
+                            const idx = pins.findIndex(p => p.id === action.data.pinId);
+                            if (idx !== -1) pins.splice(idx, 1);
+                        }
+                    }
+                    break;
+                    
+                case 'moveSimulation':
+                    // Move car back to previous position
+                    if (action.data.previousPosition && window.carMarker) {
+                        window.carMarker.setLatLng(action.data.previousPosition);
+                        window.leafletMap.setView(action.data.previousPosition, window.leafletMap.getZoom());
+                    }
+                    break;
+            }
+            
+            actionHistoryIndex--;
+            updateUndoRedoButtons();
+        }
+        
+        function redoAction() {
+            if (actionHistoryIndex >= actionHistory.length - 1) return;
+            
+            actionHistoryIndex++;
+            const action = actionHistory[actionHistoryIndex];
+            
+            // Perform redo based on action type
+            switch(action.type) {
+                case 'addPin':
+                    // Re-add the pin
+                    if (window.LeadSystem && action.data.position) {
+                        window.LeadSystem.addLeadPin(action.data.position.lat, action.data.position.lng);
+                    }
+                    break;
+                    
+                case 'moveSimulation':
+                    // Move car forward to new position
+                    if (action.data.newPosition && window.carMarker) {
+                        window.carMarker.setLatLng(action.data.newPosition);
+                        window.leafletMap.setView(action.data.newPosition, window.leafletMap.getZoom());
+                    }
+                    break;
+            }
+            
+            updateUndoRedoButtons();
+        }
+        
+        function updateUndoRedoButtons() {
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            
+            if (undoBtn) undoBtn.disabled = actionHistoryIndex < 0;
+            if (redoBtn) redoBtn.disabled = actionHistoryIndex >= actionHistory.length - 1;
+        }
+        
+        // Expose undo/redo globally
+        window.undoAction = undoAction;
+        window.redoAction = redoAction;
+        window.recordAction = recordAction;
+        
+        // ═══════════════════════════════════════════════════════════════════════
+        // BACKGROUND PERSISTENCE - Save/Restore Active Session
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        const ACTIVE_SESSION_KEY = 'lp_active_session';
+        
+        function saveActiveSessionState() {
+            if (!isSessionActive) {
+                localStorage.removeItem(ACTIVE_SESSION_KEY);
+                return;
+            }
+            
+            try {
+                const sessionData = {
+                    isActive: true,
+                    startTime: sessionStartTime,
+                    distance: sessionDistance,
+                    path: sessionPath.map(p => ({ lat: p.lat, lng: p.lng })),
+                    stations: recordingStations,
+                    pins: window.LeadSystem ? window.LeadSystem.getAllPins().map(pin => ({
+                        id: pin.id,
+                        lat: pin.lat,
+                        lng: pin.lng,
+                        index: pin.index,
+                        priority: pin.priority,
+                        status: pin.status,
+                        role: pin.role,
+                        phase: pin.phase,
+                        images: pin.images,
+                        data: pin.data
+                    })) : [],
+                    simulationMode: isSimulationMode
+                };
+                
+                localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(sessionData));
+                console.log('💾 Active session saved to localStorage');
+            } catch (e) {
+                console.error('Failed to save active session:', e);
+            }
+        }
+        
+        function restoreActiveSessionState() {
+            try {
+                const saved = localStorage.getItem(ACTIVE_SESSION_KEY);
+                if (!saved) return;
+                
+                const sessionData = JSON.parse(saved);
+                
+                // Restore session state
+                isSessionActive = sessionData.isActive;
+                sessionStartTime = sessionData.startTime;
+                sessionDistance = sessionData.distance;
+                isSimulationMode = sessionData.simulationMode;
+                
+                // Restore path
+                sessionPath = sessionData.path.map(p => L.latLng(p.lat, p.lng));
+                if (window.sessionPolyline) {
+                    window.sessionPolyline.setLatLngs(sessionPath);
+                }
+                
+                // Restore stations
+                recordingStations = sessionData.stations || [];
+                
+                // Restore pins
+                if (sessionData.pins && sessionData.pins.length > 0 && window.LeadSystem) {
+                    sessionData.pins.forEach(pinData => {
+                        window.LeadSystem.addLeadPin(pinData.lat, pinData.lng);
+                        // Update pin data
+                        const pins = window.LeadSystem.getAllPins();
+                        const pin = pins.find(p => p.lat === pinData.lat && p.lng === pinData.lng);
+                        if (pin) {
+                            Object.assign(pin, pinData);
+                        }
+                    });
+                }
+                
+                // Update UI
+                if (isSessionActive) {
+                    const btn = document.getElementById('session-btn');
+                    const icon = document.getElementById('session-icon');
+                    const timerEl = document.getElementById('session-timer');
+                    
+                    btn.classList.remove('bg-black');
+                    btn.classList.add('bg-red-500');
+                    btn.title = 'Stop Session';
+                    icon.innerHTML = '<rect x="6" y="6" width="12" height="12"/>';
+                    
+                    // Show and restart timer
+                    if (timerEl) {
+                        timerEl.classList.remove('hidden');
+                        updateSessionTimer(); // Update immediately
+                        sessionTimerInterval = setInterval(updateSessionTimer, 1000);
+                    }
+                    
+                    // Restart GPS if not in simulation mode
+                    if (!isSimulationMode && navigator.geolocation) {
+                        gpsWatchId = navigator.geolocation.watchPosition(
+                            (position) => {
+                                const newPos = L.latLng(position.coords.latitude, position.coords.longitude);
+                                carMarker.setLatLng(newPos);
+                                
+                                if (sessionPath.length > 0) {
+                                    const lastPos = sessionPath[sessionPath.length - 1];
+                                    sessionDistance += map.distance(lastPos, newPos) / 1000;
+                                }
+                                
+                                sessionPath.push(newPos);
+                                window.sessionPolyline.setLatLngs(sessionPath);
+                                
+                                saveActiveSessionState(); // Save on GPS update
+                            },
+                            (error) => console.error('GPS Error:', error),
+                            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                        );
+                    }
+                    
+                    console.log('✅ Active session restored from localStorage');
+                }
+            } catch (e) {
+                console.error('Failed to restore active session:', e);
+                localStorage.removeItem(ACTIVE_SESSION_KEY);
+            }
+        }
+        
+        // Auto-save every 10 seconds
+        setInterval(() => {
+            if (isSessionActive) {
+                saveActiveSessionState();
+            }
+        }, 10000);
+        
+        // Save on visibility change (when app goes to background)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isSessionActive) {
+                saveActiveSessionState();
+                console.log('📱 App backgrounded - session saved');
+            }
+        });
+        
+        // Restore session on page load
+        window.addEventListener('load', () => {
+            setTimeout(restoreActiveSessionState, 1000);
+        });
+        
+        // Expose session data globally for other modules
+        window.getSessionDistance = () => sessionDistance;
+
+        function toggleSession() {
+            if (isSessionActive) {
+                stopSession();
+            } else {
+                startSession();
+            }
+        }
+
+        function startSession() {
+            // Check if location has been found
+            if (!isLocationFound) {
+                alert('Please wait for your location to be found first, or click "Find My Location" button.');
+                console.warn('⚠️ Cannot start session - location not found yet');
+                return;
+            }
+            
+            isSessionActive = true;
+            sessionStartTime = Date.now();
+            sessionDistance = 0;
+            sessionPath = [carMarker.getLatLng()];
+            
+            console.log('✅ Session started at:', carMarker.getLatLng());
+            
+            const btn = document.getElementById('session-btn');
+            const icon = document.getElementById('session-icon');
+            const timerEl = document.getElementById('session-timer');
+            
+            // Change to STOP state
+            btn.classList.remove('bg-black');
+            btn.classList.add('bg-red-500');
+            btn.title = 'Stop Session';
+            icon.innerHTML = '<rect x="6" y="6" width="12" height="12"/>';
+            
+            // Show and start timer
+            if (timerEl) {
+                timerEl.classList.remove('hidden');
+                timerEl.textContent = '0min';
+                
+                // Update timer every second
+                sessionTimerInterval = setInterval(updateSessionTimer, 1000);
+            }
+            
+            // Initialize session polyline
+            if (!window.sessionPolyline) {
+                window.sessionPolyline = L.polyline(sessionPath, {
+                    color: '#007AFF',
+                    weight: 6,
+                    opacity: 0.8
+                }).addTo(map);
+            }
+            
+            // Initialize planned route polyline (dashed line)
+            if (!plannedPolyline) {
+                plannedPolyline = L.polyline([], {
+                    color: '#007AFF',
+                    weight: 4,
+                    opacity: 0.4,
+                    dashArray: '10, 10'
+                }).addTo(map);
+            }
+            
+            // Start GPS tracking if not in simulation mode
+            if (!isSimulationMode && navigator.geolocation) {
+                gpsWatchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const newPos = L.latLng(position.coords.latitude, position.coords.longitude);
+                        
+                        // Update car position
+                        const oldPos = carMarker.getLatLng();
+                        carMarker.setLatLng(newPos);
+                        
+                        // Calculate distance
+                        if (sessionPath.length > 0) {
+                            const lastPos = sessionPath[sessionPath.length - 1];
+                            sessionDistance += map.distance(lastPos, newPos) / 1000; // km
+                        }
+                        
+                        // Add to path
+                        sessionPath.push(newPos);
+                        window.sessionPolyline.setLatLngs(sessionPath);
+                        
+                        // Save session state
+                        saveActiveSessionState();
+                        
+                        console.log('📍 GPS Update:', newPos, 'Distance:', sessionDistance.toFixed(2), 'km');
+                    },
+                    (error) => {
+                        console.error('GPS Error:', error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            }
+            
+            console.log('✅ Session started');
+        }
+
+        async function stopSession() {
+            isSessionActive = false;
+            
+            const btn = document.getElementById('session-btn');
+            const icon = document.getElementById('session-icon');
+            
+            // Change back to START state
+            btn.classList.remove('bg-red-500');
+            btn.classList.add('bg-black');
+            btn.title = 'Start Session';
+            icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            
+            // Stop GPS tracking
+            if (gpsWatchId !== null) {
+                navigator.geolocation.clearWatch(gpsWatchId);
+                gpsWatchId = null;
+            }
+            
+            // Stop and hide timer
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval);
+                sessionTimerInterval = null;
+            }
+            const timerEl = document.getElementById('session-timer');
+            if (timerEl) {
+                timerEl.classList.add('hidden');
+            }
+            
+            // Clear routing queue
+            navQueue = [];
+            lastQueuedLocation = null;
+            routeSeq = 0;
+            routePending = {};
+            routeNextFlush = 0;
+            isMoving = false;
+            
+            if (plannedPolyline) {
+                plannedPolyline.setLatLngs([]);
+            }
+            
+            // Clear active session from localStorage
+            localStorage.removeItem(ACTIVE_SESSION_KEY);
+            
+            const duration = Math.floor((Date.now() - sessionStartTime) / 1000);
+            console.log('⏹️ Session stopped - Duration:', duration, 's, Distance:', sessionDistance.toFixed(2), 'km');
+            
+            // Save session to history
+            await saveSessionToHistory(duration);
+        }
+        
+        async function saveSessionToHistory(duration) {
+            if (!window.recordingHistory) {
+                window.recordingHistory = [];
+            }
+            
+            // Get lead pins for this session
+            const sessionLeads = window.LeadSystem ? window.LeadSystem.getAllPins() : [];
+            
+            // Link leads to stations by matching coordinates
+            const stationsWithLeads = recordingStations.map(station => {
+                // Find if there's a lead pin at this station location (within 50 meters)
+                const matchingLead = sessionLeads.find(lead => {
+                    const distance = Math.sqrt(
+                        Math.pow(lead.lat - station.lat, 2) + 
+                        Math.pow(lead.lng - station.lng, 2)
+                    ) * 111000; // Rough conversion to meters
+                    return distance < 50; // Within 50 meters
+                });
+                
+                if (matchingLead) {
+                    return {
+                        ...station,
+                        leadId: matchingLead.id,
+                        name: matchingLead.data.name || 'Anonymous',
+                        phone: matchingLead.data.phone || '',
+                        notes: matchingLead.data.notes || '',
+                        priority: matchingLead.priority,
+                        status: matchingLead.status,
+                        role: matchingLead.role,
+                        phase: matchingLead.phase
+                    };
+                }
+                
+                return station;
+            });
+            
+            // Get start and end addresses
+            let startAddress = 'Start Location';
+            let endAddress = 'End Location';
+            
+            if (sessionPath.length > 0) {
+                const startPos = sessionPath[0];
+                const endPos = sessionPath[sessionPath.length - 1];
+                
+                // Try to get addresses (await both)
+                try {
+                    startAddress = await getAddressFromCoords(startPos.lat, startPos.lng);
+                } catch (e) {
+                    console.error('Failed to get start address:', e);
+                }
+                
+                try {
+                    endAddress = await getAddressFromCoords(endPos.lat, endPos.lng);
+                } catch (e) {
+                    console.error('Failed to get end address:', e);
+                }
+            }
+            
+            // Create session object
+            const session = {
+                id: Date.now(),
+                type: 'live',
+                date: new Date().toISOString(),
+                duration: duration,
+                distance: sessionDistance,
+                path: sessionPath.map(p => ({ lat: p.lat, lng: p.lng })),
+                startAddress: startAddress,
+                endAddress: endAddress,
+                startLocation: sessionPath.length > 0 ? { lat: sessionPath[0].lat, lng: sessionPath[0].lng } : null,
+                endLocation: sessionPath.length > 0 ? { lat: sessionPath[sessionPath.length - 1].lat, lng: sessionPath[sessionPath.length - 1].lng } : null,
+                stations: stationsWithLeads
+            };
+            
+            window.recordingHistory.push(session);
+            
+            // Save to localStorage
+            try {
+                localStorage.setItem('lp_sessions', JSON.stringify(window.recordingHistory));
+                console.log('✅ Session saved to history:', session);
+            } catch (e) {
+                console.error('❌ Failed to save session:', e);
+            }
+            
+            // Refresh panel display
+            if (window.PanelAPI && window.PanelAPI.refreshSessionLogs) {
+                window.PanelAPI.refreshSessionLogs();
+            }
+        }
+
+        function toggleSimulationMode() {
+            isSimulationMode = !isSimulationMode;
+            
+            const btn = document.getElementById('sim-mode-btn');
+            const icon = document.getElementById('sim-icon');
+            
+            if (isSimulationMode) {
+                // Enable simulation mode
+                btn.classList.remove('bg-white', 'hover:bg-gray-50');
+                btn.classList.add('bg-green-500', 'hover:bg-green-600');
+                icon.classList.add('stroke-white');
+                btn.title = 'Simulation Mode: ON';
+                
+                // Stop GPS if active
+                if (gpsWatchId !== null) {
+                    navigator.geolocation.clearWatch(gpsWatchId);
+                    gpsWatchId = null;
+                }
+                
+                // Clear routing state
+                navQueue = [];
+                lastQueuedLocation = null;
+                routeSeq = 0;
+                routePending = {};
+                routeNextFlush = 0;
+                isMoving = false;
+                
+                if (plannedPolyline) {
+                    plannedPolyline.setLatLngs([]);
+                }
+                
+                console.log('🎮 Simulation mode ENABLED');
+            } else {
+                // Disable simulation mode
+                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                btn.classList.add('bg-white', 'hover:bg-gray-50');
+                icon.classList.remove('stroke-white');
+                btn.title = 'Simulation Mode: OFF';
+                
+                // Restart GPS if session is active
+                if (isSessionActive && navigator.geolocation) {
+                    gpsWatchId = navigator.geolocation.watchPosition(
+                        (position) => {
+                            const newPos = L.latLng(position.coords.latitude, position.coords.longitude);
+                            carMarker.setLatLng(newPos);
+                            
+                            if (sessionPath.length > 0) {
+                                const lastPos = sessionPath[sessionPath.length - 1];
+                                sessionDistance += map.distance(lastPos, newPos) / 1000;
+                            }
+                            
+                            sessionPath.push(newPos);
+                            if (window.sessionPolyline) {
+                                window.sessionPolyline.setLatLngs(sessionPath);
+                            }
+                        },
+                        null,
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
+                }
+                
+                console.log('📍 Simulation mode DISABLED - GPS tracking active');
+            }
+        }
+
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // END SESSION MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════════
 
         function locateMe() {
             if (!navigator.geolocation) {
@@ -1524,13 +2228,22 @@
         // Load saved sessions on init
         function loadSavedSessions() {
             try {
-                const saved = localStorage.getItem('recordingSessions');
+                // Load from lp_sessions (new format)
+                const saved = localStorage.getItem('lp_sessions');
                 if (saved) {
-                    recordingSessions = JSON.parse(saved);
-                    console.log('Loaded', recordingSessions.length, 'saved sessions');
+                    window.recordingHistory = JSON.parse(saved);
+                    console.log('✅ Loaded', window.recordingHistory.length, 'saved sessions');
+                } else {
+                    window.recordingHistory = [];
                 }
             } catch (e) {
-                console.error('Failed to load sessions:', e);
+                console.error('❌ Failed to load sessions:', e);
+                window.recordingHistory = [];
+            }
+            
+            // Refresh panel display if it exists
+            if (window.renderHistoryPanel) {
+                setTimeout(() => window.renderHistoryPanel(), 500);
             }
         }
 
@@ -1557,6 +2270,9 @@
             
             // Initialize modular panel AFTER map (no CONFIG needed)
             Panel = initPanel(map);
+            
+            // Expose Panel API globally for other modules
+            window.PanelAPI = Panel;
             
             // Initialize LiveProspect module
             if (window.LiveProspect && window.LiveProspect.init) {
@@ -1640,6 +2356,6 @@
     </script>
     <script src="live.js"></script>
     <script src="panel.js"></script>
-    <script src="history-modal.js"></script>
+    <script src="leads.js"></script>
 </body>
 </html>
