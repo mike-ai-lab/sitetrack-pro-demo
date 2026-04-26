@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routing Test - StreetTracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <style>
+        body { margin: 0; font-family: system-ui; }
+        #map { height: 100vh; width: 100vw; }
+        .info-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .info-panel h3 { margin: 0 0 10px 0; font-size: 16px; }
+        .info-panel p { margin: 5px 0; font-size: 13px; color: #666; }
+        .status { 
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .status.recording { background: #dcfce7; color: #166534; }
+        .status.idle { background: #f3f4f6; color: #6b7280; }
+        .btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #000;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn:hover { background: #333; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .leaflet-routing-container { display: none; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="info-panel">
+        <h3>🧪 Routing Test</h3>
+        <p><strong>Instructions:</strong></p>
+        <p>1. Click "Start Recording"</p>
+        <p>2. Click on map to set waypoints</p>
+        <p>3. Watch car follow streets</p>
+        <hr style="margin: 10px 0; border: none; border-top: 1px solid #e5e7eb;">
+        <p><strong>Distance:</strong> <span id="distance">0.0 km</span></p>
+        <p><strong>Points:</strong> <span id="points">0</span></p>
+        <p><strong>Queue:</strong> <span id="queue">0</span></p>
+        <div id="status" class="status idle">IDLE</div>
+        <button id="startBtn" class="btn">Start Recording</button>
+        <button id="resetBtn" class="btn" style="background: #dc2626;">Reset</button>
+    </div>
+
+    <script>
+        let map, carMarker, pathPolyline, plannedPolyline;
+        let isRecording = false;
+        let recordedPath = [];
+        let totalDistance = 0;
+        
+        // Queue-based routing system
+        let navQueue = [];
+        let plannedPoints = [];
+        let lastQueuedLocation = null;
+        let routeSeq = 0;
+        let routePending = {};
+        let routeNextFlush = 0;
+        let isMoving = false;
+
+        // Initialize map
+        map = L.map('map', { zoomControl: false }).setView([24.7115, 46.6744], 15);
+        L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(map);
+
+        // Initialize polylines
+        pathPolyline = L.polyline([], {
+            color: '#007AFF',
+            weight: 6,
+            opacity: 0.8
+        }).addTo(map);
+
+        // Car marker
+        const carIcon = L.divIcon({
+            html: '<div style="width: 30px; height: 30px; background: #000; border-radius: 50%; border: 3px solid white;"></div>',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+        carMarker = L.marker([24.7115, 46.6744], { icon: carIcon, opacity: 0 }).addTo(map);
+
+        // Event handlers
+        document.getElementById('startBtn').onclick = () => {
+            isRecording = !isRecording;
+            document.getElementById('startBtn').innerText = isRecording ? 'Stop Recording' : 'Start Recording';
+            document.getElementById('status').className = isRecording ? 'status recording' : 'status idle';
+            document.getElementById('status').innerText = isRecording ? 'RECORDING' : 'IDLE';
+            
+            if (isRecording) {
+                carMarker.setOpacity(1);
+            }
+        };
+
+        document.getElementById('resetBtn').onclick = () => {
+            isRecording = false;
+            recordedPath = [];
+            totalDistance = 0;
+            navQueue = [];
+            plannedPoints = [];
+            lastQueuedLocation = null;
+            routeSeq = 0;
+            routePending = {};
+            routeNextFlush = 0;
+            isMoving = false;
+            
+            pathPolyline.setLatLngs([]);
+            if (plannedPolyline) {
+                map.removeLayer(plannedPolyline);
+                plannedPolyline = null;
+            }
+            
+            carMarker.setOpacity(0);
+            document.getElementById('startBtn').innerText = 'Start Recording';
+            document.getElementById('status').className = 'status idle';
+            document.getElementById('status').innerText = 'IDLE';
+            updateStats();
+        };
+
+        map.on('click', (e) => {
+            if (!isRecording) return;
+            planRoute(e.latlng);
+        });
+
+        function planRoute(targetLatLng) {
+            const start = lastQueuedLocation || (recordedPath.length > 0 
+                ? L.latLng(recordedPath[recordedPath.length - 1].lat, recordedPath[recordedPath.length - 1].lng)
+                : carMarker.getLatLng());
+            
+            lastQueuedLocation = targetLatLng;
+            const seq = routeSeq++;
+            
+            const router = new L.Routing.OSRMv1({ 
+                serviceUrl: 'https://router.project-osrm.org/route/v1' 
+            });
+            
+            router.route([{ latLng: start }, { latLng: targetLatLng }], (err, routes) => {
+                if (!err && routes && routes[0]) {
+                    routePending[seq] = routes[0].coordinates;
+                    flushRoutes();
+                }
+            });
+        }
+
+        function flushRoutes() {
+            while (routePending[routeNextFlush] !== undefined) {
+                const coords = routePending[routeNextFlush];
+                delete routePending[routeNextFlush];
+                routeNextFlush++;
+                
+                plannedPoints = plannedPoints.concat(coords.map(c => [c.lat, c.lng]));
+                
+                if (!plannedPolyline) {
+                    plannedPolyline = L.polyline(plannedPoints, {
+                        color: '#007AFF',
+                        weight: 4,
+                        opacity: 0.4,
+                        dashArray: '10, 10'
+                    }).addTo(map);
+                } else {
+                    plannedPolyline.setLatLngs(plannedPoints);
+                }
+                
+                navQueue.push(coords);
+            }
+            processQueue();
+        }
+
+        async function processQueue() {
+            if (isMoving || navQueue.length === 0) return;
+            
+            isMoving = true;
+            
+            while (navQueue.length > 0 && isRecording) {
+                const segment = navQueue.shift();
+                
+                for (let i = 0; i < segment.length; i += 3) {
+                    if (!isRecording) break;
+                    
+                    const point = segment[i];
+                    const prevLoc = recordedPath.length > 0 
+                        ? recordedPath[recordedPath.length - 1]
+                        : null;
+                    
+                    const newLocation = { lat: point.lat, lng: point.lng };
+                    
+                    carMarker.setLatLng(newLocation);
+                    recordedPath.push(newLocation);
+                    pathPolyline.setLatLngs(recordedPath);
+                    
+                    if (prevLoc) {
+                        const dist = map.distance(prevLoc, newLocation) / 1000;
+                        totalDistance += dist;
+                    }
+                    
+                    if (plannedPoints.length > 0) {
+                        plannedPoints.splice(0, 3);
+                        if (plannedPolyline) {
+                            plannedPolyline.setLatLngs(plannedPoints);
+                        }
+                    }
+                    
+                    updateStats();
+                    await new Promise(r => setTimeout(r, 20));
+                }
+            }
+            
+            if (plannedPoints.length === 0 && plannedPolyline) {
+                map.removeLayer(plannedPolyline);
+                plannedPolyline = null;
+            }
+            
+            isMoving = false;
+        }
+
+        function updateStats() {
+            document.getElementById('distance').innerText = totalDistance.toFixed(2) + ' km';
+            document.getElementById('points').innerText = recordedPath.length;
+            document.getElementById('queue').innerText = navQueue.length;
+        }
+    </script>
+</body>
+</html>

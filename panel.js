@@ -1,4 +1,4 @@
-/**
+﻿/**
  * StreetTracker Control Panel Component
  * Modular, self-contained panel with all UI and logic
  */
@@ -7,10 +7,9 @@ const PanelComponent = {
     // State
     state: {
         isExpanded: true,
-        currentTab: 'planner',
+        currentTab: 'recorder',
         isRecording: false,
-        isDriving: false,
-        isPaused: false
+        isDriving: false
     },
 
     // References
@@ -40,105 +39,28 @@ const PanelComponent = {
                     <!-- Collapsible Content -->
                     <div id="panel-content" class="content-visible">
                     
-                        <!-- Segmented Control (4 Tabs) -->
+                        <!-- Segmented Control (3 Tabs) -->
                         <div class="px-5 pb-5">
                             <div class="flex bg-black/[0.04] p-1.5 rounded-[1.6rem] relative h-12 items-center">
-                                <button id="btn-planner" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-active">
-                                    Plan
-                                </button>
-                                <button id="btn-recorder" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
+                                <button id="btn-recorder" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-active">
                                     Rec
-                                </button>
-                                <button id="btn-live" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
-                                    Live
                                 </button>
                                 <button id="btn-history" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
                                     History
                                 </button>
+                                <button id="btn-session-data" class="flex-1 text-[11px] font-extrabold uppercase tracking-[0.12em] z-10 transition-colors duration-500 tab-inactive">
+                                    Data
+                                </button>
                                 <!-- Animated Pill Indicator -->
-                                <div id="pill" class="absolute h-[38px] w-[calc(25%-8px)] bg-black rounded-[1.3rem] transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-xl shadow-black/30" style="transform: translateX(0px);"></div>
+                                <div id="pill" class="absolute h-[38px] w-[calc(33.333%-8px)] bg-black rounded-[1.3rem] transition-all duration-600 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-xl shadow-black/30" style="transform: translateX(0px);"></div>
                             </div>
                         </div>
 
                         <!-- Tab Content Area -->
                         <div class="px-8 pb-10">
-                            
-                            <!-- PLANNER TAB -->
-                            <div id="view-planner" class="space-y-6">
-                                <!-- Route Detail -->
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-end">
-                                        <p class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Route</p>
-                                        <span id="trip-badge" class="text-[9px] font-bold text-black/40 uppercase tracking-widest">Set Pickup</span>
-                                    </div>
-                                    
-                                    <div class="relative space-y-4 pl-6 before:content-[''] before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[1px] before:bg-black/10">
-                                        <!-- Pickup -->
-                                        <div id="pickup-box" class="group cursor-pointer">
-                                            <span class="block text-[10px] font-bold text-black/40 uppercase tracking-tight mb-1">Pickup</span>
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-1.5 h-1.5 rounded-full bg-black/40"></div>
-                                                <span id="pickup-label" class="text-xs font-semibold text-black/40 group-hover:text-black transition-colors italic truncate">Set pickup...</span>
-                                            </div>
-                                        </div>
-                                        <!-- Destination -->
-                                        <div id="dest-box" class="group cursor-pointer">
-                                            <span class="block text-[10px] font-bold text-black/40 uppercase tracking-tight mb-1">Destination</span>
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-1.5 h-1.5 rounded-full bg-black"></div>
-                                                <span id="dest-label" class="text-xs font-semibold text-black/40 group-hover:text-black transition-colors italic truncate">Set destination...</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Follow Toggle -->
-                                <div class="flex items-center justify-between py-2 border-b border-black/[0.05]">
-                                    <span class="text-[10px] font-bold text-black/40 uppercase tracking-widest">Follow Car</span>
-                                    <input type="checkbox" id="follow-toggle" checked class="w-3.5 h-3.5 rounded accent-black">
-                                </div>
-
-                                <!-- Speed Control -->
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-[10px] font-black text-black/25 uppercase tracking-widest">Speed</span>
-                                        <span id="speed-display" class="text-[11px] font-bold text-black/60">Normal</span>
-                                    </div>
-                                    <input type="range" id="speed-slider" min="10" max="250" value="80" class="w-full h-1 bg-black/5 rounded-lg cursor-pointer">
-                                </div>
-
-                                <!-- Control Buttons — circular -->
-                                <div class="flex items-center justify-center gap-4 pt-2">
-                                    <button id="start-btn" disabled title="Start Trip"
-                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 disabled:bg-black/10 disabled:text-black/20 disabled:cursor-not-allowed transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    </button>
-                                    <button id="pause-btn" disabled title="Pause"
-                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                                    </button>
-                                    <button id="resume-btn" disabled title="Resume"
-                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    </button>
-                                    <button id="end-btn" title="End Trip"
-                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
-                                    </button>
-                                    <button id="reset-planner-btn" title="Reset"
-                                        class="w-12 h-12 flex items-center justify-center bg-black/[0.04] text-black/40 rounded-full hover:bg-black/10 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                                            <path d="M21 3v5h-5"/>
-                                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                                            <path d="M3 21v-5h5"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
 
                             <!-- RECORDER TAB -->
-                            <div id="view-recorder" class="space-y-6 hidden">
+                            <div id="view-recorder" class="space-y-6">
                                 <!-- Status (text only, no badge) -->
                                 <div class="flex items-center justify-between">
                                     <span id="record-badge" class="text-[9px] font-bold text-black/30 uppercase tracking-widest">Ready</span>
@@ -208,50 +130,6 @@ const PanelComponent = {
                                 </button>
                             </div>
 
-                            <!-- LIVE TAB -->
-                            <div id="view-live" class="hidden space-y-5">
-
-                                <!-- Header row -->
-                                <div class="flex items-center justify-between">
-                                    <p class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Prospecting</p>
-                                    <span id="live-stat-sites" class="text-[9px] font-bold text-black/30 uppercase tracking-widest">0 sites</span>
-                                </div>
-
-                                <!-- Session stats -->
-                                <div id="live-stats-row" class="hidden flex justify-center gap-8 py-3 bg-black/[0.02] rounded-[1.5rem] border border-black/[0.04]">
-                                    <div class="text-center">
-                                        <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Distance</p>
-                                        <p id="live-stat-dist" class="text-sm font-bold text-black">0.00 km</p>
-                                    </div>
-                                    <div class="w-[1px] bg-black/5"></div>
-                                    <div class="text-center">
-                                        <p class="text-[8px] font-bold text-black/25 uppercase tracking-widest mb-1">Time</p>
-                                        <p id="live-stat-time" class="text-sm font-bold text-black">00:00</p>
-                                    </div>
-                                </div>
-
-                                <!-- Empty state -->
-                                <div id="live-empty-state" class="py-8 text-center">
-                                    <p class="text-[10px] font-bold text-black/20 uppercase tracking-[0.2em]">Start a session</p>
-                                    <p class="text-[9px] text-black/25 mt-1">GPS tracks your path · FAB drops site pins</p>
-                                </div>
-
-                                <!-- Station tree list -->
-                                <div id="live-station-list" class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar pr-1"></div>
-
-                                <!-- Start / Stop buttons -->
-                                <div class="flex items-center justify-center gap-4 pt-1">
-                                    <button id="live-start-btn" onclick="LiveProspect.startSession()" title="Start Session"
-                                        class="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                                    </button>
-                                    <button id="live-stop-btn" onclick="LiveProspect.stopSession()" title="End Session"
-                                        class="hidden w-12 h-12 flex items-center justify-center bg-black text-white rounded-full shadow-lg hover:bg-black/80 transition-all active:scale-95">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-
                             <!-- HISTORY TAB -->
                             <div id="view-history" class="hidden">
                                 <!-- Header with Action Buttons -->
@@ -276,6 +154,52 @@ const PanelComponent = {
                                 <!-- Tree-structured history list -->
                                 <div id="main-history-list" class="space-y-4 max-h-[340px] overflow-y-auto custom-scrollbar pr-1">
                                     <p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>
+                                </div>
+                            </div>
+
+                            <!-- SESSION DATA TAB -->
+                            <div id="view-session-data" class="hidden">
+                                <!-- Header with Export Buttons -->
+                                <div class="flex items-center justify-between mb-5">
+                                    <span class="text-[10px] font-black text-black/25 uppercase tracking-[0.25em]">Session Leads</span>
+                                    <div class="flex items-center gap-2">
+                                        <!-- Export PDF Button -->
+                                        <button id="export-pdf-btn" onclick="window.ExportUtils && window.ExportUtils.exportToPDF()" title="Export to PDF"
+                                            class="w-9 h-9 flex items-center justify-center bg-red-600 text-white rounded-full hover:bg-red-700 transition-all">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                <polyline points="14 2 14 8 20 8"/>
+                                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                                <polyline points="10 9 9 9 8 9"/>
+                                            </svg>
+                                        </button>
+                                        <!-- Export Markdown Button -->
+                                        <button id="export-md-btn" onclick="window.ExportUtils && window.ExportUtils.exportToMarkdown()" title="Export to Markdown"
+                                            class="w-9 h-9 flex items-center justify-center bg-black text-white rounded-full hover:bg-black/80 transition-all">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                <polyline points="14 2 14 8 20 8"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lead List -->
+                                <div id="session-leads-list" class="space-y-3 max-h-[280px] overflow-y-auto custom-scrollbar pr-1">
+                                    <p class="text-[10px] text-black/25 italic text-center py-8">No leads captured yet<br><span class="text-[9px]">Click the pin button to add leads</span></p>
+                                </div>
+                                
+                                <!-- Session Summary -->
+                                <div class="mt-5 p-4 bg-black/[0.02] rounded-xl border border-black/[0.04]">
+                                    <div class="flex justify-between text-xs mb-2">
+                                        <span class="text-black/40 uppercase tracking-wider font-bold text-[10px]">Total Leads</span>
+                                        <span id="total-leads-count" class="font-bold text-black">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-black/40 uppercase tracking-wider font-bold text-[10px]">Distance</span>
+                                        <span id="session-distance" class="font-bold text-black">0.0 km</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -591,9 +515,9 @@ const PanelComponent = {
             const el = container.firstElementChild;
             document.body.appendChild(el);
             elementCount++;
-            console.log(`📦 Appended element ${elementCount}:`, el.id || el.tagName);
+            console.log(` Appended element ${elementCount}:`, el.id || el.tagName);
         }
-        console.log(`✅ Total elements appended: ${elementCount}`);
+        console.log(` Total elements appended: ${elementCount}`);
 
         // Cache element references
         this.cacheElements();
@@ -606,7 +530,7 @@ const PanelComponent = {
             window.LiveProspect.init(map);
         }
 
-        console.log('✅ Panel initialized');
+        console.log(' Panel initialized');
 
         return this.getAPI();
     },
@@ -615,15 +539,14 @@ const PanelComponent = {
     cacheElements() {
         const ids = [
             'main-panel', 'panel-header', 'panel-content', 'pill',
-            'btn-planner', 'btn-recorder', 'btn-live', 'btn-history',
-            'view-planner', 'view-recorder', 'view-live', 'view-history',
-            'pickup-box', 'dest-box', 'pickup-label', 'dest-label', 'trip-badge',
-            'follow-toggle', 'speed-slider', 'speed-display',
-            'start-btn', 'pause-btn', 'resume-btn', 'end-btn', 'reset-planner-btn',
+            'btn-recorder', 'btn-history', 'btn-session-data',
+            'view-recorder', 'view-history', 'view-session-data',
             'record-badge', 'recording-indicator', 'auto-focus-toggle',
             'rec-distance', 'rec-duration', 'rec-streets', 'rec-revisited',
             'start-recording-btn', 'stop-recording-btn', 'reset-recorder-btn', 'save-session-btn',
-            'history-list', 'history-stop-btn'
+            'history-list', 'history-stop-btn',
+            'session-leads-list', 'total-leads-count', 'session-distance',
+            'export-pdf-btn', 'export-md-btn'
         ];
 
         ids.forEach(id => {
@@ -639,22 +562,9 @@ const PanelComponent = {
         el['panel-header'].onclick = () => this.togglePanel();
 
         // Tab switching
-        el['btn-planner'].onclick = () => this.switchTab('planner');
         el['btn-recorder'].onclick = () => this.switchTab('recorder');
-        el['btn-live'].onclick = () => this.switchTab('live');
         el['btn-history'].onclick = () => this.switchTab('history');
-
-        // Speed slider
-        el['speed-slider'].oninput = (e) => this.updateSpeedDisplay(e.target.value);
-
-        // Planner controls
-        el['pickup-box'].onclick = () => window.startEditingPoint && window.startEditingPoint(0);
-        el['dest-box'].onclick = () => window.startEditingPoint && window.startEditingPoint(1);
-        el['start-btn'].onclick = () => window.handleStart && window.handleStart();
-        el['pause-btn'].onclick = () => window.togglePause && window.togglePause();
-        el['resume-btn'].onclick = () => window.togglePause && window.togglePause();
-        el['end-btn'].onclick = () => window.endTrip && window.endTrip();
-        el['reset-planner-btn'].onclick = () => window.resetPlanner && window.resetPlanner();
+        el['btn-session-data'].onclick = () => this.switchTab('session-data');
 
         // Recorder controls
         el['start-recording-btn'].onclick = () => window.startRecording && window.startRecording();
@@ -689,66 +599,30 @@ const PanelComponent = {
         
         console.log(`🔄 Switching from ${previousTab} to ${tab}`);
         
-        // BLOCK SWITCHING TO REC/PLAN IF LIVE IS ACTIVE
-        if (window.LiveProspect && window.LiveProspect.isActive && window.LiveProspect.isActive()) {
-            if (tab === 'planner' || tab === 'recorder') {
-                console.log('🚫 Cannot switch to ' + tab + ' - Live session is active');
-                return; // Block the switch
-            }
-        }
+        // SIMPLIFIED: 3 tabs now (recorder, history, session-data)
         
-        // COMPLETE ISOLATION: Clean up previous tab before switching
-        if (previousTab === 'planner' && tab !== 'planner') {
-            console.log('🧹 Cleaning up Planner tab - stopping trip and clearing map...');
-            
-            // Force stop any ongoing trip
-            if (window.isDriving) {
-                window.shouldEndTrip = true;
-                window.isDriving = false;
-                window.isPaused = false;
-            }
-            
-            // Full reset of planner
-            if (window.resetPlanner) {
-                window.resetPlanner();
-            }
-            
-            console.log('✅ Planner cleaned up');
-        }
-        
+        // Clean up previous tab before switching
         if (previousTab === 'recorder' && tab !== 'recorder') {
-            // DON'T reset recorder when switching to/from history tab
-            if (tab === 'history') {
-                console.log('📜 Switching to History tab - keeping recorder session active');
-            } else {
-                console.log('🧹 Cleaning up Recorder tab - stopping recording and clearing map...');
-                
-                // Force stop any ongoing recording
-                if (window.isRecording && window.stopRecording) {
-                    window.stopRecording();
-                }
-                
-                // Full reset of recorder
-                if (window.resetRecorder) {
-                    window.resetRecorder();
-                }
-                
-                console.log('✅ Recorder cleaned up');
+            // DON'T reset recorder when switching to other tabs
+            if (tab === 'history' || tab === 'session-data') {
+                console.log(` Switching to ${tab} tab - keeping recorder session active`);
             }
         }
         
         if (previousTab === 'history' && tab !== 'history') {
-            // DON'T reset recorder when switching from history to recorder
-            if (tab === 'recorder') {
-                console.log('🔴 Switching to Recorder tab - keeping session active');
-            } else {
-                console.log('📜 Leaving History tab');
+            // DON'T reset recorder when switching from history
+            if (tab === 'recorder' || tab === 'session-data') {
+                console.log(` Switching to ${tab} tab - keeping session active`);
             }
+        }
+        
+        if (previousTab === 'session-data' && tab !== 'session-data') {
+            // DON'T reset when switching from session-data
+            console.log(` Switching to ${tab} tab - keeping session active`);
         }
 
         // Update tab state
         this.state.currentTab = tab;
-        this.state.isDriving = false;
         this.state.isRecording = false;
         
         // Update global currentMode for backward compatibility
@@ -773,34 +647,36 @@ const PanelComponent = {
                 badge.innerText = 'Sim Ready';
             }
             
-            console.log('✅ Recorder tab ready - simulation mode enabled');
+            console.log(' Recorder tab ready - simulation mode enabled');
+        }
+        
+        // Render session data when switching to session-data tab
+        if (tab === 'session-data' && window.LeadManager) {
+            console.log(' Switching to session-data tab, rendering leads...');
+            setTimeout(() => window.LeadManager.renderLeadsList(), 50);
         }
         
         const el = this.refs.elements;
 
         // Hide all views
-        el['view-planner'].classList.add('hidden');
         el['view-recorder'].classList.add('hidden');
-        el['view-live'].classList.add('hidden');
         el['view-history'].classList.add('hidden');
+        el['view-session-data'].classList.add('hidden');
 
         // Reset all buttons
-        el['btn-planner'].classList.remove('tab-active');
-        el['btn-planner'].classList.add('tab-inactive');
         el['btn-recorder'].classList.remove('tab-active');
         el['btn-recorder'].classList.add('tab-inactive');
-        el['btn-live'].classList.remove('tab-active');
-        el['btn-live'].classList.add('tab-inactive');
         el['btn-history'].classList.remove('tab-active');
         el['btn-history'].classList.add('tab-inactive');
+        el['btn-session-data'].classList.remove('tab-active');
+        el['btn-session-data'].classList.add('tab-inactive');
 
-        // Calculate pill position (25% width for 4 tabs)
-        const offset = el['btn-planner'].offsetWidth;
+        // Calculate pill position (33.333% width for 3 tabs)
+        const offset = el['btn-recorder'].offsetWidth;
         const positions = {
-            'planner': 0,
-            'recorder': offset,
-            'live': offset * 2,
-            'history': offset * 3
+            'recorder': 0,
+            'history': offset,
+            'session-data': offset * 2
         };
 
         // Animate pill and show active tab
@@ -811,26 +687,19 @@ const PanelComponent = {
 
         // Render history panel when switching to history tab
         if (tab === 'history' && window.renderHistoryPanel) {
-            console.log('📜 Switching to history tab, rendering history...');
+            console.log(' Switching to history tab, rendering history...');
             setTimeout(() => window.renderHistoryPanel(), 50);
         }
 
         // Update map cursor
         if (this.refs.map) {
-            this.refs.map.getContainer().style.cursor = tab === 'planner' ? 'crosshair' : 'default';
+            this.refs.map.getContainer().style.cursor = 'default';
         }
 
         // Ensure panel is expanded when switching
         if (!this.state.isExpanded) {
             this.togglePanel();
         }
-    },
-
-    // Update speed display
-    updateSpeedDisplay(value) {
-        const val = parseInt(value);
-        const display = val < 40 ? "Traffic" : val > 150 ? "Express" : "Normal";
-        this.refs.elements['speed-display'].innerText = display;
     },
     
     // Show/hide history recording controls
@@ -914,7 +783,7 @@ window.renderHistoryPanel = function() {
     
     const historyList = document.getElementById('main-history-list');
     if (!historyList) {
-        console.log('❌ main-history-list element not found');
+        console.log(' main-history-list element not found');
         return;
     }
 
@@ -929,7 +798,7 @@ window.renderHistoryPanel = function() {
 
     if (allHistory.length === 0) {
         historyList.innerHTML = '<p class="text-[10px] text-black/25 italic text-center py-8">No recording sessions yet</p>';
-        console.log('ℹ️ No recording sessions to display');
+        console.log(' No recording sessions to display');
         return;
     }
 

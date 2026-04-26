@@ -1,4 +1,4 @@
-/**
+﻿/**
  * History Modal Component - Refactored for Muhamad
  * Style: Sleek Architectural Dock / Apple Minimalism
  */
@@ -55,7 +55,7 @@ const HistoryModalComponent = {
         modal.className = 'fixed inset-0 z-[9999] hidden';
         document.body.appendChild(modal);
         this.refs.modal = modal;
-        console.log('✅ History Modal UI Refactored');
+        console.log(' History Modal UI Refactored');
     },
 
     open() {

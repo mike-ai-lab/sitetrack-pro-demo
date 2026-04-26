@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LiveProspect — Manual Site Prospecting
  * Handles: FAB capture, GPS tracking, lead forms, photo storage,
  *          localStorage persistence, background tracking via SW.
@@ -58,7 +58,7 @@ const LiveProspect = (() => {
                 // Re-center on last known position
                 if (lastPos) map.setView(lastPos, map.getZoom());
                 refreshStationList();
-                console.log('👁️ LiveProspect: tab visible, path redrawn');
+                console.log(' LiveProspect: tab visible, path redrawn');
             }
         });
         // Expose for history-modal "Show Contact"
@@ -66,39 +66,41 @@ const LiveProspect = (() => {
             startSession, stopSession, capturePin, closeLeadForm, saveLeadForm,
             triggerPhotoUpload, onPhotosSelected, closeContactModal,
             deleteStation, deleteSession, _registerHistoryStation, init,
-            isActive: () => isActive };
+            isActive: () => isActive,
+            _getStations: () => stations };  // Expose stations for Session Data tab
     }
 
     // ─── Inject FAB + photo input at body level (avoids overflow-hidden clipping) ─
     function _injectBodyElements() {
         if (document.getElementById('live-fab')) return; // already injected
 
-        // FAB button — placed to the LEFT of the existing right-side buttons
+        // FAB button — placed at bottom-left
         const fab = document.createElement('button');
         fab.id = 'live-fab';
-        fab.title = 'Drop Site Pin';
-        fab.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+        fab.title = 'Add Lead';
+        fab.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
         fab.style.cssText = [
-            'display:none',
+            'display:flex',          // Always visible
             'position:fixed',
-            'bottom:20px',           // same row as right-side buttons
-            'right:88px',            // left of the 56px right-side column + 16px gap
-            'z-index:2000',
-            'width:56px',
-            'height:56px',
+            'bottom:32px',           // Bottom-left position
+            'left:32px',
+            'z-index:999',
+            'width:64px',
+            'height:64px',
             'background:#000',
             'color:#fff',
             'border:none',
             'border-radius:50%',
-            'box-shadow:0 8px 28px rgba(0,0,0,.35)',
+            'box-shadow:0 10px 30px rgba(0,0,0,.3)',
             'cursor:pointer',
-            'display:none',
             'align-items:center',
             'justify-content:center',
             'transition:transform .15s,opacity .2s',
             'pointer-events:auto'
         ].join(';');
         fab.addEventListener('click', capturePin);
+        fab.addEventListener('mousedown', () => fab.style.transform='scale(.92)');
+        fab.addEventListener('mouseup',   () => fab.style.transform='scale(1)');
         fab.addEventListener('touchstart', () => fab.style.transform='scale(.92)', { passive:true });
         fab.addEventListener('touchend',   () => fab.style.transform='scale(1)',   { passive:true });
         document.body.appendChild(fab);
@@ -121,7 +123,7 @@ const LiveProspect = (() => {
     function registerSW() {
         if (!('serviceWorker' in navigator)) return;
         navigator.serviceWorker.register(SW_PATH).then(reg => {
-            console.log('✅ SW registered', reg.scope);
+            console.log(' SW registered', reg.scope);
         }).catch(err => console.warn('SW registration failed:', err));
     }
 
@@ -222,7 +224,7 @@ const LiveProspect = (() => {
             startKeepAlive();
 
             // Update UI
-            show('live-fab');
+            // FAB is always visible now
             hide('live-start-btn');
             show('live-stop-btn');
             show('live-stats-row');
@@ -234,7 +236,7 @@ const LiveProspect = (() => {
             // Disable Rec/Plan tab buttons
             _updateTabButtonStates();
 
-            console.log('♻️ LiveProspect session restored');
+            console.log(' LiveProspect session restored');
         } catch (e) {
             localStorage.removeItem(ACTIVE_KEY);
         }
@@ -263,19 +265,26 @@ const LiveProspect = (() => {
 
         hide('live-start-btn');
         show('live-stop-btn');
-        show('live-fab');
+        // FAB is always visible now
         show('live-stats-row');
         hide('live-empty-state');
-        $('live-stat-dist').textContent = '0.00 km';
-        $('live-stat-time').textContent = '00:00';
-        $('live-stat-sites').textContent = '0 sites';
-        $('live-station-list').innerHTML = '';
+        
+        // Safely update stats if elements exist
+        const distEl = $('live-stat-dist');
+        const timeEl = $('live-stat-time');
+        const sitesEl = $('live-stat-sites');
+        const listEl = $('live-station-list');
+        
+        if (distEl) distEl.textContent = '0.00 km';
+        if (timeEl) timeEl.textContent = '00:00';
+        if (sitesEl) sitesEl.textContent = '0 sites';
+        if (listEl) listEl.innerHTML = '';
 
         sessionTimer = setInterval(tickTimer, 1000);
         startGPS();
         startKeepAlive();
         saveActiveState();
-        console.log('🟢 LiveProspect session started');
+        console.log(' LiveProspect session started');
     }
 
     function stopSession() {
@@ -299,9 +308,9 @@ const LiveProspect = (() => {
 
         show('live-start-btn');
         hide('live-stop-btn');
-        hide('live-fab');
+        // FAB is always visible now
 
-        console.log('🔴 LiveProspect session stopped');
+        console.log(' LiveProspect session stopped');
     }
 
     // ─── Update tab button states ─────────────────────────────────────────────
@@ -356,13 +365,13 @@ const LiveProspect = (() => {
     function onGPS(pos) {
         const pt = L.latLng(pos.coords.latitude, pos.coords.longitude);
 
-        // User car marker (red)
+        // User car marker (black to match main car)
         if (!userDot) {
             const carHtml = `
                 <div class="car-icon-inner" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                     <svg width="40" height="40" viewBox="0 0 100 100" style="display: block;">
-                        <rect x="25" y="10" width="50" height="80" rx="15" fill="#ef4444" />
-                        <rect x="30" y="22" width="40" height="18" rx="4" fill="#7f1d1d" />
+                        <rect x="25" y="10" width="50" height="80" rx="15" fill="#1a1a1a" />
+                        <rect x="30" y="22" width="40" height="18" rx="4" fill="#444" />
                         <rect x="30" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
                         <rect x="62" y="12" width="8" height="4" rx="1" fill="#FFFACD" />
                     </svg>
@@ -406,13 +415,21 @@ const LiveProspect = (() => {
 
     // ─── Capture pin (FAB) ────────────────────────────────────────────────────
     function capturePin() {
-        if (!isActive) return;
+        console.log('LiveProspect: capturePin called, isActive:', isActive);
+        
+        // Auto-start session if not active
+        if (!isActive) {
+            console.log('LiveProspect: Auto-starting session...');
+            startSession();
+        }
 
         const lat = lastPos ? lastPos.lat : map.getCenter().lat;
         const lng = lastPos ? lastPos.lng : map.getCenter().lng;
         const latlng = L.latLng(lat, lng);
         const stationId = Date.now();
         const num = stations.length + 1;
+
+        console.log('LiveProspect: Creating station', num, 'at', lat, lng);
 
         const station = {
             id: stationId, number: num,
@@ -421,24 +438,50 @@ const LiveProspect = (() => {
             address: '', contact: null, photos: []
         };
         stations.push(station);
+        
+        console.log('LiveProspect: Calling _dropPin...');
         _dropPin(station, latlng);
+        
         updateSiteCount();
         refreshStationList();
         saveActiveState();
+
+        // Update Session Data tab immediately
+        if (window.renderSessionDataTab) {
+            console.log('LiveProspect: Updating Session Data tab...');
+            window.renderSessionDataTab();
+        } else {
+            console.warn('LiveProspect: renderSessionDataTab not found');
+        }
 
         // Resolve address async
         reverseGeocode(lat, lng).then(addr => {
             station.address = addr;
             refreshStationList();
             saveActiveState();
+            // Update Session Data tab again with address
+            if (window.renderSessionDataTab) {
+                window.renderSessionDataTab();
+            }
         }).catch(() => {
             station.address = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            refreshStationList();
+            if (window.renderSessionDataTab) {
+                window.renderSessionDataTab();
+            }
         });
 
         openLeadForm(stationId);
     }
 
     function _dropPin(station, latlng) {
+        console.log('LiveProspect: Dropping pin for station', station.id, 'at', latlng);
+        
+        if (!map) {
+            console.error('LiveProspect: Map not initialized!');
+            return;
+        }
+        
         const label = (station.contact && station.contact.name) ? station.contact.name : `#${station.number}`;
         const icon = L.divIcon({
             html: `<div style="width:20px;height:20px;background:#000;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;position:relative;">
@@ -446,11 +489,23 @@ const LiveProspect = (() => {
             </div>`,
             className:'', iconSize:[20,20], iconAnchor:[10,10]
         });
-        const marker = L.marker(latlng, { icon, zIndexOffset:1000 }).addTo(map);
-        marker.on('click', () => openLeadForm(station.id));
-        const existing = pinMarkers.find(m => m.id === station.id);
-        if (existing) { map.removeLayer(existing.marker); pinMarkers = pinMarkers.filter(m => m.id !== station.id); }
-        pinMarkers.push({ id: station.id, marker });
+        
+        try {
+            const marker = L.marker(latlng, { icon, zIndexOffset:1000 }).addTo(map);
+            marker.on('click', () => openLeadForm(station.id));
+            
+            // Remove existing marker if any
+            const existing = pinMarkers.find(m => m.id === station.id);
+            if (existing) { 
+                map.removeLayer(existing.marker); 
+                pinMarkers = pinMarkers.filter(m => m.id !== station.id); 
+            }
+            
+            pinMarkers.push({ id: station.id, marker });
+            console.log('LiveProspect: Pin added successfully, total pins:', pinMarkers.length);
+        } catch (error) {
+            console.error('LiveProspect: Error adding marker to map:', error);
+        }
     }
 
     function _refreshPin(station) {
@@ -464,9 +519,15 @@ const LiveProspect = (() => {
     function openLeadForm(stationId) {
         const st = stations.find(s => s.id === stationId);
         if (!st) return;
+        
+        // Temporary: Just show an alert until we add the proper modal
+        alert(`Lead form for #${st.number} - Coming in next step!\n\nPin has been added to the map at:\n${st.address || 'Loading address...'}`);
+        
+        // TODO: Add proper modal UI from standalone version
+        /*
         const overlay = $('live-lead-overlay');
         if (!overlay) {
-            console.error('❌ live-lead-overlay element not found in DOM!');
+            console.error(' live-lead-overlay element not found in DOM!');
             console.log('Available elements:', Array.from(document.querySelectorAll('[id^="live-"]')).map(e => e.id));
             return;
         }
@@ -482,6 +543,7 @@ const LiveProspect = (() => {
         renderPhotoThumbs(st);
         show('live-lead-overlay');
         setTimeout(() => overlay.querySelector('.live-modal-card').classList.remove('scale-95'), 10);
+        */
     }
 
     function closeLeadForm() {
@@ -611,7 +673,7 @@ const LiveProspect = (() => {
         const c = st.contact || {};
         const overlay = $('live-contact-overlay');
         if (!overlay) {
-            console.error('❌ live-contact-overlay element not found in DOM!');
+            console.error(' live-contact-overlay element not found in DOM!');
             console.log('Available elements:', Array.from(document.querySelectorAll('[id^="live-"]')).map(e => e.id));
             return;
         }
