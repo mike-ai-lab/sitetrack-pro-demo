@@ -1,170 +1,168 @@
-13:18:05.111 Navigated to http://localhost:8247/index.html
-13:18:06.147 firebase-config.js:30 Firebase initialized successfully
-13:18:06.164 auth.js:175 Auth module loaded
-13:18:06.166 db-sync.js:64 ⚠️ DBSync module loaded (disabled - stub only)
-13:18:06.335 index.html:3423 🔧 Initializing LeadSystem...
-13:18:06.340 index.html:3426 ✅ LeadSystem initialized successfully
-13:18:06.343 index.html:3829 ☁️ Cloud sync button initialized
-13:18:06.380 index.html:713  INITIALIZING MAP...
-13:18:06.386 index.html:726 Map created at zoom level: 15
-13:18:06.405 index.html:800 🔍 Requesting user location...
-13:18:06.419 index.html:2857  LiveProspect initialized
-13:18:06.420 index.html:2877  App initialized with modular panel
-13:18:07.879 Fetch finished loading: POST "<URL>".
-13:18:07.879 Fetch finished loading: POST "<URL>".
-13:18:07.879 Fetch finished loading: POST "<URL>".
-13:18:07.879 Fetch finished loading: POST "<URL>".
-13:18:07.879 Fetch finished loading: POST "<URL>".
-13:18:07.866 index.html:2979 ✅ User authenticated: muhamad.shkeir@gmail.com
-13:18:07.867 db-sync.js:13 ⚠️ DBSync disabled - proper Firebase sync coming soon
-13:18:07.868 index.html:3460 🔒 Starting aggressive access monitoring for user: kUyVyvxeKDVtVJidxcbNyiU27Zc2
-13:18:07.868 index.html:3461 Disabled - no Firebase operations
-13:18:07.869 index.html:3550 🔔 Starting notification monitoring for admin
-13:18:07.869 index.html:3551 👤 Current user: {uid: 'kUyVyvxeKDVtVJidxcbNyiU27Zc2', email: 'muhamad.shkeir@gmail.com', displayName: 'muhamad shkeir', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocJDnqpBLMv3AMpt_XHiQHjJcXh0FWm4MedskbrvzY-cKVxxap98=s96-c', createdAt: ti, …}
-13:18:07.869 index.html:3557 ✅ Admin notifications section shown
-13:18:07.869 index.html:3563 Disabled - no Firebase operations
-13:18:08.872 index.html:2991 📥 Loading leads after login...
-13:18:17.829 index.html:1490 📂 Starting import from: part1_data.json
-13:18:17.832 index.html:1496 📊 Parsed JSON, total leads: 23
-13:18:17.832 index.html:1509 🗑️ Clearing existing leads...
-13:18:17.832 index.html:1517 ✅ Existing leads cleared
-13:18:17.832 index.html:1520 🗑️ Clearing existing sessions...
-13:18:17.833 index.html:1524 ✅ Existing sessions cleared
-13:18:17.834 index.html:1535 
-🔍 Processing lead 1: ابو سعد سعودى
-13:18:17.834 index.html:1536    Location: null
-13:18:17.834 index.html:1535 
-🔍 Processing lead 2: Eng Ahmad
-13:18:17.835 index.html:1536    Location: {lat: 24.619692, lng: 46.507805, map_link: 'https://maps.google.com/?q=24.619692,46.507805'}
-13:18:17.835 index.html:1539    ✓ Has valid location, importing...
-13:18:17.838 index.html:1548    📍 Pin created with ID: 1777717097835
-13:18:17.840 index.html:1588    ✓ Successfully imported: Eng Ahmad
-13:18:17.840 index.html:1535 
-🔍 Processing lead 3: ابو شهد
-13:18:17.840 index.html:1536    Location: {lat: 24.622923, lng: 46.508198, map_link: 'https://maps.google.com/?q=24.622923,46.508198'}
-13:18:17.840 index.html:1539    ✓ Has valid location, importing...
-13:18:17.842 index.html:1548    📍 Pin created with ID: 1777717097840
-13:18:17.843 index.html:1588    ✓ Successfully imported: ابو شهد
-13:18:17.843 index.html:1535 
-🔍 Processing lead 4: أبو فاطمة
-13:18:17.844 index.html:1536    Location: {lat: 24.615885, lng: 46.533966, map_link: 'https://maps.google.com/?q=24.615885,46.533966'}
-13:18:17.844 index.html:1539    ✓ Has valid location, importing...
-13:18:17.846 index.html:1548    📍 Pin created with ID: 1777717097844
-13:18:17.848 index.html:1588    ✓ Successfully imported: أبو فاطمة
-13:18:17.848 index.html:1535 
-🔍 Processing lead 5: ابو محمد
-13:18:17.848 index.html:1536    Location: {lat: 24.611879, lng: 46.488613, map_link: 'https://maps.google.com/?q=24.611879,46.488613'}
-13:18:17.848 index.html:1539    ✓ Has valid location, importing...
-13:18:17.850 index.html:1548    📍 Pin created with ID: 1777717097849
-13:18:17.851 index.html:1569    📷 Added 2 images
-13:18:17.852 index.html:1588    ✓ Successfully imported: ابو محمد
-13:18:17.852 index.html:1535 
-🔍 Processing lead 6: احمد مطيري
-13:18:17.853 index.html:1536    Location: {lat: 24.612843, lng: 46.478573, map_link: 'https://maps.google.com/?q=24.612843,46.478573'}
-13:18:17.853 index.html:1539    ✓ Has valid location, importing...
-13:18:17.855 index.html:1548    📍 Pin created with ID: 1777717097853
-13:18:17.855 index.html:1569    📷 Added 2 images
-13:18:17.856 index.html:1588    ✓ Successfully imported: احمد مطيري
-13:18:17.856 index.html:1535 
-🔍 Processing lead 7: ابو فيصل
-13:18:17.856 index.html:1536    Location: {lat: 24.609636, lng: 46.464939, map_link: 'https://maps.google.com/?q=24.609636,46.464939'}
-13:18:17.857 index.html:1539    ✓ Has valid location, importing...
-13:18:17.858 index.html:1548    📍 Pin created with ID: 1777717097857
-13:18:17.859 index.html:1569    📷 Added 2 images
-13:18:17.860 index.html:1588    ✓ Successfully imported: ابو فيصل
-13:18:17.860 index.html:1535 
-🔍 Processing lead 8: ابو وليد
-13:18:17.860 index.html:1536    Location: {lat: 24.624035, lng: 46.561264, map_link: 'https://maps.google.com/?q=24.624035,46.561264'}
-13:18:17.860 index.html:1539    ✓ Has valid location, importing...
-13:18:17.862 index.html:1548    📍 Pin created with ID: 1777717097860
-13:18:17.862 index.html:1569    📷 Added 4 images
-13:18:17.864 index.html:1588    ✓ Successfully imported: ابو وليد
-13:18:17.864 index.html:1535 
-🔍 Processing lead 9: صديق المالك
-13:18:17.864 index.html:1536    Location: null
-13:18:17.865 index.html:1535 
-🔍 Processing lead 10: ابو راكان
-13:18:17.865 index.html:1536    Location: {lat: 24.623095, lng: 46.550358, map_link: 'https://maps.google.com/?q=24.623095,46.550358'}
-13:18:17.865 index.html:1539    ✓ Has valid location, importing...
-13:18:17.867 index.html:1548    📍 Pin created with ID: 1777717097865
-13:18:17.868 index.html:1588    ✓ Successfully imported: ابو راكان
-13:18:17.868 index.html:1535 
-🔍 Processing lead 11: ابو حسين
-13:18:17.869 index.html:1536    Location: null
-13:18:17.869 index.html:1535 
-🔍 Processing lead 12: مالك سعودي
-13:18:17.869 index.html:1536    Location: {lat: 24.64843, lng: 46.580406, map_link: 'https://maps.google.com/?q=24.648430,46.580406'}
-13:18:17.869 index.html:1539    ✓ Has valid location, importing...
-13:18:17.871 index.html:1548    📍 Pin created with ID: 1777717097870
-13:18:17.872 index.html:1569    📷 Added 6 images
-13:18:17.873 index.html:1588    ✓ Successfully imported: مالك سعودي
-13:18:17.873 index.html:1535 
-🔍 Processing lead 13: سعود
-13:18:17.873 index.html:1536    Location: {lat: 24.644161, lng: 46.581524, map_link: 'https://maps.google.com/?q=24.644161,46.581524'}
-13:18:17.874 index.html:1539    ✓ Has valid location, importing...
-13:18:17.875 index.html:1548    📍 Pin created with ID: 1777717097874
-13:18:17.876 index.html:1569    📷 Added 2 images
-13:18:17.877 index.html:1588    ✓ Successfully imported: سعود
-13:18:17.877 index.html:1535 
-🔍 Processing lead 14: محمد المطيري (ابو يزيد)
-13:18:17.877 index.html:1536    Location: {lat: 24.643921, lng: 46.583794, map_link: 'https://maps.google.com/?q=24.643921,46.583794'}
-13:18:17.878 index.html:1539    ✓ Has valid location, importing...
-13:18:17.880 index.html:1548    📍 Pin created with ID: 1777717097878
-13:18:17.880 index.html:1569    📷 Added 4 images
-13:18:17.881 index.html:1588    ✓ Successfully imported: محمد المطيري (ابو يزيد)
-13:18:17.881 index.html:1535 
-🔍 Processing lead 15: ابو سعد
-13:18:17.882 index.html:1536    Location: {lat: 24.649553, lng: 46.593582, map_link: 'https://maps.google.com/?q=24.649553,46.593582'}
-13:18:17.882 index.html:1539    ✓ Has valid location, importing...
-13:18:17.884 index.html:1548    📍 Pin created with ID: 1777717097882
-13:18:17.884 index.html:1569    📷 Added 2 images
-13:18:17.885 index.html:1588    ✓ Successfully imported: ابو سعد
-13:18:17.885 index.html:1535 
-🔍 Processing lead 16: ابو عزيز
-13:18:17.886 index.html:1536    Location: {lat: 24.648268, lng: 46.590591, map_link: 'https://maps.google.com/?q=24.648268,46.590591'}
-13:18:17.886 index.html:1539    ✓ Has valid location, importing...
-13:18:17.888 index.html:1548    📍 Pin created with ID: 1777717097886
-13:18:17.888 index.html:1569    📷 Added 2 images
-13:18:17.890 index.html:1588    ✓ Successfully imported: ابو عزيز
-13:18:17.890 index.html:1535 
-🔍 Processing lead 17: المهندس مصري
-13:18:17.890 index.html:1536    Location: {lat: 24.633619, lng: 46.582012, map_link: 'https://maps.google.com/?q=24.633619,46.582012'}
-13:18:17.891 index.html:1539    ✓ Has valid location, importing...
-13:18:17.893 index.html:1548    📍 Pin created with ID: 1777717097891
-13:18:17.893 index.html:1569    📷 Added 3 images
-13:18:17.894 index.html:1588    ✓ Successfully imported: المهندس مصري
-13:18:17.894 index.html:1535 
-🔍 Processing lead 18: ابو زياد
-13:18:17.895 index.html:1536    Location: {lat: 24.627483, lng: 46.573624, map_link: 'https://maps.google.com/?q=24.627483,46.573624'}
-13:18:17.895 index.html:1539    ✓ Has valid location, importing...
-13:18:17.897 index.html:1548    📍 Pin created with ID: 1777717097895
-13:18:17.898 index.html:1588    ✓ Successfully imported: ابو زياد
-13:18:17.899 index.html:1535 
-🔍 Processing lead 19: حارس باكستاني
-13:18:17.899 index.html:1536    Location: {lat: 24.627312, lng: 46.573433, map_link: 'https://maps.google.com/?q=24.627312,46.573433'}
-13:18:17.899     ✓ Has valid location, importing...
-13:18:17.901     📍 Pin created with ID: 1777717097900
-13:18:17.902     ✓ Successfully imported: حارس باكستاني
-13:18:17.903  
-🔍 Processing lead 20: ابراهيم
-13:18:17.903     Location: {lat: 24.628435, lng: 46.574177, map_link: 'https://maps.google.com/?q=24.628435,46.574177'}
-13:18:17.903     ✓ Has valid location, importing...
-13:18:17.905     📍 Pin created with ID: 1777717097903
-13:18:17.906     ✓ Successfully imported: ابراهيم
-13:18:17.907  
-🔍 Processing lead 21: ابو محمد
-13:18:17.907     Location: {lat: 24.623423, lng: 46.566563, map_link: 'https://maps.google.com/?q=24.623423,46.566563'}
-13:18:17.907     ✓ Has valid location, importing...
-13:18:17.909     📍 Pin created with ID: 1777717097907
-13:18:17.910     ✓ Successfully imported: ابو محمد
-13:18:17.910  
-🔍 Processing lead 22: عمار
-13:18:17.911     Location: null
-13:18:17.911  
-🔍 Processing lead 23: المحلات التجارية
-13:18:17.911     Location: null
-13:18:17.912  ⚠️ No leads with timestamps to create sessions
-13:18:17.924  
-📊 Import Summary:
-13:18:17.924  ✓ Successfully imported: 18 leads
-13:18:17.924  ✗ Skipped (no location): 5 leads
+13:50:46.410 firebase-config.js:30 Firebase initialized successfully
+13:50:46.414 auth.js:175 Auth module loaded
+13:50:46.416 db-sync.js:64 ⚠️ DBSync module loaded (disabled - stub only)
+13:50:46.419 firestore-sync.js:406 ✅ FirestoreSync module loaded
+13:50:46.580 index.html:3484 🔧 Initializing LeadSystem...
+13:50:46.583 index.html:3487 ✅ LeadSystem initialized successfully
+13:50:46.586 index.html:3890 ☁️ Cloud sync button initialized
+13:50:46.612 offline-queue.js:33 ✅ IndexedDB initialized
+13:50:46.619 offline-queue.js:65 📥 Queue loaded from IndexedDB: 0 operations
+13:50:46.619 offline-queue.js:242 ✅ OfflineQueue module loaded
+13:50:47.362 index.html:723  INITIALIZING MAP...
+13:50:47.371 index.html:736 Map created at zoom level: 15
+13:50:47.389 index.html:810 🔍 Requesting user location...
+13:50:47.393 index.html:2865  LiveProspect initialized
+13:50:47.393 index.html:2885  App initialized with modular panel
+13:50:47.568 leads.js:862 📥 Leads will be loaded via Firestore real-time listener
+13:50:47.568 leads.js:862 📥 Leads will be loaded via Firestore real-time listener
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.916 Fetch finished loading: POST "<URL>".
+13:50:48.521 index.html:2989 ✅ User authenticated: muhamad.shkeir@gmail.com
+13:50:48.522 db-sync.js:13 ⚠️ DBSync disabled - proper Firebase sync coming soon
+13:50:48.522 index.html:3521 🔒 Starting aggressive access monitoring for user: kUyVyvxeKDVtVJidxcbNyiU27Zc2
+13:50:48.522 index.html:3522 Disabled - no Firebase operations
+13:50:48.523 index.html:3611 🔔 Starting notification monitoring for admin
+13:50:48.523 index.html:3612 👤 Current user: {uid: 'kUyVyvxeKDVtVJidxcbNyiU27Zc2', email: 'muhamad.shkeir@gmail.com', displayName: 'muhamad shkeir', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocJDnqpBLMv3AMpt_XHiQHjJcXh0FWm4MedskbrvzY-cKVxxap98=s96-c', lastLogin: ti, …}
+13:50:48.523 index.html:3618 ✅ Admin notifications section shown
+13:50:48.523 index.html:3624 Disabled - no Firebase operations
+13:50:48.574 firestore-sync.js:49 ✅ FirestoreSync initialized for user: kUyVyvxeKDVtVJidxcbNyiU27Zc2
+13:50:48.577 leads.js:953 ✅ Firestore Sync initialized for leads
+13:50:48.581 firestore-sync.js:49 ✅ FirestoreSync initialized for user: kUyVyvxeKDVtVJidxcbNyiU27Zc2
+13:50:48.581 leads.js:953 ✅ Firestore Sync initialized for leads
+13:50:48.711 firestore-sync.js:76 📥 Leads synced from Firestore: 0
+13:50:48.711 leads.js:925 📥 Leads updated from Firestore: 0
+13:50:48.711 firestore-sync.js:76 📥 Leads synced from Firestore: 0
+13:50:48.712 leads.js:925 📥 Leads updated from Firestore: 0
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:04.794 Fetch failed loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:51:02.947 Fetch finished loading: GET "<URL>".
+13:50:49.528 index.html:3001 📥 Loading leads after login...
+13:50:49.528 leads.js:862 📥 Leads will be loaded via Firestore real-time listener
+13:50:57.862 index.html:2073 ✅ Session started at: v {lat: 24.606345641670234, lng: 46.527935230237034}
+13:50:57.864 index.html:2149 ✅ Session started
+13:50:57.999 index.html:1939 💾 Active session state updated
+13:50:57.999 index.html:2136 📍 GPS Update: v {lat: 24.606345641670234, lng: 46.527935230237034} Distance: 0.00 km
+13:51:00.141 index.html:2321 🎮 Simulation mode ENABLED
+13:51:01.024 index.html:981 🗺️ Map clicked at: v {lat: 24.605352334979266, lng: 46.51486873626709}
+13:51:01.024 index.html:994 🎮 Planning route to: v {lat: 24.605352334979266, lng: 46.51486873626709}
+13:51:01.991 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.527935230237034,24.606345641670234;46.51486873626709,24.605352334979266?overview=false&alternatives=true&steps=true&hints=;".
+corslite @ leaflet-routing-machine.js:88
+route @ leaflet-routing-machine.js:17977
+planRoute @ index.html:1282
+onMapClick @ index.html:997
+fire @ Events.js:195
+_fireDOMEvent @ Map.js:1452
+_handleDOMEvent @ Map.js:1401
+o @ DomEvent.js:108
+13:51:02.273 leads.js:935 🔄 Sync started
+13:51:02.372 index.html:1416 📍 Station recorded: {number: 1, lat: 24.60542, lng: 46.51498, address: 'Al Rith Mountain', arrivalTime: '2026-05-02T10:51:01.810Z', …}
+13:51:02.582 firestore-sync.js:76 📥 Leads synced from Firestore: 1
+13:51:02.583 leads.js:925 📥 Leads updated from Firestore: 1
+13:51:02.586 leads.js:901 ✅ Loaded 1 leads successfully
+13:51:02.660 firestore-sync.js:76 📥 Leads synced from Firestore: 1
+13:51:02.661 leads.js:925 📥 Leads updated from Firestore: 1
+13:51:02.664 leads.js:901 ✅ Loaded 1 leads successfully
+13:51:02.745 firestore-sync.js:185 ✅ Lead saved to Firestore: 1777719062271
+13:51:02.745 leads.js:940 ✅ Sync completed
+13:51:02.748 leads.js:266 ✅ New lead synced: 1777719062271
+13:51:02.862 firestore-sync.js:76 📥 Leads synced from Firestore: 1
+13:51:02.862 leads.js:925 📥 Leads updated from Firestore: 1
+13:51:02.864 leads.js:901 ✅ Loaded 1 leads successfully
+13:51:02.868 firestore-sync.js:76 📥 Leads synced from Firestore: 1
+13:51:02.869 leads.js:925 📥 Leads updated from Firestore: 1
+13:51:02.871 leads.js:901 ✅ Loaded 1 leads successfully
+13:51:03.672 leads.js:935 🔄 Sync started
+13:51:03.798 leads.js:945 ❌ Sync error: {type: 'CONFLICT', message: 'Lead was modified elsewhere', serverData: {…}, localData: {…}}
+(anonymous) @ leads.js:945
+saveLead @ firestore-sync.js:160
+await in saveLead
+saveLead @ leads.js:542
+onclick @ index.html:3895
+13:51:03.801 leads.js:544 ❌ Failed to sync lead: undefined
+saveLead @ leads.js:544
+await in saveLead
+onclick @ index.html:3895
+13:51:05.504 index.html:981 🗺️ Map clicked at: v {lat: 24.620334546136498, lng: 46.52001857757569}
+13:51:05.505 index.html:994 🎮 Planning route to: v {lat: 24.620334546136498, lng: 46.52001857757569}
+13:51:05.982 leaflet-routing-machine.js:88 XHR finished loading: GET "https://router.project-osrm.org/route/v1/driving/46.51486873626709,24.605352334979266;46.52001857757569,24.620334546136498?overview=false&alternatives=true&steps=true&hints=;".
+corslite @ leaflet-routing-machine.js:88
+route @ leaflet-routing-machine.js:17977
+planRoute @ index.html:1282
+onMapClick @ index.html:997
+fire @ Events.js:195
+_fireDOMEvent @ Map.js:1452
+_handleDOMEvent @ Map.js:1401
+o @ DomEvent.js:108
+13:51:06.384 index.html:1939 💾 Active session state updated
+13:51:06.856 index.html:1416 📍 Station recorded: {number: 2, lat: 24.62042, lng: 46.52016, address: 'Zahrat Laban District', arrivalTime: '2026-05-02T10:51:06.473Z', …}
+13:51:07.735 leads.js:935 🔄 Sync started
+13:51:07.916 firestore-sync.js:76 📥 Leads synced from Firestore: 2
+13:51:07.917 leads.js:925 📥 Leads updated from Firestore: 2
+13:51:07.921 leads.js:901 ✅ Loaded 2 leads successfully
+13:51:07.927 firestore-sync.js:76 📥 Leads synced from Firestore: 2
+13:51:07.927 leads.js:925 📥 Leads updated from Firestore: 2
+13:51:07.931 leads.js:901 ✅ Loaded 2 leads successfully
+13:51:07.994 firestore-sync.js:185 ✅ Lead saved to Firestore: 1777719067734
+13:51:07.994 leads.js:940 ✅ Sync completed
+13:51:07.997 leads.js:266 ✅ New lead synced: 1777719067734
+13:51:08.285 firestore-sync.js:76 📥 Leads synced from Firestore: 2
+13:51:08.285 leads.js:925 📥 Leads updated from Firestore: 2
+13:51:08.288 leads.js:901 ✅ Loaded 2 leads successfully
+13:51:08.292 firestore-sync.js:76 📥 Leads synced from Firestore: 2
+13:51:08.292 leads.js:925 📥 Leads updated from Firestore: 2
+13:51:08.295 leads.js:901 ✅ Loaded 2 leads successfully
+13:51:08.704 leads.js:935 🔄 Sync started
+13:51:08.931 leads.js:945 ❌ Sync error: {type: 'CONFLICT', message: 'Lead was modified elsewhere', serverData: {…}, localData: {…}}
+(anonymous) @ leads.js:945
+saveLead @ firestore-sync.js:160
+await in saveLead
+saveLead @ leads.js:542
+onclick @ index.html:3895
+13:51:08.934 leads.js:544 ❌ Failed to sync lead: undefined
+saveLead @ leads.js:544
+await in saveLead
+onclick @ index.html:3895
+13:51:11.566 index.html:2195 ⏹️ Session stopped - Duration: 13 s, Distance: 4.84 km
+13:51:12.693 index.html:2279 ✅ Session updated
+13:51:12.697 panel.js:524 🗑️ Delete button found for session: 1777719072693
+13:51:13.247 firestore-sync.js:352 🔄 FirestoreSync: Manual sync triggered
+13:51:13.248 offline-queue.js:145 ✅ Queue is empty - nothing to sync
+13:51:13.248 index.html:3059 ✅ Manual sync completed: {success: true, synced: 0}
+13:51:15.237 firestore-sync.js:352 🔄 FirestoreSync: Manual sync triggered
+13:51:15.237 offline-queue.js:145 ✅ Queue is empty - nothing to sync
+13:51:15.238 index.html:3059 ✅ Manual sync completed: {success: true, synced: 0}

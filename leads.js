@@ -25,6 +25,40 @@ const roles = [
 const phases = ['ST', 'INT', 'FD', 'EX', 'CL'];
 const statuses = ['New', 'Active', 'On Hold', 'Closed'];
 
+// Toast notification helper
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    // Color based on type
+    const colors = {
+        'success': '#10b981',
+        'error': '#ef4444',
+        'info': '#3b82f6'
+    };
+    const bgColor = colors[type] || colors['info'];
+    
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        background: ${bgColor};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        font-size: 14px;
+        font-weight: 600;
+        animation: slideUp 0.3s ease;
+        max-width: 300px;
+        word-wrap: break-word;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
 // Initialize lead system
 function initLeadSystem() {
     // Wait for map to be available
@@ -32,6 +66,9 @@ function initLeadSystem() {
         if (window.leafletMap) {
             mapInstance = window.leafletMap;
             clearInterval(checkMap);
+            
+            // Initialize Firestore sync
+            initFirestoreSync();
             
             // Load saved leads after map is ready
             loadLeadsFromStorage();
@@ -232,6 +269,19 @@ function addLeadPin(lat, lng, skipForm = false) {
     
     pins.push(newPin);
     renderPin(newPin);
+    
+    // Sync new pin to Firestore immediately
+    if (window.FirestoreSync && window.currentUser) {
+        window.FirestoreSync.saveLead(pinId, newPin).then(result => {
+            if (result.success) {
+                console.log('✅ New lead synced:', pinId);
+            } else if (result.queued) {
+                console.log('📝 New lead queued:', pinId);
+            } else {
+                console.error('❌ Failed to sync new lead:', result.error);
+            }
+        });
+    }
     
     // Record action for undo/redo
     if (window.recordAction) {
@@ -462,7 +512,7 @@ function openForm(id) {
 }
 
 // Save lead
-function saveLead(e) {
+async function saveLead(e) {
     e?.preventDefault();
     
     const pinId = document.getElementById('currentPinId')?.value;
@@ -498,8 +548,18 @@ function saveLead(e) {
     // Render new marker
     renderPin(pin);
     
-    // Sync to Firestore (localStorage disabled)
-    saveLeadsToStorage();
+    // Sync to Firestore
+    if (window.FirestoreSync && window.currentUser) {
+        const result = await window.FirestoreSync.saveLead(pin.id, pin);
+        if (!result.success && !result.queued) {
+            console.error('❌ Failed to sync lead:', result.error);
+            showToast('Failed to sync lead', 'error');
+        } else if (result.queued) {
+            showToast('Lead queued for sync', 'info');
+        } else {
+            showToast('Lead synced', 'success');
+        }
+    }
     
     closeModal();
     updateLeadsTable();
@@ -511,7 +571,7 @@ function closeModal() {
 }
 
 // Delete pin
-function deletePin() {
+async function deletePin() {
     const id = parseInt(document.getElementById('currentPinId').value);
     const idx = pins.findIndex(p => p.id === id);
     
@@ -527,12 +587,23 @@ function deletePin() {
         }
     });
     
+    // Sync deletion to Firestore
+    if (window.FirestoreSync && window.currentUser) {
+        const result = await window.FirestoreSync.deleteLead(id);
+        if (!result.success && !result.queued) {
+            console.error('❌ Failed to delete lead:', result.error);
+            showToast('Failed to delete lead', 'error');
+        } else if (result.queued) {
+            showToast('Deletion queued for sync', 'info');
+        }
+    }
+    
     closeModal();
     updateLeadsTable();
 }
 
 // Delete pin from details modal
-function deleteFromDetails(id) {
+async function deleteFromDetails(id) {
     if (!confirm('Are you sure you want to delete this lead pin?')) return;
     
     const idx = pins.findIndex(p => p.id === id);
@@ -549,6 +620,17 @@ function deleteFromDetails(id) {
             renderPin(p);
         }
     });
+    
+    // Sync deletion to Firestore
+    if (window.FirestoreSync && window.currentUser) {
+        const result = await window.FirestoreSync.deleteLead(id);
+        if (!result.success && !result.queued) {
+            console.error('❌ Failed to delete lead:', result.error);
+            showToast('Failed to delete lead', 'error');
+        } else if (result.queued) {
+            showToast('Deletion queued for sync', 'info');
+        }
+    }
     
     closeLeadDetails();
     updateLeadsTable();
@@ -784,10 +866,11 @@ function saveLeadsToStorage() {
     }
 }
 
-// Load leads from local memory (Firestore sync disabled)
+// Load leads from Firestore
 async function loadLeadsFromStorage() {
-    // Disabled - no-op
-    return;
+    // This is now handled by the real-time listener in initFirestoreSync
+    // The listener will automatically update pins when Firestore data changes
+    console.log('📥 Leads will be loaded via Firestore real-time listener');
 }
 
 // Helper function to restore leads
@@ -832,6 +915,55 @@ function restoreLeads(leadsData) {
     if (window.SessionSummary) {
         window.SessionSummary.updateTable();
     }
+}
+
+// Initialize Firestore Sync
+async function initFirestoreSync() {
+    // Wait for auth to be ready
+    const checkAuth = setInterval(async () => {
+        if (window.currentUser && window.db && window.FirestoreSync) {
+            clearInterval(checkAuth);
+            
+            // Initialize sync module
+            const initialized = window.FirestoreSync.init(window.db, window.currentUser.uid);
+            if (!initialized) {
+                console.error('❌ Failed to initialize FirestoreSync');
+                return;
+            }
+            
+            // Listen to leads changes
+            window.FirestoreSync.listenToLeads((leads) => {
+                console.log('📥 Leads updated from Firestore:', leads.length);
+                // Update local pins from Firestore
+                if (leads.length > 0) {
+                    restoreLeads(leads);
+                    updateLeadsTable();
+                }
+            });
+            
+            // Listen to sync events
+            window.FirestoreSync.onSyncStart(() => {
+                console.log('🔄 Sync started');
+                showToast('Syncing...', 'info');
+            });
+            
+            window.FirestoreSync.onSyncEnd(() => {
+                console.log('✅ Sync completed');
+                showToast('Sync complete', 'success');
+            });
+            
+            window.FirestoreSync.onError((error) => {
+                console.error('❌ Sync error:', error);
+                if (error.type === 'CONFLICT') {
+                    showToast('Conflict: Server version used', 'error');
+                } else {
+                    showToast('Sync error: ' + (error.message || 'Unknown error'), 'error');
+                }
+            });
+            
+            console.log('✅ Firestore Sync initialized for leads');
+        }
+    }, 100);
 }
 
 // Export LeadSystem API

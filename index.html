@@ -446,6 +446,19 @@
             <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importLeadsJSON(event)">
         </label>
         
+        <!-- Manual Sync Button -->
+        <div class="relative">
+            <button id="manual-sync-btn" onclick="triggerManualSync()" class="bg-white w-[56px] h-[56px] flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:bg-gray-50 transition-all" title="Manual Sync">
+                <svg id="sync-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path>
+                </svg>
+            </button>
+            <!-- Queue Status Badge -->
+            <span id="queue-badge" class="hidden absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] rounded-full min-w-[20px] h-[20px] flex items-center justify-center font-bold shadow-lg px-1">0</span>
+        </div>
+        
         <!-- Map Tools Collapsible Menu -->
         <div class="relative">
             <!-- Toggle Button -->
@@ -1595,6 +1608,22 @@
                         // Update session summary
                         if (window.SessionSummary) {
                             window.SessionSummary.updateTable();
+                        }
+                        
+                        // SYNC ALL IMPORTED LEADS TO FIRESTORE
+                        if (window.FirestoreSync && window.currentUser) {
+                            console.log('🔄 Syncing', importCount, 'imported leads to Firestore...');
+                            const pins = window.LeadSystem.getAllPins();
+                            pins.forEach(async (pin) => {
+                                const result = await window.FirestoreSync.saveLead(pin.id, pin);
+                                if (result.success) {
+                                    console.log('✅ Synced lead:', pin.id);
+                                } else if (result.queued) {
+                                    console.log('📝 Lead queued:', pin.id);
+                                } else {
+                                    console.error('❌ Failed to sync lead:', pin.id, result.error);
+                                }
+                            });
                         }
                     }
                     
@@ -2922,6 +2951,8 @@
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
     <script src="db-sync.js"></script>
+    <script src="offline-queue.js"></script>
+    <script src="firestore-sync.js"></script>
     <script>
         // Wait for Firebase to initialize
         function waitForFirebase() {
@@ -3006,6 +3037,118 @@
                 }
             });
         }
+        
+        // Manual Sync Trigger - Non-blocking async
+        function triggerManualSync() {
+            if (!window.FirestoreSync) {
+                console.error('❌ FirestoreSync not available');
+                return;
+            }
+            
+            const status = window.FirestoreSync.getSyncStatus();
+            if (status.syncInProgress) {
+                console.warn('⚠️ Sync already in progress');
+                return;
+            }
+            
+            const btn = document.getElementById('manual-sync-btn');
+            const icon = btn.querySelector('svg');
+            const badge = document.getElementById('queue-badge');
+            
+            // Start async sync in background (non-blocking)
+            (async () => {
+                btn.disabled = true;
+                icon.style.animation = 'spin 1s linear infinite';
+                
+                let synced = 0;
+                const queueStatus = window.OfflineQueue.getQueueStatus();
+                const totalOps = queueStatus.size;
+                
+                try {
+                    // Get queue operations
+                    const queue = window.OfflineQueue.queue || [];
+                    
+                    // Sync each operation individually with progress updates
+                    for (const queueItem of queue) {
+                        try {
+                            const result = await window.FirestoreSync.executeOperation(queueItem);
+                            if (result.success) {
+                                synced++;
+                                // Update button with progress
+                                btn.textContent = `${synced}/${totalOps}`;
+                                btn.style.fontSize = '12px';
+                                btn.style.fontWeight = 'bold';
+                            }
+                        } catch (error) {
+                            console.error('Error syncing operation:', error);
+                        }
+                        // Yield to browser to prevent blocking
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                    
+                    // Clear queue after sync
+                    await window.OfflineQueue.clear();
+                    
+                    // Show completion
+                    btn.textContent = '✔';
+                    btn.style.fontSize = '20px';
+                    btn.style.color = '#10b981';
+                    showToast(`✅ Synced ${synced} operations`, 'success');
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                        btn.textContent = '';
+                        btn.style.fontSize = '';
+                        btn.style.color = '';
+                        btn.innerHTML = '<svg id="sync-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path></svg>';
+                        badge.classList.add('hidden');
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('❌ Sync error:', error);
+                    btn.textContent = '✗';
+                    btn.style.fontSize = '20px';
+                    btn.style.color = '#ef4444';
+                    showToast('Sync failed', 'error');
+                    
+                    setTimeout(() => {
+                        btn.textContent = '';
+                        btn.style.fontSize = '';
+                        btn.style.color = '';
+                        btn.innerHTML = '<svg id="sync-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path></svg>';
+                    }, 2000);
+                } finally {
+                    btn.disabled = false;
+                    icon.style.animation = '';
+                }
+            })(); // Execute immediately but non-blocking
+        }
+        
+        // Add spin animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Update queue badge every 2 seconds
+        setInterval(() => {
+            if (window.OfflineQueue) {
+                const queueSize = window.OfflineQueue.getQueueSize();
+                const badge = document.getElementById('queue-badge');
+                if (badge) {
+                    if (queueSize > 0) {
+                        badge.textContent = queueSize;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            }
+        }, 2000);
         
         // Handle visitor access
         async function handleVisitorAccess(linkId) {

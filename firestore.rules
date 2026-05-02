@@ -63,6 +63,10 @@ service cloud.firestore {
       
       // Anonymous visitors can read any user's leads (read-only)
       allow read: if isVisitor();
+      
+      // Validate required fields on write
+      allow write: if request.resource.data.keys().hasAll(['id', 'lat', 'lng']) ||
+                      request.resource.data.keys().hasAll(['_syncVersion']);
     }
     
     // Sessions collection
@@ -77,6 +81,10 @@ service cloud.firestore {
       
       // Anonymous visitors can read any user's sessions (read-only)
       allow read: if isVisitor();
+      
+      // Validate required fields on write
+      allow write: if request.resource.data.keys().hasAll(['id', 'timestamp']) ||
+                      request.resource.data.keys().hasAll(['_syncVersion']);
     }
     
     // Invites collection
