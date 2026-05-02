@@ -35,6 +35,9 @@ function initLeadSystem() {
             mapInstance = window.leafletMap;
             console.log('✅ Map instance connected');
             clearInterval(checkMap);
+            
+            // Load saved leads after map is ready
+            loadLeadsFromStorage();
         }
     }, 100);
     
@@ -97,17 +100,49 @@ function loadModals() {
                         </svg>
                     </button>
                 </div>
-                <div class="p-6 space-y-5 overflow-y-auto flex-1 custom-scroll">
+                <div class="p-6 space-y-3 overflow-y-auto flex-1 custom-scroll">
                     <input type="hidden" id="currentPinId">
-                    <div class="space-y-2">
+                    
+                    <!-- Urgency (Priority) -->
+                    <div class="space-y-1.5">
                         <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Urgency</label>
                         <div class="grid grid-cols-4 gap-2" id="priority-options"></div>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Status</label>
-                        <div class="flex gap-2" id="status-options"></div>
+                    
+                    <!-- Name -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Name</label>
+                        <input type="text" id="contactName" placeholder="Contact name..." class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-gray-400 transition-colors">
                     </div>
-                    <div class="space-y-2">
+                    
+                    <!-- Mobile -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Mobile</label>
+                        <input type="text" id="contactPhone" placeholder="05XXXXXXXX" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-gray-400 transition-colors">
+                    </div>
+                    
+                    <!-- Role & Phase -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Role</label>
+                            <select id="contactRole" onchange="LeadSystem.updatePreview()" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none focus:border-gray-400 transition-colors">
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Phase</label>
+                            <select id="projectPhase" onchange="LeadSystem.updatePreview()" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none focus:border-gray-400 transition-colors">
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Notes</label>
+                        <textarea id="siteNotes" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-gray-400 transition-colors h-20 resize-none" placeholder="Additional notes..."></textarea>
+                    </div>
+                    
+                    <!-- Site Photos -->
+                    <div class="space-y-1.5">
                         <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Site Photos</label>
                         <div class="flex flex-wrap gap-2" id="image-preview-container">
                             <label class="w-16 h-16 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-center cursor-pointer hover:border-black transition-colors">
@@ -119,21 +154,12 @@ function loadModals() {
                             </label>
                         </div>
                     </div>
-                    <div class="p-4 bg-gray-50 rounded-2xl space-y-4 border border-gray-100">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-gray-400 uppercase">Role</label>
-                                <select id="contactRole" onchange="LeadSystem.updatePreview()" class="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none"></select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-gray-400 uppercase">Phase</label>
-                                <select id="projectPhase" onchange="LeadSystem.updatePreview()" class="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm font-bold outline-none"></select>
-                            </div>
-                        </div>
-                        <input type="text" id="contactName" placeholder="Name..." class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none">
-                        <input type="text" id="contactPhone" placeholder="05XXXXXXXX" class="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none">
+                    
+                    <!-- Status -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Status</label>
+                        <div class="flex gap-2" id="status-options"></div>
                     </div>
-                    <textarea id="siteNotes" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none h-24 resize-none" placeholder="Notes..."></textarea>
                 </div>
                 <div class="p-4 bg-gray-50 border-t flex items-center gap-3">
                     <button id="btn-delete" onclick="LeadSystem.deletePin()" class="hidden p-3 bg-red-50 text-red-500 rounded-xl">
@@ -199,8 +225,8 @@ function setupMapClickForLeads() {
 }
 
 // Add lead pin at specific location
-function addLeadPin(lat, lng) {
-    console.log('📍 addLeadPin called with:', lat, lng);
+function addLeadPin(lat, lng, skipForm = false) {
+    console.log('📍 addLeadPin called with:', lat, lng, 'skipForm:', skipForm);
     
     const pinId = Date.now();
     const newPin = {
@@ -222,6 +248,9 @@ function addLeadPin(lat, lng) {
     renderPin(newPin);
     console.log('✅ Pin rendered on map');
     
+    // Save to localStorage
+    saveLeadsToStorage();
+    
     // Record action for undo/redo
     if (window.recordAction) {
         window.recordAction({
@@ -233,8 +262,11 @@ function addLeadPin(lat, lng) {
         });
     }
     
-    openForm(pinId);
-    console.log('✅ Opening form for pin:', pinId);
+    // Only open form if not skipped (e.g., during import)
+    if (!skipForm) {
+        openForm(pinId);
+        console.log('✅ Opening form for pin:', pinId);
+    }
 }
 
 // Add lead at map center
@@ -287,8 +319,8 @@ function renderPin(pinObj) {
 
 // Create pin HTML
 function createPinHTML(pin, withTooltip = true) {
-    const prio = priorities.find(p => p.label === pin.priority);
-    const role = roles.find(r => r.label === pin.role);
+    const prio = priorities.find(p => p.label === pin.priority) || priorities[2]; // Default to Normal
+    const role = roles.find(r => r.label === pin.role) || roles[0]; // Default to Owner
     
     return `<div class="relative flex items-center justify-center">
         ${withTooltip ? `<div class="tooltip">
@@ -321,6 +353,9 @@ function initFormOptions() {
     // Priority buttons
     const priorityContainer = document.getElementById('priority-options');
     if (priorityContainer) {
+        // CLEAR EXISTING BUTTONS FIRST to prevent duplicates
+        priorityContainer.innerHTML = '';
+        
         priorities.forEach(p => {
             const btn = document.createElement('button');
             btn.className = 'priority-btn py-2 rounded-lg text-[10px] font-black opacity-60 text-white';
@@ -335,6 +370,9 @@ function initFormOptions() {
     // Status buttons
     const statusContainer = document.getElementById('status-options');
     if (statusContainer) {
+        // CLEAR EXISTING BUTTONS FIRST to prevent duplicates
+        statusContainer.innerHTML = '';
+        
         statuses.forEach(s => {
             const btn = document.createElement('button');
             btn.className = 'status-btn flex-1 py-1.5 rounded-lg text-[10px] font-bold border bg-white text-gray-500';
@@ -348,6 +386,9 @@ function initFormOptions() {
     // Role dropdown
     const roleSelect = document.getElementById('contactRole');
     if (roleSelect) {
+        // CLEAR EXISTING OPTIONS FIRST to prevent duplicates
+        roleSelect.innerHTML = '';
+        
         roles.forEach(r => {
             const option = document.createElement('option');
             option.value = r.label;
@@ -359,6 +400,9 @@ function initFormOptions() {
     // Phase dropdown
     const phaseSelect = document.getElementById('projectPhase');
     if (phaseSelect) {
+        // CLEAR EXISTING OPTIONS FIRST to prevent duplicates
+        phaseSelect.innerHTML = '';
+        
         phases.forEach(p => {
             const option = document.createElement('option');
             option.value = p;
@@ -487,6 +531,9 @@ function saveLead(e) {
     // Render new marker
     renderPin(pin);
     
+    // Save to localStorage
+    saveLeadsToStorage();
+    
     closeModal();
     updateLeadsTable();
 }
@@ -513,6 +560,9 @@ function deletePin() {
         }
     });
     
+    // Save to localStorage
+    saveLeadsToStorage();
+    
     closeModal();
     updateLeadsTable();
 }
@@ -535,6 +585,9 @@ function deleteFromDetails(id) {
             renderPin(p);
         }
     });
+    
+    // Save to localStorage
+    saveLeadsToStorage();
     
     closeLeadDetails();
     updateLeadsTable();
@@ -701,16 +754,8 @@ function closeLeadDetails() {
         modal.style.display = 'none';
     }
     
-    // Restore Session Logs panel if it was open before
-    if (window._sessionLogsPanelWasOpen) {
-        window._sessionLogsPanelWasOpen = false;
-        setTimeout(() => {
-            const historyPanel = document.getElementById('history-panel');
-            if (historyPanel && historyPanel.classList.contains('hidden') && window.toggleHistory) {
-                window.toggleHistory();
-            }
-        }, 150);
-    }
+    // Don't auto-reopen session summary - let user control it
+    window._sessionLogsPanelWasOpen = false;
 }
 
 // Edit lead (from details modal)
@@ -753,6 +798,89 @@ function getAllPins() {
     return pins;
 }
 
+// Save leads to localStorage
+function saveLeadsToStorage() {
+    try {
+        const leadsData = pins.map(pin => ({
+            id: pin.id,
+            lat: pin.lat,
+            lng: pin.lng,
+            index: pin.index,
+            priority: pin.priority,
+            status: pin.status,
+            role: pin.role,
+            phase: pin.phase,
+            images: pin.images,
+            data: pin.data,
+            timestamp: pin.timestamp,
+            date: pin.date,
+            time: pin.time
+        }));
+        
+        localStorage.setItem('lp_leads', JSON.stringify(leadsData));
+        console.log('💾 Saved', leadsData.length, 'leads to localStorage');
+    } catch (e) {
+        console.error('❌ Failed to save leads:', e);
+    }
+}
+
+// Load leads from localStorage
+function loadLeadsFromStorage() {
+    try {
+        const saved = localStorage.getItem('lp_leads');
+        if (!saved) {
+            console.log('📭 No saved leads found');
+            return;
+        }
+        
+        const leadsData = JSON.parse(saved);
+        console.log('📂 Loading', leadsData.length, 'leads from localStorage');
+        
+        // Clear existing pins
+        pins.forEach(pin => {
+            if (pin.marker && mapInstance) {
+                mapInstance.removeLayer(pin.marker);
+            }
+        });
+        pins.length = 0;
+        
+        // Restore pins
+        leadsData.forEach(data => {
+            const pin = {
+                id: data.id,
+                lat: data.lat,
+                lng: data.lng,
+                index: data.index,
+                priority: data.priority || 'Normal',
+                status: data.status || 'Active',
+                role: data.role || 'Owner',
+                phase: data.phase || 'ST',
+                images: data.images || [],
+                data: data.data || { name: '', phone: '', notes: '' },
+                timestamp: data.timestamp,
+                date: data.date,
+                time: data.time
+            };
+            
+            pins.push(pin);
+            
+            // Render pin on map if map is ready
+            if (mapInstance) {
+                renderPin(pin);
+            }
+        });
+        
+        console.log('✅ Loaded', pins.length, 'leads successfully');
+        
+        // Update session summary if available
+        if (window.SessionSummary) {
+            window.SessionSummary.updateTable();
+        }
+    } catch (e) {
+        console.error('❌ Failed to load leads:', e);
+    }
+}
+
 // Export LeadSystem API
 window.LeadSystem = {
     init: initLeadSystem,
@@ -771,7 +899,8 @@ window.LeadSystem = {
     updatePreview,
     getAllPins,
     setPriority,
-    setStatus
+    setStatus,
+    createPinHTML
 };
 
 // Auto-initialize when DOM is ready
@@ -795,7 +924,7 @@ const SessionSummary = {
         if (!tbody) return;
         
         if (pins.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-gray-400 italic py-8">No leads captured yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center text-gray-400 italic py-8">No leads captured yet</td></tr>';
             if (subtitle) subtitle.innerText = '0 Leads • 0.0 km';
             return;
         }
@@ -825,11 +954,24 @@ const SessionSummary = {
             // Pin HTML
             const pinHtml = createPinHTML(p, false);
             
+            // Format date/time if available
+            let dateTimeHtml = '-';
+            if (p.date && p.time) {
+                const date = new Date(p.timestamp);
+                const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }); // "09 Apr"
+                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); // "01:57 PM"
+                dateTimeHtml = `<div class="text-[10px]">
+                    <div class="font-bold text-gray-900">${dateStr}</div>
+                    <div class="text-gray-400">${timeStr}</div>
+                </div>`;
+            }
+            
             tr.innerHTML = `
                 <td class="text-center cursor-pointer hover:bg-gray-50" onclick="window.SessionSummary.viewLeadDetails(${p.id})" title="Click to view lead details">
                     ${pinHtml}
                 </td>
                 <td class="font-bold text-gray-400">#${p.index}</td>
+                <td>${dateTimeHtml}</td>
                 <td>${imgHtml}</td>
                 <td>
                     <div class="font-bold text-gray-900">${p.data.name || 'Anonymous'}</div>
@@ -888,10 +1030,127 @@ const SessionSummary = {
         });
     },
     
-    // Export to PDF (placeholder - would need PDF library)
+    // Export to PDF
     exportPDF() {
-        alert('PDF export feature coming soon! For now, use the markdown export or print the page.');
-        console.log('📄 PDF export requested');
+        if (!window.jspdf) {
+            alert('PDF library not loaded. Please refresh the page and try again.');
+            return;
+        }
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 12;
+        let yPos = 0;
+
+        // Helper function to convert hex to RGB
+        const hexToRgb = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        };
+
+        // White background
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+        // Header
+        doc.setTextColor(15, 23, 42);
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text('Session Summary', margin, 15);
+        
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 116, 139);
+        const distance = window.getSessionDistance ? window.getSessionDistance() : 0;
+        const sessionMeta = `${pins.length} LEADS • ${distance.toFixed(2)} KM • ${new Date().toLocaleDateString('en-GB')}`;
+        doc.text(sessionMeta, margin, 21);
+
+        // Separator line
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.line(margin, 24, pageWidth - margin, 24);
+
+        yPos = 30;
+
+        // Export each lead
+        pins.forEach((pin, index) => {
+            const baseHeight = 30;
+            
+            // Page break check
+            if (yPos + baseHeight > pageHeight - 15) {
+                doc.addPage();
+                yPos = 15;
+            }
+
+            // Priority indicator circle
+            const prio = priorities.find(p => p.label === pin.priority) || priorities[2];
+            const rgb = hexToRgb(prio.color);
+            doc.setFillColor(rgb.r, rgb.g, rgb.b);
+            doc.circle(margin + 4, yPos + 3, 2.5, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(7);
+            doc.text(`${pin.index}`, margin + 4, yPos + 4.2, { align: 'center' });
+
+            // Lead info
+            const col1X = margin + 10;
+            const col2X = margin + 100;
+            
+            // Name (English translations already loaded from JSON)
+            doc.setTextColor(15, 23, 42);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(11);
+            const name = pin.data.name || 'Anonymous';
+            doc.text(name, col1X, yPos + 4);
+            
+            // Phone
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.setTextColor(100, 116, 139);
+            doc.text(pin.data.phone || '-', col1X, yPos + 9);
+            
+            // Date/Time if available
+            if (pin.date && pin.time) {
+                const date = new Date(pin.timestamp);
+                const dateStr = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                doc.text(`${dateStr} ${timeStr}`, col1X, yPos + 14);
+            }
+            
+            // Role & Phase
+            doc.setTextColor(15, 23, 42);
+            doc.text(`${pin.role} • ${pin.phase}`, col2X, yPos + 4);
+            
+            // Status & Priority
+            doc.setTextColor(100, 116, 139);
+            doc.text(`${pin.status} • ${pin.priority}`, col2X, yPos + 9);
+            
+            // Notes (truncated, English translations already loaded)
+            if (pin.data.notes) {
+                doc.setFontSize(8);
+                const notes = pin.data.notes.substring(0, 50) + (pin.data.notes.length > 50 ? '...' : '');
+                doc.text(notes, col1X, yPos + 19);
+            }
+            
+            // Separator
+            doc.setDrawColor(241, 245, 249);
+            doc.setLineWidth(0.2);
+            doc.line(margin, yPos + 24, pageWidth - margin, yPos + 24);
+            
+            yPos += 28;
+        });
+
+        // Save PDF
+        const filename = `session-summary-${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(filename);
+        
+        console.log('✅ PDF exported:', filename);
     }
 };
 

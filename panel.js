@@ -404,18 +404,33 @@ function renderRecordingItem(session, container) {
     }
     
     item.innerHTML = `
+        <!-- Map Thumbnail Preview -->
+        <div class="relative w-full h-32 bg-gray-100 rounded-t-2xl overflow-hidden mb-2">
+            <div id="session-map-${session.id}" class="w-full h-full"></div>
+        </div>
+        
         <!-- Session Header -->
         <div class="flex items-center justify-between p-4 bg-black/[0.03] rounded-2xl hover:bg-black/[0.05] transition-all cursor-pointer">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-1">
                 <div class="w-2 h-2 rounded-full bg-blue-500"></div>
                 <div>
                     <p class="text-xs font-bold text-black">${dateStr}, ${locationName}</p>
                     <p class="text-[9px] font-medium text-black/30 uppercase">${session.distance.toFixed(1)} KM • ${durationMin} MIN</p>
                 </div>
             </div>
-            <svg class="chevron-icon opacity-20 transition-transform duration-300" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <path d="M9 18l6-6-6-6"/>
-            </svg>
+            <div class="flex items-center gap-2">
+                <button class="delete-session-btn p-2 hover:bg-red-50 rounded-lg transition-all" data-session-id="${session.id}" title="Delete Session">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-black/20 hover:text-red-500 transition-colors">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                </button>
+                <svg class="chevron-icon opacity-20 transition-transform duration-300" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </div>
         </div>
         
         <!-- Expandable Details -->
@@ -492,7 +507,10 @@ function renderRecordingItem(session, container) {
     const details = item.querySelector('.session-details');
     const chevron = item.querySelector('.chevron-icon');
     
-    header.addEventListener('click', () => {
+    header.addEventListener('click', (e) => {
+        // Don't toggle if clicking delete button
+        if (e.target.closest('.delete-session-btn')) return;
+        
         const isHidden = details.classList.contains('hidden');
         details.classList.toggle('hidden');
         if (chevron) {
@@ -500,12 +518,28 @@ function renderRecordingItem(session, container) {
         }
     });
     
+    // Add click handler for delete session button
+    const deleteSessionBtn = item.querySelector('.delete-session-btn');
+    if (deleteSessionBtn) {
+        console.log('🗑️ Delete button found for session:', deleteSessionBtn.getAttribute('data-session-id'));
+        deleteSessionBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const sessionId = parseFloat(deleteSessionBtn.getAttribute('data-session-id')); // USE parseFloat instead of parseInt
+            console.log('🗑️ Delete button clicked for session ID:', sessionId);
+            // No confirmation - direct delete
+            deleteSession(sessionId);
+        });
+    } else {
+        console.error('❌ Delete session button NOT found in item!');
+    }
+    
     // Add click handlers for "View Contact" buttons
     const viewLeadButtons = item.querySelectorAll('.view-lead-btn');
     viewLeadButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const leadId = parseInt(btn.getAttribute('data-lead-id'));
+            const leadId = parseFloat(btn.getAttribute('data-lead-id')); // USE parseFloat
             if (window.LeadSystem && window.LeadSystem.openLeadDetails) {
                 window.LeadSystem.openLeadDetails(leadId);
             }
@@ -530,7 +564,7 @@ function renderRecordingItem(session, container) {
     deleteButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const sessionId = parseInt(btn.getAttribute('data-session-id'));
+            const sessionId = parseFloat(btn.getAttribute('data-session-id')); // USE parseFloat
             const stationIndex = parseInt(btn.getAttribute('data-station-index'));
             if (confirm('Delete this station?')) {
                 deleteStationFromSession(sessionId, stationIndex);
@@ -543,11 +577,96 @@ function renderRecordingItem(session, container) {
     showOnMapButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const sessionId = parseInt(btn.getAttribute('data-session-id'));
+            const sessionId = parseFloat(btn.getAttribute('data-session-id')); // USE parseFloat
             const stationIndex = parseInt(btn.getAttribute('data-station-index'));
             openStationMapModal(sessionId, stationIndex);
         });
     });
+    
+    // Render mini map thumbnail after DOM is ready
+    setTimeout(() => {
+        renderSessionMiniMap(session);
+    }, 100);
+}
+
+// Render mini map thumbnail for session
+function renderSessionMiniMap(session) {
+    const mapContainer = document.getElementById(`session-map-${session.id}`);
+    if (!mapContainer || !session.path || session.path.length === 0) return;
+    
+    try {
+        // Create mini map
+        const miniMap = L.map(mapContainer, {
+            zoomControl: false,
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            keyboard: false,
+            attributionControl: false
+        });
+        
+        // Add tile layer (Google Maps style)
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+            maxZoom: 20
+        }).addTo(miniMap);
+        
+        // Draw route path
+        const pathCoords = session.path.map(p => [p.lat, p.lng]);
+        L.polyline(pathCoords, {
+            color: '#000000',
+            weight: 3,
+            opacity: 0.8
+        }).addTo(miniMap);
+        
+        // Add start marker (gray circle)
+        if (session.path.length > 0) {
+            const start = session.path[0];
+            L.circleMarker([start.lat, start.lng], {
+                radius: 5,
+                fillColor: '#6b7280',
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(miniMap);
+        }
+        
+        // Add end marker (black circle)
+        if (session.path.length > 1) {
+            const end = session.path[session.path.length - 1];
+            L.circleMarker([end.lat, end.lng], {
+                radius: 5,
+                fillColor: '#000000',
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 1
+            }).addTo(miniMap);
+        }
+        
+        // Add station markers (small dots)
+        if (session.stations && session.stations.length > 0) {
+            session.stations.forEach(station => {
+                L.circleMarker([station.lat, station.lng], {
+                    radius: 4,
+                    fillColor: '#3b82f6',
+                    color: '#ffffff',
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 1
+                }).addTo(miniMap);
+            });
+        }
+        
+        // Fit bounds to show entire route
+        const bounds = L.latLngBounds(pathCoords);
+        miniMap.fitBounds(bounds, { padding: [10, 10] });
+        
+    } catch (e) {
+        console.error('Failed to render mini map:', e);
+    }
 }
 
 // Delete station from session
@@ -570,6 +689,42 @@ function deleteStationFromSession(sessionId, stationIndex) {
     }
     
     // Refresh panel
+    window.renderHistoryPanel();
+}
+
+// Delete entire session
+function deleteSession(sessionId) {
+    console.log('🗑️ deleteSession called with ID:', sessionId);
+    console.log('📊 Current recordingHistory:', window.recordingHistory);
+    
+    if (!window.recordingHistory) {
+        console.error('❌ recordingHistory is undefined!');
+        return;
+    }
+    
+    const index = window.recordingHistory.findIndex(s => s.id === sessionId);
+    console.log('📍 Found session at index:', index);
+    
+    if (index === -1) {
+        console.error('❌ Session not found with ID:', sessionId);
+        return;
+    }
+    
+    // Remove session (NO CONFIRMATION - direct delete)
+    console.log('🗑️ Removing session at index:', index);
+    window.recordingHistory.splice(index, 1);
+    console.log('✅ Session removed, remaining sessions:', window.recordingHistory.length);
+    
+    // Save to localStorage
+    try {
+        localStorage.setItem('lp_sessions', JSON.stringify(window.recordingHistory));
+        console.log('✅ Session deleted and saved to localStorage');
+    } catch (e) {
+        console.error('❌ Failed to save after deleting session:', e);
+    }
+    
+    // Refresh panel
+    console.log('🔄 Refreshing panel...');
     window.renderHistoryPanel();
 }
 

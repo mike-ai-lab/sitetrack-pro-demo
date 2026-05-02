@@ -1,0 +1,881 @@
+[
+  {
+    "lead_name": "مشرف البناء",
+    "contact_name": "مشرف البناء",
+    "phone": "0555166139",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.657503,
+      "lng": 46.503521,
+      "map_link": "https://maps.google.com/?q=24.657503,46.503521"
+    },
+    "notes": [
+      "مشرف البناء"
+    ],
+    "images": [
+      "media/00003120-PHOTO-2026-04-12-10-38-42.jpg",
+      "media/00003121-PHOTO-2026-04-12-10-38-43.jpg"
+    ]
+  },
+  {
+    "lead_name": "سعيد",
+    "contact_name": "سعيد",
+    "phone": "0590161885",
+    "role": "Owner Representative",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.658468,
+      "lng": 46.505039,
+      "map_link": "https://maps.google.com/?q=24.658468,46.505039"
+    },
+    "notes": [
+      "سعيد ممثل المالك",
+      "فيلا سكنية"
+    ],
+    "images": [
+      "media/00003125-PHOTO-2026-04-12-10-47-10.jpg",
+      "media/00003126-PHOTO-2026-04-12-10-47-12.jpg"
+    ]
+  },
+  {
+    "lead_name": "المشرف",
+    "contact_name": "المشرف",
+    "phone": "0567886849",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.657431,
+      "lng": 46.506706,
+      "map_link": "https://maps.google.com/?q=24.657431,46.506706"
+    },
+    "notes": [
+      "المشرف"
+    ],
+    "images": [
+      "media/00003128-PHOTO-2026-04-12-10-51-10.jpg",
+      "media/00003129-PHOTO-2026-04-12-10-51-11.jpg"
+    ]
+  },
+  {
+    "lead_name": "ابو ضياء",
+    "contact_name": "ابو ضياء",
+    "phone": "0532072810",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.653748,
+      "lng": 46.50338,
+      "map_link": "https://maps.google.com/?q=24.653748,46.503380"
+    },
+    "notes": [
+      "ابو ضياء المشرف و المهندس"
+    ],
+    "images": [
+      "media/00003135-PHOTO-2026-04-12-11-09-19.jpg",
+      "media/00003136-PHOTO-2026-04-12-11-09-21.jpg"
+    ]
+  },
+  {
+    "lead_name": "تركي حاجي طايل المطيري",
+    "contact_name": "تركي المطيري",
+    "phone": "0552211704",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.651051,
+      "lng": 46.502502,
+      "map_link": "https://maps.google.com/?q=24.651051,46.502502"
+    },
+    "notes": [
+      "المالك تركي حاجي طايل المطيري"
+    ],
+    "images": [
+      "media/00003140-PHOTO-2026-04-12-11-17-57.jpg",
+      "media/00003141-PHOTO-2026-04-12-11-17-59.jpg"
+    ]
+  },
+  {
+    "lead_name": "ابو محمد المشرف",
+    "contact_name": "ابو محمد",
+    "phone": "0535880686",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.650066,
+      "lng": 46.495956,
+      "map_link": "https://maps.google.com/?q=24.650066,46.495956"
+    },
+    "notes": [
+      "ابو محمد المشرف"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "مالك سعودي",
+    "contact_name": "مالك سعودي",
+    "phone": null,
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.641029,
+      "lng": 46.479866,
+      "map_link": "https://maps.google.com/?q=24.641029,46.479866"
+    },
+    "notes": [
+      "سعودي مالك يتردد على المشروع",
+      "الحارس غير موجود حاليا"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "فهد المطيري",
+    "contact_name": "فهد المطيري",
+    "phone": "0503242898",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.625542,
+      "lng": 46.472294,
+      "map_link": "https://maps.google.com/?q=24.625542,46.472294"
+    },
+    "notes": [
+      "المالك سعودي فهد المطيري"
+    ],
+    "images": [
+      "media/00003150-PHOTO-2026-04-12-12-30-55.jpg",
+      "media/00003151-PHOTO-2026-04-12-12-30-56.jpg"
+    ]
+  },
+  {
+    "lead_name": "مالك سعودي - Critical",
+    "contact_name": "مالك سعودي",
+    "phone": null,
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Critical",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.624737,
+      "lng": 46.47789,
+      "map_link": "https://maps.google.com/?q=24.624737,46.477890"
+    },
+    "notes": [
+      "Critical",
+      "متابعة مع الحارس",
+      "المالك سعودي"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "محمد الحارس",
+    "contact_name": "محمد",
+    "phone": "058 203 4621",
+    "role": "Guard",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.595987,
+      "lng": 46.648064,
+      "map_link": "https://maps.google.com/?q=24.595987,46.648064"
+    },
+    "notes": [
+      "محمد الحارس فيلا سكنية"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "ابو رواد",
+    "contact_name": "ابو رواد",
+    "phone": "0591415615",
+    "role": "Owner",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Critical",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.6696,
+      "lng": 46.551949,
+      "map_link": "https://maps.google.com/?q=24.669600,46.551949"
+    },
+    "notes": [
+      "المالك ابو رواد",
+      "مهم",
+      "الاثنين ١٣ ابريل"
+    ],
+    "images": [
+      "media/00003176-PHOTO-2026-04-13-10-43-39.jpg",
+      "media/00003177-PHOTO-2026-04-13-10-43-41.jpg"
+    ]
+  },
+  {
+    "lead_name": "ابو هاشم",
+    "contact_name": "ابو هاشم",
+    "phone": "0555332719",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.668224,
+      "lng": 46.551239,
+      "map_link": "https://maps.google.com/?q=24.668224,46.551239"
+    },
+    "notes": [
+      "ابو هاشم الحارس"
+    ],
+    "images": [
+      "media/00003183-PHOTO-2026-04-13-10-59-58.jpg",
+      "media/00003184-PHOTO-2026-04-13-11-00-00.jpg"
+    ]
+  },
+  {
+    "lead_name": "Gulshare",
+    "contact_name": "Gulshare",
+    "phone": "0508004127",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.661764,
+      "lng": 46.517429,
+      "map_link": "https://maps.google.com/?q=24.661764,46.517429"
+    },
+    "notes": [
+      "حارس"
+    ],
+    "images": [
+      "media/00003190-PHOTO-2026-04-13-11-21-15.jpg",
+      "media/00003191-PHOTO-2026-04-13-11-21-17.jpg"
+    ]
+  },
+  {
+    "lead_name": "ايو ناصر",
+    "contact_name": "ايو ناصر",
+    "phone": "0504615431",
+    "role": "Contact",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.661448,
+      "lng": 46.515865,
+      "map_link": "https://maps.google.com/?q=24.661448,46.515865"
+    },
+    "notes": [],
+    "images": [
+      "media/00003195-PHOTO-2026-04-13-11-29-40.jpg",
+      "media/00003196-PHOTO-2026-04-13-11-29-42.jpg",
+      "media/00003197-PHOTO-2026-04-13-11-29-50.jpg",
+      "media/00003198-PHOTO-2026-04-13-11-29-52.jpg"
+    ]
+  },
+  {
+    "lead_name": "الحارس",
+    "contact_name": "الحارس",
+    "phone": "0570249378",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.662884,
+      "lng": 46.516026,
+      "map_link": "https://maps.google.com/?q=24.662884,46.516026"
+    },
+    "notes": [
+      "الحارس"
+    ],
+    "images": [
+      "media/00003200-PHOTO-2026-04-13-11-30-52.jpg",
+      "media/00003201-PHOTO-2026-04-13-11-30-54.jpg"
+    ]
+  },
+  {
+    "lead_name": "Contact",
+    "contact_name": null,
+    "phone": "057770189",
+    "role": "Contact",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.662741,
+      "lng": 46.516342,
+      "map_link": "https://maps.google.com/?q=24.662741,46.516342"
+    },
+    "notes": [],
+    "images": []
+  },
+  {
+    "lead_name": "جابر",
+    "contact_name": "جابر",
+    "phone": "0531078127",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.659094,
+      "lng": 46.511547,
+      "map_link": "https://maps.google.com/?q=24.659094,46.511547"
+    },
+    "notes": [
+      "جابر الحارس"
+    ],
+    "images": [
+      "media/00003209-PHOTO-2026-04-13-11-46-58.jpg",
+      "media/00003210-PHOTO-2026-04-13-11-47-00.jpg"
+    ]
+  },
+  {
+    "lead_name": "كهربائي",
+    "contact_name": "كهربائي",
+    "phone": "0551500978",
+    "role": "Electrician",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.639338,
+      "lng": 46.502724,
+      "map_link": "https://maps.google.com/?q=24.639338,46.502724"
+    },
+    "notes": [
+      "تجمل كهربائي"
+    ],
+    "images": [
+      "media/00003214-PHOTO-2026-04-13-12-24-38.jpg"
+    ]
+  },
+  {
+    "lead_name": "المشرف",
+    "contact_name": "المشرف",
+    "phone": "0556684745",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.666468,
+      "lng": 46.539658,
+      "map_link": "https://maps.google.com/?q=24.666468,46.539658"
+    },
+    "notes": [
+      "المشرف"
+    ],
+    "images": [
+      "media/00003217-PHOTO-2026-04-13-13-09-25.jpg",
+      "media/00003218-PHOTO-2026-04-13-13-09-27.jpg"
+    ]
+  },
+  {
+    "lead_name": "ناصر",
+    "contact_name": "ناصر",
+    "phone": "059543035",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.660891,
+      "lng": 46.535324,
+      "map_link": "https://maps.google.com/?q=24.660891,46.535324"
+    },
+    "notes": [
+      "الحارس ناصر"
+    ],
+    "images": [
+      "media/00003222-PHOTO-2026-04-13-13-25-36.jpg",
+      "media/00003223-PHOTO-2026-04-13-13-25-38.jpg"
+    ]
+  },
+  {
+    "lead_name": "المقاول",
+    "contact_name": "المقاول",
+    "phone": "0560354436",
+    "role": "Contractor",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.660515,
+      "lng": 46.534931,
+      "map_link": "https://maps.google.com/?q=24.660515,46.534931"
+    },
+    "notes": [
+      "المقاول",
+      "فيلا سكنية"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "ابو قاسم",
+    "contact_name": "ابو قاسم",
+    "phone": "0532851629",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.661896,
+      "lng": 46.524113,
+      "map_link": "https://maps.google.com/?q=24.661896,46.524113"
+    },
+    "notes": [
+      "حارس ابو قاسم"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "فيلا للمراجعة",
+    "contact_name": null,
+    "phone": null,
+    "role": "Owner",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Normal",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.662733,
+      "lng": 46.535595,
+      "map_link": "https://maps.google.com/?q=24.662733,46.535595"
+    },
+    "notes": [
+      "فيلا سكنية للمراجعة لاحقا",
+      "لا يوجد حارس"
+    ],
+    "images": [
+      "media/00003235-PHOTO-2026-04-13-13-51-07.jpg",
+      "media/00003236-PHOTO-2026-04-13-13-51-10.jpg"
+    ]
+  },
+  {
+    "lead_name": "المشرف",
+    "contact_name": "المشرف",
+    "phone": "0501000408",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.611107,
+      "lng": 46.518169,
+      "map_link": "https://maps.google.com/?q=24.611107,46.518169"
+    },
+    "notes": [
+      "المشرف"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "ابو ركان",
+    "contact_name": "ابو ركان",
+    "phone": "0555166139",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Critical",
+    "status": "Follow-up",
+    "location": null,
+    "notes": [
+      "اول عميل سعودى مهم جدا جدا استاذ محمد"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "الحارس",
+    "contact_name": "الحارس",
+    "phone": "0594408106",
+    "role": "Guard",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.656313,
+      "lng": 46.507298,
+      "map_link": "https://maps.google.com/?q=24.656313,46.507298"
+    },
+    "notes": [
+      "رقم الحارس و هو بيعطي الكرت للمالك",
+      "فيلا سكنية"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "المالك",
+    "contact_name": "المالك",
+    "phone": "0559479905",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.655399,
+      "lng": 46.506657,
+      "map_link": "https://maps.google.com/?q=24.655399,46.506657"
+    },
+    "notes": [
+      "الحارس موجود و المالك بيجي العصر",
+      "To pass by around 3"
+    ],
+    "images": [
+      "media/00003253-PHOTO-2026-04-14-09-56-29.jpg",
+      "media/00003254-PHOTO-2026-04-14-09-56-31.jpg"
+    ]
+  },
+  {
+    "lead_name": "علي الشهري",
+    "contact_name": "علي الشهري",
+    "phone": "0543335643",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.654526,
+      "lng": 46.503418,
+      "map_link": "https://maps.google.com/?q=24.654526,46.503418"
+    },
+    "notes": [
+      "المالك علي الشهري"
+    ],
+    "images": [
+      "media/00003259-PHOTO-2026-04-14-10-09-17.jpg",
+      "media/00003260-PHOTO-2026-04-14-10-09-19.jpg",
+      "media/00003261-PHOTO-2026-04-14-10-09-22.jpg",
+      "media/00003262-PHOTO-2026-04-14-10-09-23.jpg"
+    ]
+  },
+  {
+    "lead_name": "بدر",
+    "contact_name": "بدر",
+    "phone": "0505498210",
+    "role": "Supervisor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.656929,
+      "lng": 46.507172,
+      "map_link": "https://maps.google.com/?q=24.656929,46.507172"
+    },
+    "notes": [
+      "المشرف بدر"
+    ],
+    "images": [
+      "media/00003264-PHOTO-2026-04-14-10-11-20.jpg",
+      "media/00003265-PHOTO-2026-04-14-10-11-21.jpg",
+      "media/00003266-PHOTO-2026-04-14-10-11-25.jpg",
+      "media/00003267-PHOTO-2026-04-14-10-11-27.jpg"
+    ]
+  },
+  {
+    "lead_name": "عصام",
+    "contact_name": "عصام",
+    "phone": null,
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Contact Needed",
+    "location": null,
+    "notes": [
+      "مهندس عصام",
+      "للتواصل واتساب"
+    ],
+    "images": [
+      "media/00003271-PHOTO-2026-04-14-10-19-01.jpg",
+      "media/00003272-PHOTO-2026-04-14-10-19-03.jpg",
+      "media/00003273-PHOTO-2026-04-14-10-19-17.jpg",
+      "media/00003274-PHOTO-2026-04-14-10-19-18.jpg"
+    ]
+  },
+  {
+    "lead_name": "Contact",
+    "contact_name": null,
+    "phone": "0551691000",
+    "role": "Contact",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.654245,
+      "lng": 46.507656,
+      "map_link": "https://maps.google.com/?q=24.654245,46.507656"
+    },
+    "notes": [],
+    "images": [
+      "media/00003280-PHOTO-2026-04-14-10-27-18.jpg",
+      "media/00003281-PHOTO-2026-04-14-10-27-20.jpg"
+    ]
+  },
+  {
+    "lead_name": "عبد المجيد",
+    "contact_name": "عبد المجيد",
+    "phone": "0548481741",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.657608,
+      "lng": 46.499409,
+      "map_link": "https://maps.google.com/?q=24.657608,46.499409"
+    },
+    "notes": [
+      "المالك عبد المجيد"
+    ],
+    "images": [
+      "media/00003287-PHOTO-2026-04-14-10-49-58.jpg",
+      "media/00003288-PHOTO-2026-04-14-10-50-00.jpg"
+    ]
+  },
+  {
+    "lead_name": "ابو عبد العزيز",
+    "contact_name": "ابو عبد العزيز",
+    "phone": "0504163216",
+    "role": "Owner",
+    "area": null,
+    "property_type": "مشروع سكني",
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.659138,
+      "lng": 46.501007,
+      "map_link": "https://maps.google.com/?q=24.659138,46.501007"
+    },
+    "notes": [
+      "المالك",
+      "تصميم داخلي",
+      "مشروع سكني",
+      "لسا عالعضم"
+    ],
+    "images": [
+      "media/00003293-PHOTO-2026-04-14-10-56-27.jpg",
+      "media/00003294-PHOTO-2026-04-14-10-56-29.jpg"
+    ]
+  },
+  {
+    "lead_name": "معلم بلاط",
+    "contact_name": "معلم بلاط",
+    "phone": null,
+    "role": "Tile Worker",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": null,
+    "notes": [
+      "معلم بلاط"
+    ],
+    "images": [
+      "media/00003296-PHOTO-2026-04-14-11-06-37.jpg",
+      "media/00003297-PHOTO-2026-04-14-11-06-38.jpg"
+    ]
+  },
+  {
+    "lead_name": "Abou yazid",
+    "contact_name": "Abou yazid",
+    "phone": "0554262541",
+    "role": "Owner",
+    "area": null,
+    "property_type": "عمارة سكنية",
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.648586,
+      "lng": 46.500298,
+      "map_link": "https://maps.google.com/?q=24.648586,46.500298"
+    },
+    "notes": [
+      "عمارة سكنية",
+      "رقم المالك"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "Photos",
+    "contact_name": null,
+    "phone": null,
+    "role": "Contact",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": null,
+    "notes": [],
+    "images": [
+      "media/00003305-PHOTO-2026-04-14-11-18-31.jpg",
+      "media/00003306-PHOTO-2026-04-14-11-18-31.jpg",
+      "media/00003307-PHOTO-2026-04-14-11-18-34.jpg",
+      "media/00003308-PHOTO-2026-04-14-11-18-34.jpg"
+    ]
+  },
+  {
+    "lead_name": "خالد العتيبي",
+    "contact_name": "خالد العتيبي",
+    "phone": "0500361881",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.647429,
+      "lng": 46.48925,
+      "map_link": "https://maps.google.com/?q=24.647429,46.489250"
+    },
+    "notes": [
+      "المالك خالد العتيبي"
+    ],
+    "images": [
+      "media/00003310-PHOTO-2026-04-14-11-35-27.jpg",
+      "media/00003311-PHOTO-2026-04-14-11-35-29.jpg",
+      "media/00003312-PHOTO-2026-04-14-11-35-34.jpg",
+      "media/00003313-PHOTO-2026-04-14-11-35-36.jpg"
+    ]
+  },
+  {
+    "lead_name": "محمد عبد السلام",
+    "contact_name": "محمد عبد السلام",
+    "phone": null,
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.653095,
+      "lng": 46.493458,
+      "map_link": "https://maps.google.com/?q=24.653095,46.493458"
+    },
+    "notes": [
+      "مهندس محمد عبد السلام"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "الحارس",
+    "contact_name": "الحارس",
+    "phone": "054278694",
+    "role": "Guard",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.653524,
+      "lng": 46.494537,
+      "map_link": "https://maps.google.com/?q=24.653524,46.494537"
+    },
+    "notes": [
+      "الحارس",
+      "فيلا سكنية"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "حبيب خان",
+    "contact_name": "حبيب خان",
+    "phone": "0530782816",
+    "role": "Contractor",
+    "area": null,
+    "property_type": "أعمال تليس الياسا",
+    "priority": "Normal",
+    "status": "Active",
+    "location": null,
+    "notes": [
+      "أعمال تليس الياسا",
+      "شغل مع مواد وبدون مواد",
+      "تركيب زاوية - ودع",
+      "شباك - ميزان قيده",
+      "مقاول باكستاني"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "Abo abdel aziz",
+    "contact_name": "Abo abdel aziz",
+    "phone": "0500713137",
+    "role": "Contractor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.640226,
+      "lng": 46.477318,
+      "map_link": "https://maps.google.com/?q=24.640226,46.477318"
+    },
+    "notes": [
+      "مقاول"
+    ],
+    "images": []
+  },
+  {
+    "lead_name": "الحارس",
+    "contact_name": "الحارس",
+    "phone": "0538501182",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": {
+      "lat": 24.625469,
+      "lng": 46.474316,
+      "map_link": "https://maps.google.com/?q=24.625469,46.474316"
+    },
+    "notes": [
+      "الحارس"
+    ],
+    "images": []
+  }
+]

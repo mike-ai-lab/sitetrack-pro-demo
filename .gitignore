@@ -4,3 +4,4 @@ node_modules
 *.log
 playbacklogic/config.js
 config.js
+.env*.local

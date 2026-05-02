@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Studiø Field Prospecting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; background: #fff; }
+        h1, h2, .serif { font-family: 'Playfair Display', serif; }
+
+        #map { height: 100vh; width: 100vw; z-index: 1; background: #f8f8f8; }
+
+        .fab {
+            position: fixed; bottom: 30px; left: 24px; width: 64px; height: 64px;
+            background: black; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 100;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .modal-content {
+            background: white; width: 100%; max-width: 500px;
+            max-height: 90vh; border-radius: 24px; overflow-y: auto;
+            position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+
+        .streetview-container {
+            width: 100%; height: 180px; background: #eee; border-radius: 16px;
+            overflow: hidden; position: relative; margin-bottom: 15px;
+        }
+
+        .streetview-iframe {
+            width: 100%; height: 100%; border: none;
+        }
+
+        .pin-container { transition: all 0.2s ease; cursor: pointer; }
+        .tooltip {
+            display: none; position: absolute; bottom: 120%; left: 50%;
+            transform: translateX(-50%); width: 180px; background: #0f172a;
+            color: white; padding: 12px; border-radius: 8px; font-size: 11px;
+            z-index: 60; text-align: center; direction: rtl;
+        }
+        .pin-container:hover .tooltip { display: block; }
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <button class="fab" id="addPinBtn">
+        <i data-lucide="map-pin"></i>
+    </button>
+
+    <!-- Header UI -->
+    <div class="fixed top-6 left-6 right-6 z-[100] flex justify-between items-start pointer-events-none">
+        <div class="bg-white p-5 rounded-2xl shadow-2xl pointer-events-auto border border-gray-100 flex items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold italic leading-tight">Studiø Field</h1>
+                <div id="sessionStats" class="text-[10px] text-gray-400 uppercase tracking-tighter mt-0.5">
+                    Riyadh • 0 Leads
+                </div>
+            </div>
+            <div class="h-8 w-[1px] bg-gray-100"></div>
+            <button id="toggleSessionBtn" class="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-xs font-bold transition-all active:scale-95">
+                <i data-lucide="play" class="w-3 h-3 fill-current"></i>
+                <span>START SESSION</span>
+            </button>
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <!-- Map Layer Toggle -->
+            <button id="layerToggleBtn" class="bg-white px-4 py-3 rounded-2xl shadow-xl pointer-events-auto border border-gray-100 text-[10px] font-black tracking-tighter flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                SATELLITE VIEW
+            </button>
+            <label class="bg-white px-4 py-3 rounded-2xl shadow-xl pointer-events-auto border border-gray-100 text-[10px] font-black tracking-tighter flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                IMPORT JSON
+                <input type="file" id="importJson" accept=".json,.txt" class="hidden" onchange="importLeads(event)">
+            </label>
+        </div>
+    </div>
+
+    <!-- Lead Form Modal with Street View -->
+    <div id="formModal" class="modal-overlay">
+        <div class="modal-content overflow-hidden flex flex-col">
+            <div class="p-6 bg-gray-50 border-b flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div id="modal-preview-pin"></div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Lead Insights</h3>
+                        <p id="modal-coords" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest"></p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="p-6 space-y-4 overflow-y-auto flex-1 custom-scroll" dir="rtl">
+                <!-- Street View Embed -->
+                <div class="streetview-container">
+                    <div id="streetViewPlaceholder" class="absolute inset-0 flex items-center justify-center bg-gray-100 text-[10px] font-bold text-gray-400 uppercase">
+                        Loading Street View...
+                    </div>
+                    <iframe id="streetViewFrame" class="streetview-iframe"></iframe>
+                </div>
+
+                <input type="hidden" id="currentPinId">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="contactName" placeholder="الاسم..." class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                    <input type="text" id="contactPhone" placeholder="رقم الجوال..." class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none">
+                </div>
+                <textarea id="siteNotes" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none h-24 resize-none" placeholder="ملاحظات الموقع..."></textarea>
+            </div>
+            
+            <div class="p-4 bg-gray-50 border-t flex items-center gap-3">
+                <button onclick="closeModal()" class="flex-1 py-3 text-xs font-black uppercase text-gray-400">إغاء</button>
+                <button onclick="saveLead()" class="flex-[2] py-4 bg-gray-900 text-white rounded-xl text-xs font-black uppercase shadow-xl">حفظ البيانات</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, pins = [], currentLayer = 'street';
+        let userLocation = [24.7136, 46.6753]; // Riyadh Default
+        
+        const layers = {
+            street: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }),
+            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' })
+        };
+
+        window.onload = () => {
+            lucide.createIcons();
+            initMap();
+            document.getElementById('layerToggleBtn').onclick = toggleLayers;
+            document.getElementById('addPinBtn').onclick = () => dropPin(userLocation[0], userLocation[1]);
+        };
+
+        function initMap() {
+            map = L.map('map', { zoomControl: false }).setView(userLocation, 13);
+            layers.street.addTo(map);
+        }
+
+        function toggleLayers() {
+            if (currentLayer === 'street') {
+                map.removeLayer(layers.street);
+                layers.satellite.addTo(map);
+                currentLayer = 'satellite';
+                this.innerHTML = '<i data-lucide="map" class="w-4 h-4"></i> STANDARD VIEW';
+            } else {
+                map.removeLayer(layers.satellite);
+                layers.street.addTo(map);
+                currentLayer = 'street';
+                this.innerHTML = '<i data-lucide="layers" class="w-4 h-4"></i> SATELLITE VIEW';
+            }
+            lucide.createIcons();
+        }
+
+        function dropPin(lat, lng) {
+            const id = Date.now();
+            const pin = { id, lat, lng, data: { name: '', phone: '', notes: '' } };
+            pins.push(pin);
+            renderPin(pin);
+            openForm(id);
+        }
+
+        function renderPin(pin) {
+            const marker = L.marker([pin.lat, pin.lng], {
+                icon: L.divIcon({
+                    className: 'pin-container',
+                    html: `<div class="p-1.5 rounded-full bg-black text-white border-2 border-white shadow-lg"><i data-lucide="map-pin" class="w-4 h-4"></i></div>`,
+                    iconSize: [24, 24]
+                })
+            }).addTo(map);
+            marker.on('click', () => openForm(pin.id));
+            pin.marker = marker;
+            lucide.createIcons();
+        }
+
+        function openForm(id) {
+            const pin = pins.find(p => p.id === id);
+            document.getElementById('currentPinId').value = id;
+            document.getElementById('contactName').value = pin.data.name;
+            document.getElementById('contactPhone').value = pin.data.phone;
+            document.getElementById('siteNotes').value = pin.data.notes;
+            document.getElementById('modal-coords').innerText = `${pin.lat.toFixed(5)}, ${pin.lng.toFixed(5)}`;
+            
+            // Street View Logic: Using Google Maps Embed (No API key required for basic view)
+            const svFrame = document.getElementById('streetViewFrame');
+            // We use a specific embed URL that Google allows for public coordinates
+            svFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=&location=${pin.lat},${pin.lng}&heading=210&pitch=10&fov=90`;
+            // NOTE: For a production app without an API key, we use the fallback preview:
+            svFrame.src = `https://maps.google.com/maps?q=${pin.lat},${pin.lng}&layer=c&cbll=${pin.lat},${pin.lng}&source=embed&output=svembed`;
+
+            document.getElementById('formModal').style.display = 'flex';
+        }
+
+        function saveLead() {
+            const id = document.getElementById('currentPinId').value;
+            const pin = pins.find(p => p.id == id);
+            pin.data.name = document.getElementById('contactName').value;
+            pin.data.phone = document.getElementById('contactPhone').value;
+            pin.data.notes = document.getElementById('siteNotes').value;
+            closeModal();
+        }
+
+        function closeModal() { document.getElementById('formModal').style.display = 'none'; }
+
+        function importLeads(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                let content = e.target.result.replace(/```(json)?/g, '').trim();
+                try {
+                    const data = JSON.parse(content);
+                    data.forEach(item => {
+                        if (item.location) {
+                            const p = { id: Date.now() + Math.random(), lat: item.location.lat, lng: item.location.lng, data: { name: item.lead_name, phone: item.phone, notes: item.notes?.join(', ') } };
+                            pins.push(p);
+                            renderPin(p);
+                        }
+                    });
+                    if (pins.length) map.setView([pins[0].lat, pins[0].lng], 15);
+                } catch (err) { alert("Error parsing JSON"); }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>

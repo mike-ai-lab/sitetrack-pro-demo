@@ -1,0 +1,246 @@
+[
+  {
+    "lead_name": "مهندس مسؤول",
+    "contact_name": "مهندس محمد",
+    "phone": "0500106020",
+    "role": "Engineer",
+    "area": "حي طويق",
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.569538,
+      "lng": 46.555378,
+      "map_link": "https://maps.google.com/?q=24.569538,46.555378"
+    },
+    "notes": [
+      "المهندس المسؤول"
+    ],
+    "images": 1
+  },
+  {
+    "lead_name": "مقاول مصري",
+    "contact_name": null,
+    "phone": "0541757862",
+    "role": "Contractor",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.567919,
+      "lng": 46.555065,
+      "map_link": "https://maps.google.com/?q=24.567919,46.555065"
+    },
+    "notes": [
+      "المقاول مصري"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "مهندس محمد",
+    "contact_name": "مهندس محمد",
+    "phone": "0500106020",
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": null,
+    "notes": [],
+    "images": 0
+  },
+  {
+    "lead_name": "مهندس محمود",
+    "contact_name": "مهندس محمود",
+    "phone": "0572909154",
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.568584,
+      "lng": 46.559849,
+      "map_link": "https://maps.google.com/?q=24.568584,46.559849"
+    },
+    "notes": [],
+    "images": 0
+  },
+  {
+    "lead_name": "الحارس",
+    "contact_name": "الحارس",
+    "phone": "0563876845",
+    "role": "Guard",
+    "area": null,
+    "property_type": null,
+    "priority": "Low",
+    "status": "Active",
+    "location": null,
+    "notes": [],
+    "images": 0
+  },
+  {
+    "lead_name": "ابو احمد",
+    "contact_name": "ابو احمد",
+    "phone": "0567241844",
+    "role": "Engineer",
+    "area": null,
+    "property_type": "عمارة سكنية",
+    "priority": "Normal",
+    "status": "Active",
+    "location": {
+      "lat": 24.566975,
+      "lng": 46.575436,
+      "map_link": "https://maps.google.com/?q=24.566975,46.575436"
+    },
+    "notes": [
+      "مهندس",
+      "عمارة سكنية"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "مهندس محمد",
+    "contact_name": "مهندس محمد",
+    "phone": "0576153610",
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "High",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.559160,
+      "lng": 46.568546,
+      "map_link": "https://maps.google.com/?q=24.559160,46.568546"
+    },
+    "notes": [
+      "مصري",
+      "معاه مشاريع غير هنا"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "ابو نصر",
+    "contact_name": "ابو نصر",
+    "phone": "0593562807",
+    "role": "Guard",
+    "area": "الطويق",
+    "property_type": null,
+    "priority": "High",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.561161,
+      "lng": 46.572273,
+      "map_link": "https://maps.google.com/?q=24.561161,46.572273"
+    },
+    "notes": [
+      "حارس مشاريع ابو سعود",
+      "لديه مشاريع في الطويق",
+      "متابعة"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "ابو عبدالله",
+    "contact_name": "ابو عبدالله",
+    "phone": "0554478495",
+    "role": "Owner",
+    "area": "حي العوالي",
+    "property_type": "فيلا سكنية",
+    "priority": "Critical",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.557753,
+      "lng": 46.584087,
+      "map_link": "https://maps.google.com/?q=24.557753,46.584087"
+    },
+    "notes": [
+      "للمتابعة",
+      "مهم"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "مهندس عماد",
+    "contact_name": "مهندس عماد",
+    "phone": "0508480699",
+    "role": "Engineer",
+    "area": null,
+    "property_type": null,
+    "priority": "Normal",
+    "status": "Contact Needed",
+    "location": {
+      "lat": 24.568884,
+      "lng": 46.580578,
+      "map_link": "https://maps.google.com/?q=24.568884,46.580578"
+    },
+    "notes": [
+      "للتواصل"
+    ],
+    "images": 0
+  },
+  {
+    "lead_name": "ابو عقيل",
+    "contact_name": "ابو عقيل",
+    "phone": "0575433057",
+    "role": "Finishing Contractor",
+    "area": null,
+    "property_type": "فيلا سكنية",
+    "priority": "Critical",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.565540,
+      "lng": 46.583244,
+      "map_link": "https://maps.google.com/?q=24.565540,46.583244"
+    },
+    "notes": [
+      "تشطيبات",
+      "مهم",
+      "للمتابعة",
+      "عمائر سكنية"
+    ],
+    "images": 2
+  },
+  {
+    "lead_name": "ابو مفلح",
+    "contact_name": "ابو مفلح",
+    "phone": "0546659602",
+    "secondary_phone": "0599452800",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "High",
+    "status": "Follow-up",
+    "location": {
+      "lat": 24.575842,
+      "lng": 46.551792,
+      "map_link": "https://maps.google.com/?q=24.575842,46.551792"
+    },
+    "notes": [
+      "معلم بناء و صب خرسانة",
+      "للمتابعة"
+    ],
+    "images": 2
+  },
+  {
+    "lead_name": "الاستاذ تركي",
+    "contact_name": "الاستاذ تركي",
+    "phone": "0552137743",
+    "role": "Owner",
+    "area": null,
+    "property_type": null,
+    "priority": "Critical",
+    "status": "Active",
+    "location": {
+      "lat": 24.576771,
+      "lng": 46.551796,
+      "map_link": "https://maps.google.com/?q=24.576771,46.551796"
+    },
+    "notes": [
+      "المالك",
+      "مهم جدا"
+    ],
+    "images": 2
+  }
+]
