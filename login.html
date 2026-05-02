@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - StreetTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-google {
+      transition: all 0.3s ease;
+    }
+    
+    .btn-google:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4">
+  
+  <div class="glass rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-3">🗺️</div>
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">STREETTRACK</h1>
+      <p class="text-gray-600">Field Prospecting Tool</p>
+    </div>
+    
+    <!-- Main Content -->
+    <div id="loginContent">
+      <!-- Google Sign In Button -->
+      <button 
+        id="googleSignInBtn"
+        class="btn-google w-full bg-white border-2 border-gray-300 rounded-lg py-3 px-4 flex items-center justify-center gap-3 hover:bg-gray-50 font-medium text-gray-700 mb-6"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <path fill="#4285F4" d="M19.6 10.23c0-.82-.1-1.42-.25-2.05H10v3.72h5.5c-.15.96-.74 2.31-2.04 3.22v2.45h3.16c1.89-1.73 2.98-4.3 2.98-7.34z"/>
+          <path fill="#34A853" d="M13.46 15.13c-.83.59-1.96 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15H1.07v2.52C2.72 17.75 6.09 20 10 20c2.7 0 4.96-.89 6.62-2.42l-3.16-2.45z"/>
+          <path fill="#FBBC05" d="M3.99 10c0-.69.12-1.35.32-1.97V5.51H1.07A9.973 9.973 0 000 10c0 1.61.39 3.14 1.07 4.49l3.24-2.52c-.2-.62-.32-1.28-.32-1.97z"/>
+          <path fill="#EA4335" d="M10 3.88c1.88 0 3.13.81 3.85 1.48l2.84-2.76C14.96.99 12.7 0 10 0 6.09 0 2.72 2.25 1.07 5.51l3.24 2.52C5.12 5.62 7.36 3.88 10 3.88z"/>
+        </svg>
+        Sign in with Google
+      </button>
+      
+      <!-- Divider -->
+      <div class="relative mb-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-4 bg-white text-gray-500">Or use invite code</span>
+        </div>
+      </div>
+      
+      <!-- Invite Code Input -->
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="inviteCodeInput"
+          placeholder="Enter invite code..."
+          class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+        />
+        <button 
+          id="joinBtn"
+          class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium"
+        >
+          Join
+        </button>
+      </div>
+    </div>
+    
+    <!-- Status Messages -->
+    <div id="statusMessage" class="hidden mt-6 p-4 rounded-lg"></div>
+    
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="hidden text-center mt-6">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-purple-500 border-t-transparent"></div>
+      <p class="text-gray-600 mt-2">Signing in...</p>
+    </div>
+  </div>
+  
+  <!-- Firebase Config -->
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+  
+  <script>
+    const googleSignInBtn = document.getElementById('googleSignInBtn');
+    const joinBtn = document.getElementById('joinBtn');
+    const inviteCodeInput = document.getElementById('inviteCodeInput');
+    const statusMessage = document.getElementById('statusMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const loginContent = document.getElementById('loginContent');
+    
+    // Check for invite code in URL first
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCodeFromUrl = urlParams.get('invite');
+    
+    // Check if already logged in
+    checkAuth().then(result => {
+      if (result.authenticated) {
+        if (result.status === 'active') {
+          // Already active, go to app
+          window.location.href = 'index.html';
+        } else if (result.status === 'pending') {
+          // If there's an invite code in URL, try to use it to auto-approve
+          if (inviteCodeFromUrl) {
+            useInviteCode(inviteCodeFromUrl, result.user.uid).then(() => {
+              window.location.href = 'index.html';
+            }).catch(() => {
+              showPendingApproval(result.user);
+            });
+          } else {
+            showPendingApproval(result.user);
+          }
+        }
+      } else {
+        // Not logged in
+        if (inviteCodeFromUrl) {
+          // Auto-fill and trigger join
+          inviteCodeInput.value = inviteCodeFromUrl;
+          setTimeout(() => {
+            joinBtn.click();
+          }, 500);
+        }
+      }
+    });
+    
+    // Show pending approval screen with real-time checking
+    let waitingTimer = null;
+    let waitingStartTime = null;
+    let lastReminderTime = 0;
+    
+    function showPendingApproval(user) {
+      loginContent.classList.add('hidden');
+      loadingSpinner.classList.add('hidden'); // Ensure loading is hidden
+      
+      waitingStartTime = Date.now();
+      
+      showStatus('warning', `
+        <div class="text-center">
+          <div class="text-4xl mb-3">⏳</div>
+          <div class="font-bold text-lg mb-2">Waiting for Admin Approval</div>
+          <div class="text-sm mb-4">Your account is pending approval by the administrator.</div>
+          <div class="text-xs text-gray-600 mb-4">
+            <strong>Email:</strong> ${user.email}
+          </div>
+          <div class="flex items-center justify-center gap-2 text-xs text-gray-500 mb-3">
+            <div class="animate-spin rounded-full h-4 w-4 border-2 border-yellow-500 border-t-transparent"></div>
+            <span>Checking approval status...</span>
+          </div>
+          <div class="text-sm font-medium text-gray-700 mb-4">
+            ⏱️ Waiting time: <span id="waiting-timer">0:00</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button 
+              id="remind-admin-btn"
+              onclick="remindAdmin('${user.uid}', '${user.email}')" 
+              class="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              🔔 Remind Admin
+            </button>
+            <button onclick="signOut()" class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all text-sm font-medium">
+              Sign Out
+            </button>
+          </div>
+        </div>
+      `);
+      
+      // Start timer
+      startWaitingTimer();
+      
+      // Start listening for approval in real-time
+      listenForApproval(user.uid);
+    }
+    
+    // Start waiting timer
+    function startWaitingTimer() {
+      if (waitingTimer) clearInterval(waitingTimer);
+      
+      waitingTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - waitingStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        
+        const timerElement = document.getElementById('waiting-timer');
+        if (timerElement) {
+          timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+    
+    // Stop waiting timer
+    function stopWaitingTimer() {
+      if (waitingTimer) {
+        clearInterval(waitingTimer);
+        waitingTimer = null;
+      }
+    }
+    
+    // Remind admin function
+    async function remindAdmin(userId, userEmail) {
+      const now = Date.now();
+      const timeSinceLastReminder = (now - lastReminderTime) / 1000;
+      
+      // Check if 1 minute has passed since last reminder
+      if (lastReminderTime > 0 && timeSinceLastReminder < 60) {
+        const remainingSeconds = Math.ceil(60 - timeSinceLastReminder);
+        showStatus('warning', `⏳ Please wait ${remainingSeconds} seconds before sending another reminder.`);
+        setTimeout(() => {
+          showPendingApproval({ uid: userId, email: userEmail });
+        }, 2000);
+        return;
+      }
+      
+      const btn = document.getElementById('remind-admin-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '📤 Sending...';
+      }
+      
+      try {
+        // Create reminder in Firestore - DISABLED
+        console.log('Disabled - no Firebase operations');
+        // await db.collection('reminders').add({
+        //   userId: userId,
+        //   userEmail: userEmail,
+        //   message: `${userEmail} is waiting for approval`,
+        //   timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        //   read: false
+        // });
+        
+        lastReminderTime = now;
+        
+        showStatus('success', '✅ Reminder sent to admin!');
+        
+        // Show pending screen again after 2 seconds
+        setTimeout(() => {
+          showPendingApproval({ uid: userId, email: userEmail });
+        }, 2000);
+        
+      } catch (error) {
+        console.error('Error sending reminder:', error);
+        showStatus('error', '❌ Failed to send reminder. Please try again.');
+        
+        setTimeout(() => {
+          showPendingApproval({ uid: userId, email: userEmail });
+        }, 2000);
+      }
+    }
+    
+    // Listen for approval status changes in real-time - DISABLED
+    function listenForApproval(userId) {
+      console.log('Disabled - no Firebase operations');
+      // const unsubscribe = db.collection('users').doc(userId).onSnapshot((doc) => {
+      //   if (doc.exists) {
+      //     const userData = doc.data();
+      //     if (userData.status === 'active') {
+      //       // User was approved!
+      //       stopWaitingTimer();
+      //       
+      //       showStatus('success', `
+      //         <div class="text-center">
+      //           <div class="text-4xl mb-3">✅</div>
+      //           <div class="font-bold text-lg mb-2">Approved!</div>
+      //           <div class="text-sm mb-4">Your account has been approved. Redirecting...</div>
+      //         </div>
+      //       `);
+      //       
+      //       // Redirect after 2 seconds
+      //       setTimeout(() => {
+      //         window.location.href = 'index.html';
+      //       }, 2000);
+      //       
+      //       // Stop listening
+      //       unsubscribe();
+      //     }
+      //   } else {
+      //     // User document was deleted (rejected)
+      //     stopWaitingTimer();
+      //     
+      //     showStatus('error', `
+      //       <div class="text-center">
+      //         <div class="text-4xl mb-3">🚫</div>
+      //         <div class="font-bold text-lg mb-2">Access Denied</div>
+      //         <div class="text-sm mb-4">You do not have permission to access this app.</div>
+      //         <div class="text-xs text-gray-600 mb-4">Contact your app Administrator to request access.</div>
+      //         <button onclick="returnToLogin()" class="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all text-sm font-medium">
+      //           Return to Login
+      //         </button>
+      //       </div>
+      //     `);
+      //     
+      //     // Stop listening
+      //     unsubscribe();
+      //   }
+      // }, (error) => {
+      //   console.error('Error listening for approval:', error);
+      // });
+      return null; // Return null instead of unsubscribe function
+    }
+    
+    // Google Sign In
+    googleSignInBtn.addEventListener('click', async () => {
+      showLoading(true);
+      
+      const result = await signInWithGoogle();
+      
+      if (result.success) {
+        const authResult = await checkAuth();
+        
+        if (authResult.status === 'active') {
+          window.location.href = 'index.html';
+        } else if (authResult.status === 'pending') {
+          showLoading(false);
+          showPendingApproval(authResult.user);
+        }
+      } else {
+        showLoading(false);
+        showStatus('error', '❌ Sign in failed: ' + result.error);
+      }
+    });
+    
+    // Join with Invite Code
+    joinBtn.addEventListener('click', async () => {
+      const code = inviteCodeInput.value.trim();
+      
+      console.log('🔑 Join button clicked with code:', code);
+      
+      if (!code) {
+        showStatus('error', '❌ Please enter an invite code');
+        return;
+      }
+      
+      showLoading(true);
+      
+      try {
+        console.log('📋 Checking invite code validity...');
+        
+        // Check invite code
+        const inviteCheck = await checkInviteCode(code);
+        
+        console.log('📋 Invite check result:', inviteCheck);
+        
+        if (!inviteCheck.valid) {
+          showLoading(false);
+          showStatus('error', '❌ ' + inviteCheck.message);
+          return;
+        }
+        
+        console.log('✅ Invite code is valid, starting Google sign-in...');
+        
+        // Sign in with Google
+        const result = await signInWithGoogle();
+        
+        console.log('🔐 Sign-in result:', result);
+        
+        if (result.success) {
+          console.log('✅ Sign-in successful, using invite code...');
+          
+          // Use invite code (this updates user status to 'active')
+          await useInviteCode(code, result.user.uid);
+          
+          console.log('✅ Invite code used successfully, redirecting...');
+          
+          // Show success message
+          showLoading(false);
+          showStatus('success', `
+            <div class="text-center">
+              <div class="text-4xl mb-3">✅</div>
+              <div class="font-bold text-lg mb-2">Welcome!</div>
+              <div class="text-sm">Redirecting to app...</div>
+            </div>
+          `);
+          
+          // Wait a moment then redirect
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } else {
+          console.error('❌ Sign-in failed:', result.error);
+          showLoading(false);
+          showStatus('error', '❌ Sign in failed: ' + result.error);
+        }
+      } catch (error) {
+        console.error('❌ Join error:', error);
+        showLoading(false);
+        showStatus('error', '❌ Error: ' + error.message);
+      }
+    });
+    
+    // Show status message
+    function showStatus(type, message) {
+      statusMessage.classList.remove('hidden', 'bg-red-100', 'bg-yellow-100', 'bg-green-100', 'text-red-700', 'text-yellow-700', 'text-green-700');
+      
+      if (type === 'error') {
+        statusMessage.classList.add('bg-red-100', 'text-red-700');
+      } else if (type === 'warning') {
+        statusMessage.classList.add('bg-yellow-100', 'text-yellow-700');
+      } else if (type === 'success') {
+        statusMessage.classList.add('bg-green-100', 'text-green-700');
+      }
+      
+      // Support HTML content
+      if (message.includes('<')) {
+        statusMessage.innerHTML = message;
+      } else {
+        statusMessage.textContent = message;
+      }
+    }
+    
+    // Show/hide loading
+    function showLoading(show) {
+      if (show) {
+        loadingSpinner.classList.remove('hidden');
+        loginContent.classList.add('hidden');
+      } else {
+        loadingSpinner.classList.add('hidden');
+        loginContent.classList.remove('hidden');
+      }
+    }
+    
+    // Return to login (after rejection)
+    async function returnToLogin() {
+      await signOut();
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--browser-url",
+        "http://127.0.0.1:9222"
+      ],
+      "env": {},
+      "disabled": false,
+      "autoApprove": [
+        "list_pages",
+        "take_snapshot",
+        "take_screenshot",
+        "click",
+        "new_page",
+        "list_console_messages",
+        "navigate_page",
+        "handle_dialog",
+        "evaluate_script",
+        "select_page",
+        "wait_for"
+      ],
+      "disabledTools": []
+    }
+  }
+}

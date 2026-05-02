@@ -21,8 +21,7 @@ const LiveProspect = (() => {
     let stations     = [];     // [{id,number,location,arrivalTime,address,contact,photos}]
     let pinMarkers   = [];     // [{id, marker}]
 
-    const STORAGE_KEY     = 'lp_sessions';
-    const ACTIVE_KEY      = 'lp_active_session';
+    // Storage disabled - no persistence
     const SW_PATH         = 'sw.js';
 
     // ─── Utility ─────────────────────────────────────────────────────────────
@@ -73,29 +72,7 @@ const LiveProspect = (() => {
     // ─── Inject FAB + photo input at body level (avoids overflow-hidden clipping) ─
     function _injectBodyElements() {
         // DISABLED: Old FAB implementation - will be replaced with new pin system
-        console.log('⚠️ Old FAB button disabled - awaiting new pin implementation');
         
-        /* OLD FAB CODE - DISABLED
-        if (document.getElementById('live-fab')) return;
-        const fab = document.createElement('button');
-        fab.id = 'live-fab';
-        fab.title = 'Add Lead';
-        fab.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
-        fab.style.cssText = [
-            'display:flex', 'position:fixed', 'bottom:32px', 'left:32px', 'z-index:999',
-            'width:64px', 'height:64px', 'background:#000', 'color:#fff', 'border:none',
-            'border-radius:50%', 'box-shadow:0 10px 30px rgba(0,0,0,.3)', 'cursor:pointer',
-            'align-items:center', 'justify-content:center', 'transition:transform .15s,opacity .2s',
-            'pointer-events:auto'
-        ].join(';');
-        fab.addEventListener('click', capturePin);
-        fab.addEventListener('mousedown', () => fab.style.transform='scale(.92)');
-        fab.addEventListener('mouseup',   () => fab.style.transform='scale(1)');
-        fab.addEventListener('touchstart', () => fab.style.transform='scale(.92)', { passive:true });
-        fab.addEventListener('touchend',   () => fab.style.transform='scale(1)',   { passive:true });
-        document.body.appendChild(fab);
-        */
-
         // Hidden photo input (keep for potential reuse)
         if (document.getElementById('live-photo-input')) return;
         const photoInput = document.createElement('input');
@@ -113,6 +90,9 @@ const LiveProspect = (() => {
     let _keepAliveInterval = null;
 
     function registerSW() {
+        // TEMPORARILY DISABLED - Service worker causing issues with visitor links
+        return;
+        
         if (!('serviceWorker' in navigator)) return;
         navigator.serviceWorker.register(SW_PATH).then(reg => {
             console.log(' SW registered', reg.scope);
@@ -127,9 +107,7 @@ const LiveProspect = (() => {
                 const ch = new MessageChannel();
                 navigator.serviceWorker.controller.postMessage({ type: 'KEEP_ALIVE' }, [ch.port2]);
             }
-            // Also write a heartbeat to localStorage so the page can detect
-            // it was in background and re-sync on visibility change
-            localStorage.setItem('lp_heartbeat', Date.now());
+            // Heartbeat disabled (using Firestore only)
         }, 25000);
     }
 
@@ -139,99 +117,19 @@ const LiveProspect = (() => {
 
     // ─── localStorage helpers ─────────────────────────────────────────────────
     function saveAllSessions(sessions) {
-        try {
-            // Strip Leaflet objects before storing; photos kept as base64
-            const clean = sessions.map(s => ({
-                ...s,
-                path: (s.path || []).map(p => ({ lat: p.lat ?? p[0], lng: p.lng ?? p[1] })),
-                stations: (s.stations || []).map(st => ({ ...st }))
-            }));
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
-        } catch (e) {
-            console.warn('LiveProspect: localStorage save failed', e);
-        }
+        // Disabled - no-op
     }
 
     function loadPersistedSessions() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const saved = JSON.parse(raw);
-            // Merge into window.recordingHistory
-            if (!window.recordingHistory) window.recordingHistory = [];
-            saved.forEach(s => {
-                if (!window.recordingHistory.find(x => x.id === s.id)) {
-                    window.recordingHistory.unshift(s);
-                }
-            });
-        } catch (e) {
-            console.warn('LiveProspect: localStorage load failed', e);
-        }
+        // Disabled - no-op
     }
 
     function saveActiveState() {
-        if (!isActive) { localStorage.removeItem(ACTIVE_KEY); return; }
-        try {
-            localStorage.setItem(ACTIVE_KEY, JSON.stringify({
-                sessionId,
-                sessionStart,
-                sessionDist,
-                stations,
-                pathCoords: pathCoords.map(p => ({ lat: p.lat, lng: p.lng }))
-            }));
-        } catch (e) {}
+        // Disabled - no-op
     }
 
     function restoreActiveSession() {
-        try {
-            const raw = localStorage.getItem(ACTIVE_KEY);
-            if (!raw) return;
-            const s = JSON.parse(raw);
-            // Resume the session silently
-            sessionId    = s.sessionId;
-            sessionStart = s.sessionStart;
-            sessionDist  = s.sessionDist || 0;
-            stations     = s.stations || [];
-            pathCoords   = (s.pathCoords || []).map(p => L.latLng(p.lat, p.lng));
-            isActive     = true;
-
-            // Hide the global carMarker (used by Planner/Recorder)
-            if (window.carMarker) {
-                window.carMarker.setOpacity(0);
-            }
-
-            // Restore path on map
-            if (pathCoords.length > 1) {
-                pathLine = L.polyline(pathCoords, { color:'#000', weight:3, opacity:0.35, lineCap:'round' }).addTo(map);
-            }
-
-            // Restore pins
-            stations.forEach(st => {
-                const latlng = L.latLng(st.location.lat, st.location.lng);
-                _dropPin(st, latlng);
-            });
-
-            // Resume GPS watch
-            startGPS();
-            startKeepAlive();
-
-            // Update UI
-            // FAB is always visible now
-            hide('live-start-btn');
-            show('live-stop-btn');
-            show('live-stats-row');
-            hide('live-empty-state');
-            updateSiteCount();
-            refreshStationList();
-            sessionTimer = setInterval(tickTimer, 1000);
-
-            // Disable Rec/Plan tab buttons
-            _updateTabButtonStates();
-
-            console.log(' LiveProspect session restored');
-        } catch (e) {
-            localStorage.removeItem(ACTIVE_KEY);
-        }
+        // Disabled - no-op
     }
 
     // ─── Session start / stop ─────────────────────────────────────────────────
@@ -287,7 +185,7 @@ const LiveProspect = (() => {
         stopGPS();
         stopKeepAlive();
         persistSessionToHistory();
-        localStorage.removeItem(ACTIVE_KEY);
+        // Disabled - no-op
 
         // Hide the red car
         if (userDot) {
@@ -407,11 +305,8 @@ const LiveProspect = (() => {
 
     // ─── Capture pin (FAB) ────────────────────────────────────────────────────
     function capturePin() {
-        console.log('LiveProspect: capturePin called, isActive:', isActive);
-        
         // Auto-start session if not active
         if (!isActive) {
-            console.log('LiveProspect: Auto-starting session...');
             startSession();
         }
 
@@ -421,8 +316,6 @@ const LiveProspect = (() => {
         const stationId = Date.now();
         const num = stations.length + 1;
 
-        console.log('LiveProspect: Creating station', num, 'at', lat, lng);
-
         const station = {
             id: stationId, number: num,
             location: { lat, lng },
@@ -431,7 +324,6 @@ const LiveProspect = (() => {
         };
         stations.push(station);
         
-        console.log('LiveProspect: Calling _dropPin...');
         _dropPin(station, latlng);
         
         updateSiteCount();
@@ -440,10 +332,7 @@ const LiveProspect = (() => {
 
         // Update Session Data tab immediately
         if (window.renderSessionDataTab) {
-            console.log('LiveProspect: Updating Session Data tab...');
             window.renderSessionDataTab();
-        } else {
-            console.warn('LiveProspect: renderSessionDataTab not found');
         }
 
         // Resolve address async
@@ -467,8 +356,6 @@ const LiveProspect = (() => {
     }
 
     function _dropPin(station, latlng) {
-        console.log('LiveProspect: Dropping pin for station', station.id, 'at', latlng);
-        
         if (!map) {
             console.error('LiveProspect: Map not initialized!');
             return;
@@ -494,7 +381,6 @@ const LiveProspect = (() => {
             }
             
             pinMarkers.push({ id: station.id, marker });
-            console.log('LiveProspect: Pin added successfully, total pins:', pinMarkers.length);
         } catch (error) {
             console.error('LiveProspect: Error adding marker to map:', error);
         }
@@ -716,10 +602,8 @@ const LiveProspect = (() => {
         if (window.recordingHistory) {
             window.recordingHistory = window.recordingHistory.filter(s => s.id !== sessionId);
         }
-        // sync localStorage
-        const allSessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-            .filter(s => s.id !== sessionId);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allSessions));
+        // Disabled - no-op
+        
         if (window.renderHistoryPanel) window.renderHistoryPanel();
     }
 
@@ -755,20 +639,9 @@ const LiveProspect = (() => {
                         _historySession: undefined,
                         _historyIndex: undefined
                     };
-                    // Persist to localStorage
-                    const allSessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                    const idx = allSessions.findIndex(s => s.id === session.id);
-                    if (idx !== -1) {
-                        allSessions[idx] = session;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(allSessions));
-                    }
-                    if (window.renderHistoryPanel) window.renderHistoryPanel();
+                    // Disabled - no-op
                 }
             }
-            // Remove temp station from active array
-            const tempIdx = stations.findIndex(s => s.id === tempStation.id);
-            if (tempIdx !== -1) stations.splice(tempIdx, 1);
-            window._tempHistorySave = null;
         };
         
         // Open the lead form
@@ -790,7 +663,7 @@ const LiveProspect = (() => {
         if (el) el.textContent = `${stations.length} site${stations.length !== 1 ? 's' : ''}`;
     }
 
-    // ─── Persist to recordingHistory + localStorage ───────────────────────────
+    // ─── Persist to recordingHistory + Firestore (localStorage disabled) ───────
     function persistSessionToHistory() {
         if (!stations.length && pathCoords.length < 2) return;
         const duration = Math.floor((Date.now() - sessionStart) / 1000);
@@ -816,12 +689,7 @@ const LiveProspect = (() => {
         window.recordingHistory = window.recordingHistory.filter(s => s.id !== session.id);
         window.recordingHistory.unshift(session);
 
-        // Persist all live sessions to localStorage
-        const allSaved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-            .filter(s => s.id !== session.id);
-        allSaved.unshift(session);
-        if (allSaved.length > 30) allSaved.length = 30;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allSaved));
+        // Disabled - no-op
 
         // Async address resolution
         if (startPos && endPos) {
@@ -831,11 +699,8 @@ const LiveProspect = (() => {
             ]).then(([sa, ea]) => {
                 session.startAddress = sa;
                 session.endAddress   = ea;
-                // update in storage too
-                const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                const idx = stored.findIndex(s => s.id === session.id);
-                if (idx !== -1) { stored[idx].startAddress = sa; stored[idx].endAddress = ea; }
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+                // Disabled - no-op
+                
                 if (window.renderHistoryPanel) window.renderHistoryPanel();
             }).catch(() => {});
         }

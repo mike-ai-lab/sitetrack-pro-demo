@@ -1,0 +1,129 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user is active
+    function isActive() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
+    }
+    
+    // Helper function to check if user is visitor (anonymous auth)
+    function isVisitor() {
+      return isAuthenticated() && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone authenticated can read their own user document
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Only admins can read all users
+      allow read: if isAdmin();
+      
+      // Allow user to create their own document on first login
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
+      // Users can update their own lastLogin
+      allow update: if isAuthenticated() && 
+                      request.auth.uid == userId && 
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastLogin']);
+      
+      // Users can update their own status from 'pending' to 'active' when using invite code
+      allow update: if isAuthenticated() && 
+                      request.auth.uid == userId && 
+                      resource.data.status == 'pending' &&
+                      request.resource.data.status == 'active' &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'invitedBy']);
+      
+      // Only admins can create, update (role/status), or delete users
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Leads collection
+    match /leads/{userId}/pins/{pinId} {
+      // Users can only access their own leads
+      allow read, write: if isAuthenticated() && 
+                           request.auth.uid == userId && 
+                           isActive();
+      
+      // Admins can read and write all leads
+      allow read, write: if isAdmin();
+      
+      // Anonymous visitors can read any user's leads (read-only)
+      allow read: if isVisitor();
+    }
+    
+    // Sessions collection
+    match /sessions/{userId}/history/{sessionId} {
+      // Users can only access their own sessions
+      allow read, write: if isAuthenticated() && 
+                           request.auth.uid == userId && 
+                           isActive();
+      
+      // Admins can read and write all sessions
+      allow read, write: if isAdmin();
+      
+      // Anonymous visitors can read any user's sessions (read-only)
+      allow read: if isVisitor();
+    }
+    
+    // Invites collection
+    match /invites/{inviteId} {
+      // Anyone can read invites to check validity (even unauthenticated)
+      allow read: if true;
+      
+      // Only admins can create or delete invites
+      allow create, delete: if isAdmin();
+      
+      // Admins can update invites
+      allow update: if isAdmin();
+      
+      // Authenticated users can mark invite as used when they use it
+      allow update: if isAuthenticated() && 
+                      request.resource.data.used == true && 
+                      request.resource.data.usedBy == request.auth.uid &&
+                      resource.data.used == false;
+    }
+    
+    // Visitor Links collection
+    match /visitorLinks/{linkId} {
+      // Anyone can read visitor links to check validity (even unauthenticated)
+      allow read: if true;
+      
+      // Only admins can create or delete visitor links
+      allow create, delete: if isAdmin();
+      
+      // Admins can update visitor links
+      allow update: if isAdmin();
+      
+      // Anonymous users can mark visitor link as used
+      allow update: if isVisitor() &&
+                      request.resource.data.used == true &&
+                      resource.data.used == false;
+    }
+    
+    // Reminders collection
+    match /reminders/{reminderId} {
+      // Authenticated users can create reminders
+      allow create: if isAuthenticated();
+      
+      // Only admins can read and delete reminders
+      allow read, delete: if isAdmin();
+      
+      // Admins can mark reminders as read
+      allow update: if isAdmin();
+    }
+  }
+}

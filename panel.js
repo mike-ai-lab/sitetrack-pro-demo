@@ -681,13 +681,6 @@ function deleteStationFromSession(sessionId, stationIndex) {
         s.number = i + 1;
     });
     
-    // Save to localStorage
-    try {
-        localStorage.setItem('lp_sessions', JSON.stringify(window.recordingHistory));
-    } catch (e) {
-        console.error('Failed to save after deleting station:', e);
-    }
-    
     // Refresh panel
     window.renderHistoryPanel();
 }
@@ -715,13 +708,8 @@ function deleteSession(sessionId) {
     window.recordingHistory.splice(index, 1);
     console.log('✅ Session removed, remaining sessions:', window.recordingHistory.length);
     
-    // Save to localStorage
-    try {
-        localStorage.setItem('lp_sessions', JSON.stringify(window.recordingHistory));
-        console.log('✅ Session deleted and saved to localStorage');
-    } catch (e) {
-        console.error('❌ Failed to save after deleting session:', e);
-    }
+    // Refresh panel
+    window.renderHistoryPanel();
     
     // Refresh panel
     console.log('🔄 Refreshing panel...');
@@ -1136,9 +1124,8 @@ window.deleteSessionFromHistory = function(sessionId) {
 
 function _persistHistoryToStorage() {
     try {
-        const lp = JSON.parse(localStorage.getItem('lp_sessions') || '[]');
         const updated = (window.recordingHistory || []).filter(s => s.type === 'live');
-        localStorage.setItem('lp_sessions', JSON.stringify(updated));
+        // Disabled - no-op
     } catch(e) {}
 }
 

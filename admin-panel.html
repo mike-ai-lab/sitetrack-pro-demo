@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - StreetTrack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-100">
+  
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-2xl">🗺️</a>
+        <div>
+          <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+          <p class="text-sm text-gray-500">User & Team Management</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Notification Bell -->
+        <button 
+          id="notificationBell"
+          class="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          onclick="toggleNotifications()"
+        >
+          <span class="text-2xl">🔔</span>
+          <span id="notificationBadge" class="hidden absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
+        </button>
+        <a href="index.html" class="text-purple-600 hover:text-purple-700 font-medium">← Back to App</a>
+      </div>
+    </div>
+    
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="hidden absolute right-4 top-16 bg-white rounded-lg shadow-lg border w-96 max-h-96 overflow-y-auto z-50">
+      <div class="p-4 border-b flex items-center justify-between">
+        <h3 class="font-bold text-gray-800">Reminders</h3>
+        <button onclick="clearAllReminders()" class="text-xs text-red-600 hover:text-red-700">Clear All</button>
+      </div>
+      <div id="notificationList" class="divide-y">
+        <div class="p-4 text-center text-gray-500 text-sm">No reminders</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl mb-2">👥</div>
+        <div class="text-2xl font-bold text-gray-800" id="totalUsers">0</div>
+        <div class="text-sm text-gray-500">Total Users</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl mb-2">✅</div>
+        <div class="text-2xl font-bold text-green-600" id="activeUsers">0</div>
+        <div class="text-sm text-gray-500">Active Members</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="text-3xl mb-2">⏳</div>
+        <div class="text-2xl font-bold text-yellow-600" id="pendingUsers">0</div>
+        <div class="text-sm text-gray-500">Pending Approvals</div>
+      </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="bg-white rounded-lg shadow mb-4">
+      <div class="border-b flex">
+        <button class="tab-btn active px-6 py-3 font-medium" data-tab="users">Users</button>
+        <button class="tab-btn px-6 py-3 font-medium" data-tab="invites">Invites</button>
+        <button class="tab-btn px-6 py-3 font-medium" data-tab="visitors">Visitor Links</button>
+      </div>
+    </div>
+    
+    <!-- Users Tab -->
+    <div id="usersTab" class="tab-content bg-white rounded-lg shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-800">User Management</h2>
+        <button 
+          id="refreshUsersBtn"
+          class="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition-colors"
+        >
+          <span id="refreshIcon">🔄</span>
+          <span>Refresh</span>
+        </button>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left py-3 px-2 text-sm font-medium text-gray-600">User</th>
+              <th class="text-left py-3 px-2 text-sm font-medium text-gray-600">Email</th>
+              <th class="text-left py-3 px-2 text-sm font-medium text-gray-600">Role</th>
+              <th class="text-left py-3 px-2 text-sm font-medium text-gray-600">Status</th>
+              <th class="text-left py-3 px-2 text-sm font-medium text-gray-600">Last Login</th>
+              <th class="text-right py-3 px-2 text-sm font-medium text-gray-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr>
+              <td colspan="6" class="text-center py-8 text-gray-500">Loading users...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Invites Tab -->
+    <div id="invitesTab" class="tab-content hidden bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">Invite Members</h2>
+      
+      <!-- Invite by Email -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+        <h3 class="font-medium text-gray-700 mb-3">📧 Invite by Email</h3>
+        <div class="flex gap-2">
+          <input 
+            type="email" 
+            id="inviteEmail"
+            placeholder="user@gmail.com"
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+          />
+          <button 
+            id="sendInviteBtn"
+            class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium"
+          >
+            Send Invite
+          </button>
+        </div>
+      </div>
+      
+      <!-- Generate Link -->
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+        <h3 class="font-medium text-gray-700 mb-3">🔗 Generate Invite Link</h3>
+        <button 
+          id="generateLinkBtn"
+          class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-medium mb-3"
+        >
+          Generate New Link
+        </button>
+        
+        <div id="inviteLinkContainer" class="hidden">
+          <!-- Invite Link -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">📎 Share this LINK (click to open):</label>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="inviteLink"
+                readonly
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+              />
+              <button 
+                id="copyLinkBtn"
+                class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 font-medium"
+              >
+                Copy Link
+              </button>
+            </div>
+          </div>
+          
+          <!-- Invite Code -->
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">🔑 Or share this CODE (type in login page):</label>
+            <div class="flex gap-2">
+              <input 
+                type="text" 
+                id="inviteCode"
+                readonly
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-yellow-50 text-lg font-mono font-bold text-center"
+              />
+              <button 
+                id="copyCodeBtn"
+                class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 font-medium"
+              >
+                Copy Code
+              </button>
+            </div>
+          </div>
+          
+          <p class="text-sm text-gray-500 mt-2">⏰ Expires in 7 days</p>
+        </div>
+      </div>
+      
+      <!-- Active Invites -->
+      <div>
+        <h3 class="font-medium text-gray-700 mb-3">Active Invites</h3>
+        <div id="invitesList" class="space-y-2">
+          <p class="text-gray-500 text-sm">No active invites</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Visitor Links Tab -->
+    <div id="visitorsTab" class="tab-content hidden bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">Visitor Access Links</h2>
+      
+      <!-- Generate Visitor Link -->
+      <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h3 class="font-medium text-gray-700 mb-4">🔗 Generate Visitor Link</h3>
+        
+        <!-- Access Level Selection -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Access Level:</label>
+          <div class="space-y-2">
+            <label class="flex items-start gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="accessLevel" value="strict" checked class="mt-1" />
+              <div>
+                <div class="font-medium text-gray-800">🔒 Strict Read-Only</div>
+                <div class="text-xs text-gray-600">Can only zoom in/out (limited), pins are blurred, no panels</div>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="accessLevel" value="flex" class="mt-1" />
+              <div>
+                <div class="font-medium text-gray-800">👁️ Flexible Read-Only</div>
+                <div class="text-xs text-gray-600">Can zoom freely, view pins, open session summary, but cannot edit</div>
+              </div>
+            </label>
+          </div>
+        </div>
+        
+        <!-- Time Duration -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">⏱️ Access Duration:</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button class="duration-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-purple-50 hover:border-purple-500" data-minutes="15">15 min</button>
+            <button class="duration-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-purple-50 hover:border-purple-500" data-minutes="30">30 min</button>
+            <button class="duration-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-purple-50 hover:border-purple-500" data-minutes="60">1 hour</button>
+            <button class="duration-btn px-4 py-2 border border-gray-300 rounded-lg hover:bg-purple-50 hover:border-purple-500" data-minutes="120">2 hours</button>
+          </div>
+          <div class="mt-2 flex gap-2 items-center">
+            <input 
+              type="number" 
+              id="customDuration"
+              placeholder="Custom minutes"
+              min="1"
+              max="1440"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+            />
+            <span class="text-sm text-gray-600">minutes</span>
+          </div>
+        </div>
+        
+        <button 
+          id="generateVisitorLinkBtn"
+          class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-medium"
+        >
+          Generate Visitor Link
+        </button>
+      </div>
+      
+      <!-- Active Visitor Links -->
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-medium text-gray-700">Active Visitor Links</h3>
+          <button onclick="loadVisitorLinks()" class="text-sm text-purple-600 hover:text-purple-700">🔄 Refresh</button>
+        </div>
+        <div id="visitorLinksList" class="space-y-3">
+          <p class="text-gray-500 text-sm">No active visitor links</p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Toast Notification -->
+  <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg">
+    <span id="toastMessage"></span>
+  </div>
+  
+  <!-- Firebase Config -->
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+  
+  <script>
+    let allUsers = [];
+    let allInvites = [];
+    let allReminders = [];
+    let allVisitorLinks = [];
+    let reminderListener = null;
+    let visitorLinksListener = null;
+    let selectedDuration = 30; // Default 30 minutes
+    
+    // Check admin access
+    checkAuth().then(async result => {
+      if (!result.authenticated || result.status !== 'active') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      const adminCheck = await isAdmin();
+      if (!adminCheck) {
+        alert('Access denied. Admin only.');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // Load data
+      loadUsers();
+      loadInvites();
+      loadReminders();
+      loadVisitorLinks();
+      startReminderListener();
+      startVisitorLinksListener();
+    });
+    
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        
+        // Update buttons
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'border-b-2', 'border-purple-600', 'text-purple-600'));
+        btn.classList.add('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
+        
+        // Update content
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(tab + 'Tab').classList.remove('hidden');
+      });
+    });
+    
+    // Initialize first tab
+    document.querySelector('.tab-btn').click();
+    
+    // Refresh users button
+    document.getElementById('refreshUsersBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('refreshUsersBtn');
+      const icon = document.getElementById('refreshIcon');
+      
+      // Add spinning animation
+      icon.style.display = 'inline-block';
+      icon.style.animation = 'spin 0.5s linear';
+      btn.disabled = true;
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+      
+      // Reload users
+      await loadUsers();
+      
+      // Remove animation after a short delay
+      setTimeout(() => {
+        icon.style.animation = '';
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        showToast('Users list refreshed!');
+      }, 500);
+    });
+    
+    // Load users
+    async function loadUsers() {
+      const snapshot = await db.collection('users').orderBy('createdAt', 'desc').get();
+      allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      renderUsers();
+      updateStats();
+    }
+    
+    // Render users table
+    function renderUsers() {
+      const tbody = document.getElementById('usersTableBody');
+      
+      if (allUsers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No users found</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = allUsers.map(user => `
+        <tr class="border-b hover:bg-gray-50">
+          <td class="py-3 px-2">
+            <div class="flex items-center gap-2">
+              <img src="${user.photoURL || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full" />
+              <span class="font-medium text-gray-800">${user.displayName}</span>
+            </div>
+          </td>
+          <td class="py-3 px-2 text-sm text-gray-600">${user.email}</td>
+          <td class="py-3 px-2">
+            <select 
+              class="role-select px-2 py-1 border border-gray-300 rounded text-sm ${user.role === 'admin' ? 'bg-purple-50 text-purple-700' : 'bg-gray-50'}"
+              data-user-id="${user.id}"
+              ${user.email === ADMIN_EMAIL ? 'disabled' : ''}
+            >
+              <option value="member" ${user.role === 'member' ? 'selected' : ''}>Member</option>
+              <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+            </select>
+          </td>
+          <td class="py-3 px-2">
+            <span class="px-2 py-1 rounded-full text-xs font-medium ${
+              user.status === 'active' ? 'bg-green-100 text-green-700' : 
+              user.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 
+              'bg-gray-100 text-gray-700'
+            }">
+              ${user.status === 'active' ? '✓ Active' : user.status === 'pending' ? '⏳ Pending' : 'Disabled'}
+            </span>
+          </td>
+          <td class="py-3 px-2 text-sm text-gray-600">
+            ${user.lastLogin ? formatDate(user.lastLogin.toDate()) : 'Never'}
+          </td>
+          <td class="py-3 px-2 text-right">
+            ${user.status === 'pending' ? `
+              <button class="approve-btn text-green-600 hover:text-green-700 font-medium text-sm mr-2" data-user-id="${user.id}">
+                Approve
+              </button>
+              <button class="reject-btn text-red-600 hover:text-red-700 font-medium text-sm" data-user-id="${user.id}">
+                Reject
+              </button>
+            ` : user.email !== ADMIN_EMAIL ? `
+              <button class="remove-btn text-red-600 hover:text-red-700 font-medium text-sm" data-user-id="${user.id}">
+                Remove
+              </button>
+            ` : '<span class="text-gray-400 text-sm">Owner</span>'}
+          </td>
+        </tr>
+      `).join('');
+      
+      // Add event listeners
+      attachUserActions();
+    }
+    
+    // Attach user action listeners
+    function attachUserActions() {
+      // Role change
+      document.querySelectorAll('.role-select').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const userId = e.target.dataset.userId;
+          const newRole = e.target.value;
+          
+          await db.collection('users').doc(userId).update({ role: newRole });
+          showToast(`Role updated to ${newRole}`);
+          loadUsers();
+        });
+      });
+      
+      // Approve
+      document.querySelectorAll('.approve-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const userId = e.target.dataset.userId;
+          await db.collection('users').doc(userId).update({ status: 'active' });
+          showToast('User approved!');
+          loadUsers();
+        });
+      });
+      
+      // Reject
+      document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (!confirm('Reject this user? They will be deleted.')) return;
+          
+          const userId = e.target.dataset.userId;
+          await db.collection('users').doc(userId).delete();
+          showToast('User rejected');
+          loadUsers();
+        });
+      });
+      
+      // Remove
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          if (!confirm('Remove this user? This cannot be undone.')) return;
+          
+          const userId = e.target.dataset.userId;
+          await db.collection('users').doc(userId).delete();
+          showToast('User removed');
+          loadUsers();
+        });
+      });
+    }
+    
+    // Update stats
+    function updateStats() {
+      document.getElementById('totalUsers').textContent = allUsers.length;
+      document.getElementById('activeUsers').textContent = allUsers.filter(u => u.status === 'active').length;
+      document.getElementById('pendingUsers').textContent = allUsers.filter(u => u.status === 'pending').length;
+    }
+    
+    // Send email invite
+    document.getElementById('sendInviteBtn').addEventListener('click', async () => {
+      const email = document.getElementById('inviteEmail').value.trim();
+      
+      if (!email || !email.includes('@')) {
+        showToast('Please enter a valid email');
+        return;
+      }
+      
+      const inviteCode = generateInviteCode();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
+      
+      await db.collection('invites').doc(inviteCode).set({
+        email: email,
+        inviteCode: inviteCode,
+        createdBy: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt),
+        used: false,
+        usedBy: null
+      });
+      
+      document.getElementById('inviteEmail').value = '';
+      showToast(`Invite sent to ${email}!`);
+      loadInvites();
+    });
+    
+    // Generate invite link
+    document.getElementById('generateLinkBtn').addEventListener('click', async () => {
+      const inviteCode = generateInviteCode();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      
+      await db.collection('invites').doc(inviteCode).set({
+        inviteCode: inviteCode,
+        createdBy: currentUser.email,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt),
+        used: false,
+        usedBy: null
+      });
+      
+      const link = `${window.location.origin}/login.html?invite=${inviteCode}`;
+      document.getElementById('inviteLink').value = link;
+      document.getElementById('inviteCode').value = inviteCode;
+      document.getElementById('inviteLinkContainer').classList.remove('hidden');
+      
+      showToast('Invite link generated!');
+      loadInvites();
+    });
+    
+    // Copy link
+    document.getElementById('copyLinkBtn').addEventListener('click', () => {
+      const link = document.getElementById('inviteLink');
+      link.select();
+      document.execCommand('copy');
+      showToast('Link copied to clipboard!');
+    });
+    
+    // Copy code
+    document.getElementById('copyCodeBtn').addEventListener('click', () => {
+      const code = document.getElementById('inviteCode');
+      code.select();
+      document.execCommand('copy');
+      showToast('Code copied to clipboard!');
+    });
+    
+    // Load invites
+    async function loadInvites() {
+      const snapshot = await db.collection('invites')
+        .where('used', '==', false)
+        .orderBy('createdAt', 'desc')
+        .get();
+      
+      allInvites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderInvites();
+    }
+    
+    // Render invites
+    function renderInvites() {
+      const container = document.getElementById('invitesList');
+      
+      if (allInvites.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No active invites</p>';
+        return;
+      }
+      
+      container.innerHTML = allInvites.map(invite => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <div class="font-medium text-gray-800">${invite.email || 'Link invite'}</div>
+            <div class="text-sm text-gray-500">Code: ${invite.inviteCode}</div>
+            <div class="text-xs text-gray-400">Expires: ${formatDate(invite.expiresAt.toDate())}</div>
+          </div>
+          <button class="delete-invite-btn text-red-600 hover:text-red-700 text-sm font-medium" data-invite-id="${invite.id}">
+            Delete
+          </button>
+        </div>
+      `).join('');
+      
+      // Delete invite
+      document.querySelectorAll('.delete-invite-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const inviteId = e.target.dataset.inviteId;
+          await db.collection('invites').doc(inviteId).delete();
+          showToast('Invite deleted');
+          loadInvites();
+        });
+      });
+    }
+    
+    // Generate random invite code (safe for Firestore document IDs)
+    function generateInviteCode() {
+      // Use timestamp + random string for uniqueness
+      const timestamp = Date.now().toString(36);
+      const random = Math.random().toString(36).substring(2, 10);
+      return `${timestamp}${random}`;
+    }
+    
+    // Generate random code of specified length
+    function generateRandomCode(length = 16) {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let code = '';
+      for (let i = 0; i < length; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return code;
+    }
+    
+    // Format date
+    function formatDate(date) {
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    }
+    
+    // Show toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      toastMessage.textContent = message;
+      toast.classList.remove('hidden');
+      
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+    
+    // Load reminders
+    async function loadReminders() {
+      const snapshot = await db.collection('reminders')
+        .where('read', '==', false)
+        .orderBy('timestamp', 'desc')
+        .get();
+      
+      allReminders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderReminders();
+      updateNotificationBadge();
+    }
+    
+    // Start real-time reminder listener
+    function startReminderListener() {
+      if (reminderListener) return;
+      
+      reminderListener = db.collection('reminders')
+        .where('read', '==', false)
+        .onSnapshot((snapshot) => {
+          const newReminders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          
+          // Check if there are new reminders
+          if (newReminders.length > allReminders.length) {
+            // Play notification sound or show alert
+            playNotificationSound();
+          }
+          
+          allReminders = newReminders;
+          renderReminders();
+          updateNotificationBadge();
+        });
+    }
+    
+    // Render reminders
+    function renderReminders() {
+      const container = document.getElementById('notificationList');
+      
+      if (allReminders.length === 0) {
+        container.innerHTML = '<div class="p-4 text-center text-gray-500 text-sm">No reminders</div>';
+        return;
+      }
+      
+      container.innerHTML = allReminders.map(reminder => `
+        <div class="p-4 hover:bg-gray-50 transition-colors">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex-1">
+              <div class="font-medium text-gray-800 text-sm">${reminder.message}</div>
+              <div class="text-xs text-gray-500 mt-1">
+                ${reminder.timestamp ? formatDate(reminder.timestamp.toDate()) : 'Just now'}
+              </div>
+            </div>
+            <button 
+              onclick="dismissReminder('${reminder.id}')"
+              class="text-gray-400 hover:text-gray-600 text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Update notification badge
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notificationBadge');
+      const count = allReminders.length;
+      
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+    
+    // Toggle notifications dropdown
+    function toggleNotifications() {
+      const dropdown = document.getElementById('notificationDropdown');
+      dropdown.classList.toggle('hidden');
+    }
+    
+    // Dismiss single reminder
+    async function dismissReminder(reminderId) {
+      await db.collection('reminders').doc(reminderId).update({ read: true });
+      loadReminders();
+    }
+    
+    // Clear all reminders
+    async function clearAllReminders() {
+      if (!confirm('Clear all reminders?')) return;
+      
+      const batch = db.batch();
+      allReminders.forEach(reminder => {
+        const ref = db.collection('reminders').doc(reminder.id);
+        batch.update(ref, { read: true });
+      });
+      
+      await batch.commit();
+      loadReminders();
+      showToast('All reminders cleared');
+    }
+    
+    // Play notification sound
+    function playNotificationSound() {
+      // Create a simple beep sound using Web Audio API
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+      } catch (error) {
+        console.log('Could not play notification sound:', error);
+      }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('notificationDropdown');
+      const bell = document.getElementById('notificationBell');
+      
+      if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+    
+    // ========================================
+    // VISITOR LINKS FUNCTIONALITY
+    // ========================================
+    
+    // Duration button selection
+    document.querySelectorAll('.duration-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.duration-btn').forEach(b => {
+          b.classList.remove('bg-purple-500', 'text-white', 'border-purple-500');
+        });
+        btn.classList.add('bg-purple-500', 'text-white', 'border-purple-500');
+        selectedDuration = parseInt(btn.dataset.minutes);
+        document.getElementById('customDuration').value = '';
+      });
+    });
+    
+    // Custom duration input
+    document.getElementById('customDuration').addEventListener('input', (e) => {
+      if (e.target.value) {
+        document.querySelectorAll('.duration-btn').forEach(b => {
+          b.classList.remove('bg-purple-500', 'text-white', 'border-purple-500');
+        });
+        selectedDuration = parseInt(e.target.value) || 30;
+      }
+    });
+    
+    // Generate visitor link
+    document.getElementById('generateVisitorLinkBtn').addEventListener('click', async () => {
+      const accessLevel = document.querySelector('input[name="accessLevel"]:checked').value;
+      const customDuration = document.getElementById('customDuration').value;
+      const duration = customDuration ? parseInt(customDuration) : selectedDuration;
+      
+      if (duration < 1 || duration > 1440) {
+        showToast('Duration must be between 1 and 1440 minutes');
+        return;
+      }
+      
+      try {
+        // Get current admin user ID
+        const currentUser = firebase.auth().currentUser;
+        if (!currentUser) {
+          showToast('Error: Not authenticated');
+          return;
+        }
+        
+        const linkId = generateRandomCode(16);
+        const link = `${window.location.origin}/index.html?visitor=${linkId}`;
+        
+        await db.collection('visitorLinks').doc(linkId).set({
+          linkId,
+          accessLevel,
+          durationMinutes: duration,
+          createdBy: currentUser.uid, // Store admin's UID
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          expiresAt: null, // Will be set when link is opened
+          used: false,
+          usedAt: null,
+          active: true
+        });
+        
+        showToast('Visitor link generated!');
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(link);
+        showToast('Link copied to clipboard!');
+        
+        loadVisitorLinks();
+      } catch (error) {
+        console.error('Error generating visitor link:', error);
+        showToast('Error generating link');
+      }
+    });
+    
+    // Load visitor links
+    async function loadVisitorLinks() {
+      try {
+        const snapshot = await db.collection('visitorLinks')
+          .where('active', '==', true)
+          .get();
+        
+        allVisitorLinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Sort by createdAt client-side
+        allVisitorLinks.sort((a, b) => {
+          const aTime = a.createdAt ? a.createdAt.toMillis() : 0;
+          const bTime = b.createdAt ? b.createdAt.toMillis() : 0;
+          return bTime - aTime;
+        });
+        
+        renderVisitorLinks();
+      } catch (error) {
+        console.error('Error loading visitor links:', error);
+        // If index error, try without ordering
+        try {
+          const snapshot = await db.collection('visitorLinks').get();
+          allVisitorLinks = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(link => link.active);
+          
+          allVisitorLinks.sort((a, b) => {
+            const aTime = a.createdAt ? a.createdAt.toMillis() : 0;
+            const bTime = b.createdAt ? b.createdAt.toMillis() : 0;
+            return bTime - aTime;
+          });
+          
+          renderVisitorLinks();
+        } catch (err) {
+          console.error('Error loading visitor links (fallback):', err);
+        }
+      }
+    }
+    
+    // Start real-time listener for visitor links
+    function startVisitorLinksListener() {
+      visitorLinksListener = db.collection('visitorLinks')
+        .where('active', '==', true)
+        .onSnapshot((snapshot) => {
+          allVisitorLinks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          
+          // Sort by createdAt client-side
+          allVisitorLinks.sort((a, b) => {
+            const aTime = a.createdAt ? a.createdAt.toMillis() : 0;
+            const bTime = b.createdAt ? b.createdAt.toMillis() : 0;
+            return bTime - aTime;
+          });
+          
+          renderVisitorLinks();
+        }, (error) => {
+          console.error('Error in visitor links listener:', error);
+        });
+    }
+    
+    // Render visitor links
+    function renderVisitorLinks() {
+      const container = document.getElementById('visitorLinksList');
+      
+      if (allVisitorLinks.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No active visitor links</p>';
+        return;
+      }
+      
+      container.innerHTML = allVisitorLinks.map(link => {
+        const createdAt = link.createdAt ? link.createdAt.toDate() : new Date();
+        const usedAt = link.usedAt ? link.usedAt.toDate() : null;
+        const expiresAt = link.expiresAt ? link.expiresAt.toDate() : null;
+        const now = new Date();
+        
+        let statusColor, statusText, timeLeft;
+        
+        if (!link.used) {
+          // Not opened yet
+          statusColor = 'gray';
+          statusText = '⏳ Not opened yet';
+          timeLeft = null;
+        } else if (expiresAt && now > expiresAt) {
+          // Expired
+          statusColor = 'red';
+          statusText = '⏰ Expired';
+          timeLeft = 0;
+        } else if (expiresAt) {
+          // Active
+          timeLeft = Math.max(0, Math.floor((expiresAt - now) / 1000 / 60));
+          statusColor = timeLeft < 5 ? 'orange' : 'green';
+          statusText = `✅ Active (${timeLeft}min left)`;
+        } else {
+          statusColor = 'gray';
+          statusText = '⏳ Pending';
+          timeLeft = null;
+        }
+        
+        const accessIcon = link.accessLevel === 'strict' ? '🔒' : '👁️';
+        const accessLabel = link.accessLevel === 'strict' ? 'Strict' : 'Flexible';
+        const fullLink = `${window.location.origin}/index.html?visitor=${link.linkId}`;
+        
+        return `
+          <div class="p-4 border border-gray-200 rounded-lg bg-white">
+            <div class="flex items-start justify-between mb-2">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-lg">${accessIcon}</span>
+                  <span class="font-medium text-gray-800">${accessLabel} Read-Only</span>
+                  <span class="text-xs px-2 py-1 bg-${statusColor}-100 text-${statusColor}-700 rounded-full">${statusText}</span>
+                </div>
+                <div class="text-xs text-gray-500">
+                  Duration: ${link.durationMinutes} minutes
+                </div>
+                ${link.used && usedAt ? `<div class="text-xs text-green-600 mt-1">Opened: ${formatDate(usedAt)}</div>` : ''}
+              </div>
+              <div class="flex gap-2">
+                ${link.used && expiresAt && now < expiresAt ? `
+                  <button 
+                    onclick="revokeVisitorAccess('${link.id}')"
+                    class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700"
+                  >
+                    Remove Access
+                  </button>
+                ` : ''}
+                <button 
+                  onclick="deleteVisitorLink('${link.id}')"
+                  class="text-red-600 hover:text-red-700 text-sm"
+                  title="Delete Link"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            
+            <div class="flex gap-2 mt-3">
+              <input 
+                type="text" 
+                value="${fullLink}"
+                readonly
+                class="flex-1 px-3 py-2 text-xs border border-gray-300 rounded bg-gray-50"
+              />
+              <button 
+                onclick="copyVisitorLink('${fullLink}')"
+                class="px-4 py-2 bg-gray-600 text-white text-xs rounded hover:bg-gray-700"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Copy visitor link
+    function copyVisitorLink(link) {
+      navigator.clipboard.writeText(link);
+      showToast('Link copied!');
+    }
+    
+    // Delete visitor link
+    async function deleteVisitorLink(linkId) {
+      if (!confirm('Delete this visitor link?')) return;
+      
+      try {
+        await db.collection('visitorLinks').doc(linkId).update({
+          active: false
+        });
+        showToast('Link deleted');
+        loadVisitorLinks();
+      } catch (error) {
+        console.error('Error deleting link:', error);
+        showToast('Error deleting link');
+      }
+    }
+    
+    // Revoke visitor access (immediately expire the link)
+    async function revokeVisitorAccess(linkId) {
+      if (!confirm('Revoke access for this visitor? They will be logged out immediately.')) return;
+      
+      try {
+        await db.collection('visitorLinks').doc(linkId).update({
+          expiresAt: new Date(), // Set to now (expired)
+          active: false
+        });
+        showToast('Access revoked');
+        loadVisitorLinks();
+      } catch (error) {
+        console.error('Error revoking access:', error);
+        showToast('Error revoking access');
+      }
+    }
+    
+  </script>
+</body>
+</html>

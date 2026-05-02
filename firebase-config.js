@@ -17,6 +17,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Make available globally for visitor access
+window.db = db;
+window.firebase = firebase;
+
 // Google Auth Provider
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 

@@ -59,9 +59,17 @@ self.addEventListener('fetch', event => {
         return;
     }
     
+    // Skip external APIs and tiles
     if (url.includes('nominatim') || url.includes('google.com/vt') ||
-        url.includes('tile') || url.includes('osrm') || url.includes('router.project-osrm')) {
+        url.includes('tile') || url.includes('osrm') || url.includes('router.project-osrm') ||
+        url.includes('firebase') || url.includes('googleapis')) {
         return; // don't intercept, fall through to network
+    }
+    
+    // For index.html with query params (like visitor links), always fetch from network
+    if (url.includes('index.html?')) {
+        event.respondWith(fetch(event.request));
+        return;
     }
 
     event.respondWith(

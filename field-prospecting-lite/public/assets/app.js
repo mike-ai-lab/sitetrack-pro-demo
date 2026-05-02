@@ -15,9 +15,7 @@ let sessionStart = null;
 let keepAliveInterval = null;
 let durationInterval = null;
 
-// Storage keys
-const STORAGE_KEY = 'fp_lite_sessions';
-const ACTIVE_KEY = 'fp_lite_active_session';
+// Storage disabled - no persistence
 
 // Configuration
 const priorities = [
@@ -45,7 +43,7 @@ window.onload = function() {
     initFormOptions();
     attachEventListeners();
     registerServiceWorker();
-    restoreActiveSession();
+    // restoreActiveSession disabled - no persistence
     requestLocation();
     
     // Re-sync when tab becomes visible
@@ -646,8 +644,7 @@ function startKeepAlive() {
                 [channel.port2]
             );
         }
-        // Write heartbeat to localStorage for background detection
-        localStorage.setItem('fp_lite_heartbeat', Date.now().toString());
+        // Disabled - no persistence
     }, 25000);
 }
 
@@ -663,129 +660,11 @@ function stopKeepAlive() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function saveActiveSession() {
-    if (!isRecording) {
-        localStorage.removeItem(ACTIVE_KEY);
-        return;
-    }
-    
-    try {
-        const sessionData = {
-            sessionId,
-            sessionStart,
-            totalDistance,
-            isSimulationMode,
-            userLocation: userLocation ? { lat: userLocation[0], lng: userLocation[1] } : null,
-            pathPoints: pathPoints.map(p => ({ lat: p[0], lng: p[1] })),
-            pins: pins.map(pin => ({
-                id: pin.id,
-                lat: pin.lat,
-                lng: pin.lng,
-                index: pin.index,
-                priority: pin.priority,
-                status: pin.status,
-                role: pin.role,
-                phase: pin.phase,
-                data: {
-                    name: pin.data.name,
-                    phone: pin.data.phone,
-                    notes: pin.data.notes,
-                    photos: pin.data.photos || []
-                }
-            }))
-        };
-        
-        localStorage.setItem(ACTIVE_KEY, JSON.stringify(sessionData));
-        console.log('💾 Session saved to localStorage');
-    } catch (e) {
-        console.warn('Failed to save session:', e);
-    }
+    // Disabled - no persistence
 }
 
 function restoreActiveSession() {
-    try {
-        const saved = localStorage.getItem(ACTIVE_KEY);
-        if (!saved) return;
-        
-        const data = JSON.parse(saved);
-        
-        // Restore state
-        sessionId = data.sessionId;
-        sessionStart = data.sessionStart;
-        totalDistance = data.totalDistance || 0;
-        isSimulationMode = data.isSimulationMode || false;
-        isRecording = true;
-        
-        // Restore user location
-        if (data.userLocation) {
-            userLocation = [data.userLocation.lat, data.userLocation.lng];
-        }
-        
-        // Restore path
-        pathPoints = (data.pathPoints || []).map(p => [p.lat, p.lng]);
-        if (pathPoints.length > 0) {
-            pathPolyline.setLatLngs(pathPoints);
-        }
-        
-        // Restore pins
-        pins = (data.pins || []).map(pin => ({
-            ...pin,
-            marker: null // Will be recreated
-        }));
-        
-        // Recreate pin markers
-        pins.forEach(pin => {
-            renderPin(pin);
-        });
-        
-        // Restore user marker
-        if (userLocation) {
-            if (!userMarker) {
-                userMarker = L.circleMarker(userLocation, {
-                    radius: 10,
-                    fillColor: "#007AFF",
-                    color: "white",
-                    weight: 4,
-                    fillOpacity: 1
-                }).addTo(map);
-            } else {
-                userMarker.setLatLng(userLocation);
-            }
-            map.setView(userLocation, 17);
-        }
-        
-        // Update UI
-        const icon = document.getElementById('sessionIcon');
-        const text = document.getElementById('sessionText');
-        const btn = document.getElementById('toggleSessionBtn');
-        
-        btn.classList.replace('bg-black', 'bg-red-500');
-        text.innerText = "STOP SESSION";
-        icon.setAttribute('data-lucide', 'square');
-        lucide.createIcons();
-        
-        // Update simulation mode UI
-        if (isSimulationMode) {
-            const simBtn = document.getElementById('simToggleBtn');
-            const dot = document.getElementById('simIndicator');
-            simBtn.classList.add('bg-black', 'text-white');
-            dot.classList.replace('bg-gray-300', 'bg-green-400');
-        }
-        
-        updateStats();
-        
-        // Resume GPS or keep-alive
-        if (isSimulationMode) {
-            startKeepAlive();
-        } else {
-            requestLocation();
-            startKeepAlive();
-        }
-        
-        console.log('♻️ Session restored from localStorage');
-    } catch (e) {
-        console.warn('Failed to restore session:', e);
-        localStorage.removeItem(ACTIVE_KEY);
-    }
+    // Disabled - no persistence
 }
 
 function saveSessionToHistory() {
@@ -815,7 +694,7 @@ function saveSessionToHistory() {
         };
         
         // Load existing sessions
-        const allSessions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const allSessions = [];
         
         // Add new session at the beginning
         allSessions.unshift(session);
@@ -825,8 +704,7 @@ function saveSessionToHistory() {
             allSessions.length = 30;
         }
         
-        // Save back to localStorage
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allSessions));
+        // Disabled - no persistence
         
         console.log('📝 Session saved to history');
     } catch (e) {
@@ -855,7 +733,7 @@ toggleSession = function() {
         // Stopping session
         stopKeepAlive();
         saveSessionToHistory();
-        localStorage.removeItem(ACTIVE_KEY);
+        // Disabled - no-op
     }
 };
 

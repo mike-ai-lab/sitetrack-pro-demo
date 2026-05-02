@@ -27,13 +27,10 @@ const statuses = ['New', 'Active', 'On Hold', 'Closed'];
 
 // Initialize lead system
 function initLeadSystem() {
-    console.log('🎯 Lead system initializing...');
-    
     // Wait for map to be available
     const checkMap = setInterval(() => {
         if (window.leafletMap) {
             mapInstance = window.leafletMap;
-            console.log('✅ Map instance connected');
             clearInterval(checkMap);
             
             // Load saved leads after map is ready
@@ -43,29 +40,22 @@ function initLeadSystem() {
     
     setupMapClickForLeads();
     loadModals(); // Load modals first
-    console.log('✅ Modals loaded');
     
     // Initialize form options after a short delay to ensure DOM is ready
     setTimeout(() => {
         initFormOptions();
-        console.log('✅ Form options initialized');
         setupModalClickOutside(); // Setup click-outside handlers
-        console.log('✅ Click-outside handlers setup');
         
         // Verify FAB button exists
         const fab = document.getElementById('add-lead-fab');
-        if (fab) {
-            console.log('✅ FAB button found in DOM');
-        } else {
+        if (!fab) {
             console.error('❌ FAB button NOT found in DOM!');
         }
         
         // Verify modals exist
         const formModal = document.getElementById('formModal');
         const detailsModal = document.getElementById('leadDetailsModal');
-        if (formModal && detailsModal) {
-            console.log('✅ Both modals found in DOM');
-        } else {
+        if (!formModal || !detailsModal) {
             console.error('❌ Modals NOT found in DOM!', { formModal: !!formModal, detailsModal: !!detailsModal });
         }
     }, 200);
@@ -226,8 +216,6 @@ function setupMapClickForLeads() {
 
 // Add lead pin at specific location
 function addLeadPin(lat, lng, skipForm = false) {
-    console.log('📍 addLeadPin called with:', lat, lng, 'skipForm:', skipForm);
-    
     const pinId = Date.now();
     const newPin = {
         id: pinId,
@@ -243,13 +231,7 @@ function addLeadPin(lat, lng, skipForm = false) {
     };
     
     pins.push(newPin);
-    console.log('✅ Pin added to array, total pins:', pins.length);
-    
     renderPin(newPin);
-    console.log('✅ Pin rendered on map');
-    
-    // Save to localStorage
-    saveLeadsToStorage();
     
     // Record action for undo/redo
     if (window.recordAction) {
@@ -265,16 +247,12 @@ function addLeadPin(lat, lng, skipForm = false) {
     // Only open form if not skipped (e.g., during import)
     if (!skipForm) {
         openForm(pinId);
-        console.log('✅ Opening form for pin:', pinId);
     }
 }
 
 // Add lead at map center
 function addLeadAtMapCenter() {
-    console.log('🎯 FAB button clicked - addLeadAtMapCenter called');
-    
     if (!mapInstance) {
-        console.error('❌ Map not initialized yet');
         alert('Map is not ready yet. Please wait a moment and try again.');
         return;
     }
@@ -285,11 +263,9 @@ function addLeadAtMapCenter() {
     // Check if carMarker exists (from index.html)
     if (window.carMarker) {
         carPosition = window.carMarker.getLatLng();
-        console.log('📍 Using car marker position:', carPosition);
     } else {
         // Fallback to map center if car marker not found
         carPosition = mapInstance.getCenter();
-        console.log('⚠️ Car marker not found, using map center:', carPosition);
     }
     
     addLeadPin(carPosition.lat, carPosition.lng);
@@ -456,24 +432,16 @@ function updatePreview() {
 
 // Open form
 function openForm(id) {
-    console.log('📝 openForm called for pin ID:', id);
-    
     const pin = pins.find(p => p.id === id);
     if (!pin) {
-        console.error('❌ Pin not found:', id);
         return;
     }
-    
-    console.log('✅ Pin found:', pin);
     
     const formModal = document.getElementById('formModal');
     if (!formModal) {
-        console.error('❌ formModal element not found in DOM!');
         alert('Lead form not initialized. Please refresh the page.');
         return;
     }
-    
-    console.log('✅ formModal element found');
     
     document.getElementById('currentPinId').value = id;
     document.getElementById('contactName').value = pin.data.name;
@@ -491,7 +459,6 @@ function openForm(id) {
     updatePreview();
     
     formModal.style.display = 'flex';
-    console.log('✅ Form modal displayed');
 }
 
 // Save lead
@@ -531,7 +498,7 @@ function saveLead(e) {
     // Render new marker
     renderPin(pin);
     
-    // Save to localStorage
+    // Sync to Firestore (localStorage disabled)
     saveLeadsToStorage();
     
     closeModal();
@@ -560,9 +527,6 @@ function deletePin() {
         }
     });
     
-    // Save to localStorage
-    saveLeadsToStorage();
-    
     closeModal();
     updateLeadsTable();
 }
@@ -585,9 +549,6 @@ function deleteFromDetails(id) {
             renderPin(p);
         }
     });
-    
-    // Save to localStorage
-    saveLeadsToStorage();
     
     closeLeadDetails();
     updateLeadsTable();
@@ -798,7 +759,7 @@ function getAllPins() {
     return pins;
 }
 
-// Save leads to localStorage
+// Save leads to Firestore (localStorage disabled)
 function saveLeadsToStorage() {
     try {
         const leadsData = pins.map(pin => ({
@@ -817,67 +778,59 @@ function saveLeadsToStorage() {
             time: pin.time
         }));
         
-        localStorage.setItem('lp_leads', JSON.stringify(leadsData));
-        console.log('💾 Saved', leadsData.length, 'leads to localStorage');
+        // Disabled - no-op
     } catch (e) {
-        console.error('❌ Failed to save leads:', e);
+        // Disabled - no-op
     }
 }
 
-// Load leads from localStorage
-function loadLeadsFromStorage() {
-    try {
-        const saved = localStorage.getItem('lp_leads');
-        if (!saved) {
-            console.log('📭 No saved leads found');
-            return;
+// Load leads from local memory (Firestore sync disabled)
+async function loadLeadsFromStorage() {
+    // Disabled - no-op
+    return;
+}
+
+// Helper function to restore leads
+function restoreLeads(leadsData) {
+    // Clear existing pins
+    pins.forEach(pin => {
+        if (pin.marker && mapInstance) {
+            mapInstance.removeLayer(pin.marker);
         }
+    });
+    pins.length = 0;
+    
+    // Restore pins
+    leadsData.forEach(data => {
+        const pin = {
+            id: data.id,
+            lat: data.lat,
+            lng: data.lng,
+            index: data.index,
+            priority: data.priority || 'Normal',
+            status: data.status || 'Active',
+            role: data.role || 'Owner',
+            phase: data.phase || 'ST',
+            images: data.images || [],
+            data: data.data || { name: '', phone: '', notes: '' },
+            timestamp: data.timestamp,
+            date: data.date,
+            time: data.time
+        };
         
-        const leadsData = JSON.parse(saved);
-        console.log('📂 Loading', leadsData.length, 'leads from localStorage');
+        pins.push(pin);
         
-        // Clear existing pins
-        pins.forEach(pin => {
-            if (pin.marker && mapInstance) {
-                mapInstance.removeLayer(pin.marker);
-            }
-        });
-        pins.length = 0;
-        
-        // Restore pins
-        leadsData.forEach(data => {
-            const pin = {
-                id: data.id,
-                lat: data.lat,
-                lng: data.lng,
-                index: data.index,
-                priority: data.priority || 'Normal',
-                status: data.status || 'Active',
-                role: data.role || 'Owner',
-                phase: data.phase || 'ST',
-                images: data.images || [],
-                data: data.data || { name: '', phone: '', notes: '' },
-                timestamp: data.timestamp,
-                date: data.date,
-                time: data.time
-            };
-            
-            pins.push(pin);
-            
-            // Render pin on map if map is ready
-            if (mapInstance) {
-                renderPin(pin);
-            }
-        });
-        
-        console.log('✅ Loaded', pins.length, 'leads successfully');
-        
-        // Update session summary if available
-        if (window.SessionSummary) {
-            window.SessionSummary.updateTable();
+        // Render pin on map if map is ready
+        if (mapInstance) {
+            renderPin(pin);
         }
-    } catch (e) {
-        console.error('❌ Failed to load leads:', e);
+    });
+    
+    console.log('✅ Loaded', pins.length, 'leads successfully');
+    
+    // Update session summary if available
+    if (window.SessionSummary) {
+        window.SessionSummary.updateTable();
     }
 }
 
@@ -900,7 +853,9 @@ window.LeadSystem = {
     getAllPins,
     setPriority,
     setStatus,
-    createPinHTML
+    createPinHTML,
+    loadLeadsFromStorage,
+    pins // Expose pins array for sync button
 };
 
 // Auto-initialize when DOM is ready
@@ -1155,4 +1110,4 @@ const SessionSummary = {
 };
 
 // Expose SessionSummary globally
-window.SessionSummary = SessionSummary;
+window.SessionSummary = SessionSummary

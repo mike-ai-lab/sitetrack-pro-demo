@@ -1,1299 +1,170 @@
-02:44:42.514 panel.js:614 ✅ Session deleted successfully
-02:44:44.682 panel.js:614 ✅ Session deleted successfully
-02:44:46.850 panel.js:614 ✅ Session deleted successfully
-02:44:48.682 panel.js:614 ✅ Session deleted successfully
-02:44:50.882 panel.js:614 ✅ Session deleted successfully
-02:44:52.810 panel.js:614 ✅ Session deleted successfully
-02:44:54.818 panel.js:614 ✅ Session deleted successfully
-02:45:05.735 (index):1285 📂 Starting import from: all_leads.json
-02:45:05.740  📊 Parsed JSON, total leads: 100
-02:45:05.741  
+13:18:05.111 Navigated to http://localhost:8247/index.html
+13:18:06.147 firebase-config.js:30 Firebase initialized successfully
+13:18:06.164 auth.js:175 Auth module loaded
+13:18:06.166 db-sync.js:64 ⚠️ DBSync module loaded (disabled - stub only)
+13:18:06.335 index.html:3423 🔧 Initializing LeadSystem...
+13:18:06.340 index.html:3426 ✅ LeadSystem initialized successfully
+13:18:06.343 index.html:3829 ☁️ Cloud sync button initialized
+13:18:06.380 index.html:713  INITIALIZING MAP...
+13:18:06.386 index.html:726 Map created at zoom level: 15
+13:18:06.405 index.html:800 🔍 Requesting user location...
+13:18:06.419 index.html:2857  LiveProspect initialized
+13:18:06.420 index.html:2877  App initialized with modular panel
+13:18:07.879 Fetch finished loading: POST "<URL>".
+13:18:07.879 Fetch finished loading: POST "<URL>".
+13:18:07.879 Fetch finished loading: POST "<URL>".
+13:18:07.879 Fetch finished loading: POST "<URL>".
+13:18:07.879 Fetch finished loading: POST "<URL>".
+13:18:07.866 index.html:2979 ✅ User authenticated: muhamad.shkeir@gmail.com
+13:18:07.867 db-sync.js:13 ⚠️ DBSync disabled - proper Firebase sync coming soon
+13:18:07.868 index.html:3460 🔒 Starting aggressive access monitoring for user: kUyVyvxeKDVtVJidxcbNyiU27Zc2
+13:18:07.868 index.html:3461 Disabled - no Firebase operations
+13:18:07.869 index.html:3550 🔔 Starting notification monitoring for admin
+13:18:07.869 index.html:3551 👤 Current user: {uid: 'kUyVyvxeKDVtVJidxcbNyiU27Zc2', email: 'muhamad.shkeir@gmail.com', displayName: 'muhamad shkeir', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocJDnqpBLMv3AMpt_XHiQHjJcXh0FWm4MedskbrvzY-cKVxxap98=s96-c', createdAt: ti, …}
+13:18:07.869 index.html:3557 ✅ Admin notifications section shown
+13:18:07.869 index.html:3563 Disabled - no Firebase operations
+13:18:08.872 index.html:2991 📥 Loading leads after login...
+13:18:17.829 index.html:1490 📂 Starting import from: part1_data.json
+13:18:17.832 index.html:1496 📊 Parsed JSON, total leads: 23
+13:18:17.832 index.html:1509 🗑️ Clearing existing leads...
+13:18:17.832 index.html:1517 ✅ Existing leads cleared
+13:18:17.832 index.html:1520 🗑️ Clearing existing sessions...
+13:18:17.833 index.html:1524 ✅ Existing sessions cleared
+13:18:17.834 index.html:1535 
 🔍 Processing lead 1: ابو سعد سعودى
-02:45:05.741     Location: null
-02:45:05.741  
+13:18:17.834 index.html:1536    Location: null
+13:18:17.834 index.html:1535 
 🔍 Processing lead 2: Eng Ahmad
-02:45:05.742     Location: {lat: 24.619692, lng: 46.507805, map_link: 'https://maps.google.com/?q=24.619692,46.507805'}
-02:45:05.742     ✓ Has valid location, importing...
-02:45:05.742  📍 addLeadPin called with: 24.619692 46.507805
-02:45:05.743  ✅ Pin added to array, total pins: 1
-02:45:05.745  ✅ Pin rendered on map
-02:45:05.746  📝 openForm called for pin ID: 1777679105743
-02:45:05.746  ✅ Pin found: {id: 1777679105743, lat: 24.619692, lng: 46.507805, index: 1, priority: 'Normal', …}
-02:45:05.746  ✅ formModal element found
-02:45:05.752  ✅ Form modal displayed
-02:45:05.752  ✅ Opening form for pin: 1777679105743
-02:45:05.753     📍 Pin created with ID: 1777679105743
-02:45:05.755     ✓ Successfully imported: Eng Ahmad
-02:45:05.755  
+13:18:17.835 index.html:1536    Location: {lat: 24.619692, lng: 46.507805, map_link: 'https://maps.google.com/?q=24.619692,46.507805'}
+13:18:17.835 index.html:1539    ✓ Has valid location, importing...
+13:18:17.838 index.html:1548    📍 Pin created with ID: 1777717097835
+13:18:17.840 index.html:1588    ✓ Successfully imported: Eng Ahmad
+13:18:17.840 index.html:1535 
 🔍 Processing lead 3: ابو شهد
-02:45:05.755     Location: {lat: 24.622923, lng: 46.508198, map_link: 'https://maps.google.com/?q=24.622923,46.508198'}
-02:45:05.756     ✓ Has valid location, importing...
-02:45:05.756  📍 addLeadPin called with: 24.622923 46.508198
-02:45:05.756  ✅ Pin added to array, total pins: 2
-02:45:05.758  ✅ Pin rendered on map
-02:45:05.759  📝 openForm called for pin ID: 1777679105756
-02:45:05.759  ✅ Pin found: {id: 1777679105756, lat: 24.622923, lng: 46.508198, index: 2, priority: 'Normal', …}
-02:45:05.759  ✅ formModal element found
-02:45:05.764  ✅ Form modal displayed
-02:45:05.764  ✅ Opening form for pin: 1777679105756
-02:45:05.764     📍 Pin created with ID: 1777679105756
-02:45:05.765     ✓ Successfully imported: ابو شهد
-02:45:05.765  
+13:18:17.840 index.html:1536    Location: {lat: 24.622923, lng: 46.508198, map_link: 'https://maps.google.com/?q=24.622923,46.508198'}
+13:18:17.840 index.html:1539    ✓ Has valid location, importing...
+13:18:17.842 index.html:1548    📍 Pin created with ID: 1777717097840
+13:18:17.843 index.html:1588    ✓ Successfully imported: ابو شهد
+13:18:17.843 index.html:1535 
 🔍 Processing lead 4: أبو فاطمة
-02:45:05.766     Location: {lat: 24.615885, lng: 46.533966, map_link: 'https://maps.google.com/?q=24.615885,46.533966'}
-02:45:05.766     ✓ Has valid location, importing...
-02:45:05.766  📍 addLeadPin called with: 24.615885 46.533966
-02:45:05.766  ✅ Pin added to array, total pins: 3
-02:45:05.768  ✅ Pin rendered on map
-02:45:05.769  📝 openForm called for pin ID: 1777679105766
-02:45:05.769  ✅ Pin found: {id: 1777679105766, lat: 24.615885, lng: 46.533966, index: 3, priority: 'Normal', …}
-02:45:05.769  ✅ formModal element found
-02:45:05.774  ✅ Form modal displayed
-02:45:05.774  ✅ Opening form for pin: 1777679105766
-02:45:05.774     📍 Pin created with ID: 1777679105766
-02:45:05.775     ✓ Successfully imported: أبو فاطمة
-02:45:05.775  
+13:18:17.844 index.html:1536    Location: {lat: 24.615885, lng: 46.533966, map_link: 'https://maps.google.com/?q=24.615885,46.533966'}
+13:18:17.844 index.html:1539    ✓ Has valid location, importing...
+13:18:17.846 index.html:1548    📍 Pin created with ID: 1777717097844
+13:18:17.848 index.html:1588    ✓ Successfully imported: أبو فاطمة
+13:18:17.848 index.html:1535 
 🔍 Processing lead 5: ابو محمد
-02:45:05.775     Location: {lat: 24.611879, lng: 46.488613, map_link: 'https://maps.google.com/?q=24.611879,46.488613'}
-02:45:05.776     ✓ Has valid location, importing...
-02:45:05.776  📍 addLeadPin called with: 24.611879 46.488613
-02:45:05.776  ✅ Pin added to array, total pins: 4
-02:45:05.778  ✅ Pin rendered on map
-02:45:05.779  📝 openForm called for pin ID: 1777679105776
-02:45:05.779  ✅ Pin found: {id: 1777679105776, lat: 24.611879, lng: 46.488613, index: 4, priority: 'Normal', …}
-02:45:05.779  ✅ formModal element found
-02:45:05.784  ✅ Form modal displayed
-02:45:05.784  ✅ Opening form for pin: 1777679105776
-02:45:05.784     📍 Pin created with ID: 1777679105776
-02:45:05.785     📷 Added 2 images
-02:45:05.786     ✓ Successfully imported: ابو محمد
-02:45:05.786  
+13:18:17.848 index.html:1536    Location: {lat: 24.611879, lng: 46.488613, map_link: 'https://maps.google.com/?q=24.611879,46.488613'}
+13:18:17.848 index.html:1539    ✓ Has valid location, importing...
+13:18:17.850 index.html:1548    📍 Pin created with ID: 1777717097849
+13:18:17.851 index.html:1569    📷 Added 2 images
+13:18:17.852 index.html:1588    ✓ Successfully imported: ابو محمد
+13:18:17.852 index.html:1535 
 🔍 Processing lead 6: احمد مطيري
-02:45:05.786     Location: {lat: 24.612843, lng: 46.478573, map_link: 'https://maps.google.com/?q=24.612843,46.478573'}
-02:45:05.786     ✓ Has valid location, importing...
-02:45:05.787  📍 addLeadPin called with: 24.612843 46.478573
-02:45:05.787  ✅ Pin added to array, total pins: 5
-02:45:05.789  ✅ Pin rendered on map
-02:45:05.789  📝 openForm called for pin ID: 1777679105787
-02:45:05.789  ✅ Pin found: {id: 1777679105787, lat: 24.612843, lng: 46.478573, index: 5, priority: 'Normal', …}
-02:45:05.789  ✅ formModal element found
-02:45:05.794  ✅ Form modal displayed
-02:45:05.794  ✅ Opening form for pin: 1777679105787
-02:45:05.794     📍 Pin created with ID: 1777679105787
-02:45:05.794     📷 Added 2 images
-02:45:05.795     ✓ Successfully imported: احمد مطيري
-02:45:05.796  
+13:18:17.853 index.html:1536    Location: {lat: 24.612843, lng: 46.478573, map_link: 'https://maps.google.com/?q=24.612843,46.478573'}
+13:18:17.853 index.html:1539    ✓ Has valid location, importing...
+13:18:17.855 index.html:1548    📍 Pin created with ID: 1777717097853
+13:18:17.855 index.html:1569    📷 Added 2 images
+13:18:17.856 index.html:1588    ✓ Successfully imported: احمد مطيري
+13:18:17.856 index.html:1535 
 🔍 Processing lead 7: ابو فيصل
-02:45:05.796     Location: {lat: 24.609636, lng: 46.464939, map_link: 'https://maps.google.com/?q=24.609636,46.464939'}
-02:45:05.796     ✓ Has valid location, importing...
-02:45:05.796  📍 addLeadPin called with: 24.609636 46.464939
-02:45:05.797  ✅ Pin added to array, total pins: 6
-02:45:05.798  ✅ Pin rendered on map
-02:45:05.799  📝 openForm called for pin ID: 1777679105797
-02:45:05.799  ✅ Pin found: {id: 1777679105797, lat: 24.609636, lng: 46.464939, index: 6, priority: 'Normal', …}
-02:45:05.799  ✅ formModal element found
-02:45:05.803  ✅ Form modal displayed
-02:45:05.805  ✅ Opening form for pin: 1777679105797
-02:45:05.805     📍 Pin created with ID: 1777679105797
-02:45:05.805     📷 Added 2 images
-02:45:05.807     ✓ Successfully imported: ابو فيصل
-02:45:05.807  
+13:18:17.856 index.html:1536    Location: {lat: 24.609636, lng: 46.464939, map_link: 'https://maps.google.com/?q=24.609636,46.464939'}
+13:18:17.857 index.html:1539    ✓ Has valid location, importing...
+13:18:17.858 index.html:1548    📍 Pin created with ID: 1777717097857
+13:18:17.859 index.html:1569    📷 Added 2 images
+13:18:17.860 index.html:1588    ✓ Successfully imported: ابو فيصل
+13:18:17.860 index.html:1535 
 🔍 Processing lead 8: ابو وليد
-02:45:05.807     Location: {lat: 24.624035, lng: 46.561264, map_link: 'https://maps.google.com/?q=24.624035,46.561264'}
-02:45:05.807     ✓ Has valid location, importing...
-02:45:05.808  📍 addLeadPin called with: 24.624035 46.561264
-02:45:05.808  ✅ Pin added to array, total pins: 7
-02:45:05.810  ✅ Pin rendered on map
-02:45:05.811  📝 openForm called for pin ID: 1777679105808
-02:45:05.811  ✅ Pin found: {id: 1777679105808, lat: 24.624035, lng: 46.561264, index: 7, priority: 'Normal', …}
-02:45:05.811  ✅ formModal element found
-02:45:05.815  ✅ Form modal displayed
-02:45:05.815  ✅ Opening form for pin: 1777679105808
-02:45:05.815     📍 Pin created with ID: 1777679105808
-02:45:05.816     📷 Added 4 images
-02:45:05.817     ✓ Successfully imported: ابو وليد
-02:45:05.817  
+13:18:17.860 index.html:1536    Location: {lat: 24.624035, lng: 46.561264, map_link: 'https://maps.google.com/?q=24.624035,46.561264'}
+13:18:17.860 index.html:1539    ✓ Has valid location, importing...
+13:18:17.862 index.html:1548    📍 Pin created with ID: 1777717097860
+13:18:17.862 index.html:1569    📷 Added 4 images
+13:18:17.864 index.html:1588    ✓ Successfully imported: ابو وليد
+13:18:17.864 index.html:1535 
 🔍 Processing lead 9: صديق المالك
-02:45:05.817     Location: null
-02:45:05.818  
+13:18:17.864 index.html:1536    Location: null
+13:18:17.865 index.html:1535 
 🔍 Processing lead 10: ابو راكان
-02:45:05.818     Location: {lat: 24.623095, lng: 46.550358, map_link: 'https://maps.google.com/?q=24.623095,46.550358'}
-02:45:05.818     ✓ Has valid location, importing...
-02:45:05.818  📍 addLeadPin called with: 24.623095 46.550358
-02:45:05.818  ✅ Pin added to array, total pins: 8
-02:45:05.820  ✅ Pin rendered on map
-02:45:05.820  📝 openForm called for pin ID: 1777679105818
-02:45:05.821  ✅ Pin found: {id: 1777679105818, lat: 24.623095, lng: 46.550358, index: 8, priority: 'Normal', …}
-02:45:05.821  ✅ formModal element found
-02:45:05.825  ✅ Form modal displayed
-02:45:05.825  ✅ Opening form for pin: 1777679105818
-02:45:05.825     📍 Pin created with ID: 1777679105818
-02:45:05.826     ✓ Successfully imported: ابو راكان
-02:45:05.826  
+13:18:17.865 index.html:1536    Location: {lat: 24.623095, lng: 46.550358, map_link: 'https://maps.google.com/?q=24.623095,46.550358'}
+13:18:17.865 index.html:1539    ✓ Has valid location, importing...
+13:18:17.867 index.html:1548    📍 Pin created with ID: 1777717097865
+13:18:17.868 index.html:1588    ✓ Successfully imported: ابو راكان
+13:18:17.868 index.html:1535 
 🔍 Processing lead 11: ابو حسين
-02:45:05.826     Location: null
-02:45:05.827  
+13:18:17.869 index.html:1536    Location: null
+13:18:17.869 index.html:1535 
 🔍 Processing lead 12: مالك سعودي
-02:45:05.827     Location: {lat: 24.64843, lng: 46.580406, map_link: 'https://maps.google.com/?q=24.648430,46.580406'}
-02:45:05.827     ✓ Has valid location, importing...
-02:45:05.827  📍 addLeadPin called with: 24.64843 46.580406
-02:45:05.828  ✅ Pin added to array, total pins: 9
-02:45:05.829  ✅ Pin rendered on map
-02:45:05.830  📝 openForm called for pin ID: 1777679105827
-02:45:05.830  ✅ Pin found: {id: 1777679105827, lat: 24.64843, lng: 46.580406, index: 9, priority: 'Normal', …}
-02:45:05.830  ✅ formModal element found
-02:45:05.834  ✅ Form modal displayed
-02:45:05.834  ✅ Opening form for pin: 1777679105827
-02:45:05.834     📍 Pin created with ID: 1777679105827
-02:45:05.835     📷 Added 6 images
-02:45:05.836     ✓ Successfully imported: مالك سعودي
-02:45:05.836  
+13:18:17.869 index.html:1536    Location: {lat: 24.64843, lng: 46.580406, map_link: 'https://maps.google.com/?q=24.648430,46.580406'}
+13:18:17.869 index.html:1539    ✓ Has valid location, importing...
+13:18:17.871 index.html:1548    📍 Pin created with ID: 1777717097870
+13:18:17.872 index.html:1569    📷 Added 6 images
+13:18:17.873 index.html:1588    ✓ Successfully imported: مالك سعودي
+13:18:17.873 index.html:1535 
 🔍 Processing lead 13: سعود
-02:45:05.836     Location: {lat: 24.644161, lng: 46.581524, map_link: 'https://maps.google.com/?q=24.644161,46.581524'}
-02:45:05.836     ✓ Has valid location, importing...
-02:45:05.837  📍 addLeadPin called with: 24.644161 46.581524
-02:45:05.837  ✅ Pin added to array, total pins: 10
-02:45:05.839  ✅ Pin rendered on map
-02:45:05.839  📝 openForm called for pin ID: 1777679105837
-02:45:05.839  ✅ Pin found: {id: 1777679105837, lat: 24.644161, lng: 46.581524, index: 10, priority: 'Normal', …}
-02:45:05.839  ✅ formModal element found
-02:45:05.843  ✅ Form modal displayed
-02:45:05.843  ✅ Opening form for pin: 1777679105837
-02:45:05.843     📍 Pin created with ID: 1777679105837
-02:45:05.843     📷 Added 2 images
-02:45:05.844     ✓ Successfully imported: سعود
-02:45:05.845  
+13:18:17.873 index.html:1536    Location: {lat: 24.644161, lng: 46.581524, map_link: 'https://maps.google.com/?q=24.644161,46.581524'}
+13:18:17.874 index.html:1539    ✓ Has valid location, importing...
+13:18:17.875 index.html:1548    📍 Pin created with ID: 1777717097874
+13:18:17.876 index.html:1569    📷 Added 2 images
+13:18:17.877 index.html:1588    ✓ Successfully imported: سعود
+13:18:17.877 index.html:1535 
 🔍 Processing lead 14: محمد المطيري (ابو يزيد)
-02:45:05.845     Location: {lat: 24.643921, lng: 46.583794, map_link: 'https://maps.google.com/?q=24.643921,46.583794'}
-02:45:05.845     ✓ Has valid location, importing...
-02:45:05.845  📍 addLeadPin called with: 24.643921 46.583794
-02:45:05.845  ✅ Pin added to array, total pins: 11
-02:45:05.847  ✅ Pin rendered on map
-02:45:05.847  📝 openForm called for pin ID: 1777679105845
-02:45:05.848  ✅ Pin found: {id: 1777679105845, lat: 24.643921, lng: 46.583794, index: 11, priority: 'Normal', …}
-02:45:05.848  ✅ formModal element found
-02:45:05.852  ✅ Form modal displayed
-02:45:05.852  ✅ Opening form for pin: 1777679105845
-02:45:05.852     📍 Pin created with ID: 1777679105845
-02:45:05.853     📷 Added 4 images
-02:45:05.854     ✓ Successfully imported: محمد المطيري (ابو يزيد)
-02:45:05.854  
+13:18:17.877 index.html:1536    Location: {lat: 24.643921, lng: 46.583794, map_link: 'https://maps.google.com/?q=24.643921,46.583794'}
+13:18:17.878 index.html:1539    ✓ Has valid location, importing...
+13:18:17.880 index.html:1548    📍 Pin created with ID: 1777717097878
+13:18:17.880 index.html:1569    📷 Added 4 images
+13:18:17.881 index.html:1588    ✓ Successfully imported: محمد المطيري (ابو يزيد)
+13:18:17.881 index.html:1535 
 🔍 Processing lead 15: ابو سعد
-02:45:05.854     Location: {lat: 24.649553, lng: 46.593582, map_link: 'https://maps.google.com/?q=24.649553,46.593582'}
-02:45:05.854     ✓ Has valid location, importing...
-02:45:05.854  📍 addLeadPin called with: 24.649553 46.593582
-02:45:05.855  ✅ Pin added to array, total pins: 12
-02:45:05.856 leads.js:223 ✅ Pin rendered on map
-02:45:05.856 leads.js:415 📝 openForm called for pin ID: 1777679105855
-02:45:05.856 leads.js:423 ✅ Pin found: {id: 1777679105855, lat: 24.649553, lng: 46.593582, index: 12, priority: 'Normal', …}
-02:45:05.857 leads.js:432 ✅ formModal element found
-02:45:05.861 leads.js:450 ✅ Form modal displayed
-02:45:05.861 leads.js:237 ✅ Opening form for pin: 1777679105855
-02:45:05.861 (index):1317    📍 Pin created with ID: 1777679105855
-02:45:05.861 (index):1338    📷 Added 2 images
-02:45:05.862 (index):1357    ✓ Successfully imported: ابو سعد
-02:45:05.862 (index):1304 
+13:18:17.882 index.html:1536    Location: {lat: 24.649553, lng: 46.593582, map_link: 'https://maps.google.com/?q=24.649553,46.593582'}
+13:18:17.882 index.html:1539    ✓ Has valid location, importing...
+13:18:17.884 index.html:1548    📍 Pin created with ID: 1777717097882
+13:18:17.884 index.html:1569    📷 Added 2 images
+13:18:17.885 index.html:1588    ✓ Successfully imported: ابو سعد
+13:18:17.885 index.html:1535 
 🔍 Processing lead 16: ابو عزيز
-02:45:05.863 (index):1305    Location: {lat: 24.648268, lng: 46.590591, map_link: 'https://maps.google.com/?q=24.648268,46.590591'}
-02:45:05.863 (index):1308    ✓ Has valid location, importing...
-02:45:05.863 leads.js:203 📍 addLeadPin called with: 24.648268 46.590591
-02:45:05.863 leads.js:220 ✅ Pin added to array, total pins: 13
-02:45:05.865 leads.js:223 ✅ Pin rendered on map
-02:45:05.865 leads.js:415 📝 openForm called for pin ID: 1777679105863
-02:45:05.865 leads.js:423 ✅ Pin found: {id: 1777679105863, lat: 24.648268, lng: 46.590591, index: 13, priority: 'Normal', …}
-02:45:05.865 leads.js:432 ✅ formModal element found
-02:45:05.870 leads.js:450 ✅ Form modal displayed
-02:45:05.871 leads.js:237 ✅ Opening form for pin: 1777679105863
-02:45:05.871 (index):1317    📍 Pin created with ID: 1777679105863
-02:45:05.871 (index):1338    📷 Added 2 images
-02:45:05.872 (index):1357    ✓ Successfully imported: ابو عزيز
-02:45:05.872 (index):1304 
+13:18:17.886 index.html:1536    Location: {lat: 24.648268, lng: 46.590591, map_link: 'https://maps.google.com/?q=24.648268,46.590591'}
+13:18:17.886 index.html:1539    ✓ Has valid location, importing...
+13:18:17.888 index.html:1548    📍 Pin created with ID: 1777717097886
+13:18:17.888 index.html:1569    📷 Added 2 images
+13:18:17.890 index.html:1588    ✓ Successfully imported: ابو عزيز
+13:18:17.890 index.html:1535 
 🔍 Processing lead 17: المهندس مصري
-02:45:05.872 (index):1305    Location: {lat: 24.633619, lng: 46.582012, map_link: 'https://maps.google.com/?q=24.633619,46.582012'}
-02:45:05.873 (index):1308    ✓ Has valid location, importing...
-02:45:05.873 leads.js:203 📍 addLeadPin called with: 24.633619 46.582012
-02:45:05.873 leads.js:220 ✅ Pin added to array, total pins: 14
-02:45:05.874 leads.js:223 ✅ Pin rendered on map
-02:45:05.874 leads.js:415 📝 openForm called for pin ID: 1777679105873
-02:45:05.875 leads.js:423 ✅ Pin found: {id: 1777679105873, lat: 24.633619, lng: 46.582012, index: 14, priority: 'Normal', …}
-02:45:05.875 leads.js:432 ✅ formModal element found
-02:45:05.878 leads.js:450 ✅ Form modal displayed
-02:45:05.878 leads.js:237 ✅ Opening form for pin: 1777679105873
-02:45:05.878 (index):1317    📍 Pin created with ID: 1777679105873
-02:45:05.878 (index):1338    📷 Added 3 images
-02:45:05.879 (index):1357    ✓ Successfully imported: المهندس مصري
-02:45:05.879 (index):1304 
+13:18:17.890 index.html:1536    Location: {lat: 24.633619, lng: 46.582012, map_link: 'https://maps.google.com/?q=24.633619,46.582012'}
+13:18:17.891 index.html:1539    ✓ Has valid location, importing...
+13:18:17.893 index.html:1548    📍 Pin created with ID: 1777717097891
+13:18:17.893 index.html:1569    📷 Added 3 images
+13:18:17.894 index.html:1588    ✓ Successfully imported: المهندس مصري
+13:18:17.894 index.html:1535 
 🔍 Processing lead 18: ابو زياد
-02:45:05.880 (index):1305    Location: {lat: 24.627483, lng: 46.573624, map_link: 'https://maps.google.com/?q=24.627483,46.573624'}
-02:45:05.880 (index):1308    ✓ Has valid location, importing...
-02:45:05.880 leads.js:203 📍 addLeadPin called with: 24.627483 46.573624
-02:45:05.880 leads.js:220 ✅ Pin added to array, total pins: 15
-02:45:05.882 leads.js:223 ✅ Pin rendered on map
-02:45:05.882 leads.js:415 📝 openForm called for pin ID: 1777679105880
-02:45:05.882 leads.js:423 ✅ Pin found: {id: 1777679105880, lat: 24.627483, lng: 46.573624, index: 15, priority: 'Normal', …}
-02:45:05.883 leads.js:432 ✅ formModal element found
-02:45:05.887 leads.js:450 ✅ Form modal displayed
-02:45:05.887 leads.js:237 ✅ Opening form for pin: 1777679105880
-02:45:05.887 (index):1317    📍 Pin created with ID: 1777679105880
-02:45:05.888 (index):1357    ✓ Successfully imported: ابو زياد
-02:45:05.888 (index):1304 
+13:18:17.895 index.html:1536    Location: {lat: 24.627483, lng: 46.573624, map_link: 'https://maps.google.com/?q=24.627483,46.573624'}
+13:18:17.895 index.html:1539    ✓ Has valid location, importing...
+13:18:17.897 index.html:1548    📍 Pin created with ID: 1777717097895
+13:18:17.898 index.html:1588    ✓ Successfully imported: ابو زياد
+13:18:17.899 index.html:1535 
 🔍 Processing lead 19: حارس باكستاني
-02:45:05.888 (index):1305    Location: {lat: 24.627312, lng: 46.573433, map_link: 'https://maps.google.com/?q=24.627312,46.573433'}
-02:45:05.888 (index):1308    ✓ Has valid location, importing...
-02:45:05.889  📍 addLeadPin called with: 24.627312 46.573433
-02:45:05.889  ✅ Pin added to array, total pins: 16
-02:45:05.891  ✅ Pin rendered on map
-02:45:05.891  📝 openForm called for pin ID: 1777679105889
-02:45:05.891  ✅ Pin found: {id: 1777679105889, lat: 24.627312, lng: 46.573433, index: 16, priority: 'Normal', …}
-02:45:05.892  ✅ formModal element found
-02:45:05.897  ✅ Form modal displayed
-02:45:05.897  ✅ Opening form for pin: 1777679105889
-02:45:05.897     📍 Pin created with ID: 1777679105889
-02:45:05.898     ✓ Successfully imported: حارس باكستاني
-02:45:05.899  
+13:18:17.899 index.html:1536    Location: {lat: 24.627312, lng: 46.573433, map_link: 'https://maps.google.com/?q=24.627312,46.573433'}
+13:18:17.899     ✓ Has valid location, importing...
+13:18:17.901     📍 Pin created with ID: 1777717097900
+13:18:17.902     ✓ Successfully imported: حارس باكستاني
+13:18:17.903  
 🔍 Processing lead 20: ابراهيم
-02:45:05.899     Location: {lat: 24.628435, lng: 46.574177, map_link: 'https://maps.google.com/?q=24.628435,46.574177'}
-02:45:05.899     ✓ Has valid location, importing...
-02:45:05.899  📍 addLeadPin called with: 24.628435 46.574177
-02:45:05.899  ✅ Pin added to array, total pins: 17
-02:45:05.901  ✅ Pin rendered on map
-02:45:05.901  📝 openForm called for pin ID: 1777679105899
-02:45:05.901  ✅ Pin found: {id: 1777679105899, lat: 24.628435, lng: 46.574177, index: 17, priority: 'Normal', …}
-02:45:05.902  ✅ formModal element found
-02:45:05.906  ✅ Form modal displayed
-02:45:05.906  ✅ Opening form for pin: 1777679105899
-02:45:05.906     📍 Pin created with ID: 1777679105899
-02:45:05.907     ✓ Successfully imported: ابراهيم
-02:45:05.907  
+13:18:17.903     Location: {lat: 24.628435, lng: 46.574177, map_link: 'https://maps.google.com/?q=24.628435,46.574177'}
+13:18:17.903     ✓ Has valid location, importing...
+13:18:17.905     📍 Pin created with ID: 1777717097903
+13:18:17.906     ✓ Successfully imported: ابراهيم
+13:18:17.907  
 🔍 Processing lead 21: ابو محمد
-02:45:05.908     Location: {lat: 24.623423, lng: 46.566563, map_link: 'https://maps.google.com/?q=24.623423,46.566563'}
-02:45:05.908     ✓ Has valid location, importing...
-02:45:05.908  📍 addLeadPin called with: 24.623423 46.566563
-02:45:05.908  ✅ Pin added to array, total pins: 18
-02:45:05.910  ✅ Pin rendered on map
-02:45:05.910  📝 openForm called for pin ID: 1777679105908
-02:45:05.910  ✅ Pin found: {id: 1777679105908, lat: 24.623423, lng: 46.566563, index: 18, priority: 'Normal', …}
-02:45:05.911  ✅ formModal element found
-02:45:05.915  ✅ Form modal displayed
-02:45:05.915  ✅ Opening form for pin: 1777679105908
-02:45:05.915     📍 Pin created with ID: 1777679105908
-02:45:05.916     ✓ Successfully imported: ابو محمد
-02:45:05.917  
+13:18:17.907     Location: {lat: 24.623423, lng: 46.566563, map_link: 'https://maps.google.com/?q=24.623423,46.566563'}
+13:18:17.907     ✓ Has valid location, importing...
+13:18:17.909     📍 Pin created with ID: 1777717097907
+13:18:17.910     ✓ Successfully imported: ابو محمد
+13:18:17.910  
 🔍 Processing lead 22: عمار
-02:45:05.917     Location: null
-02:45:05.917  
+13:18:17.911     Location: null
+13:18:17.911  
 🔍 Processing lead 23: المحلات التجارية
-02:45:05.917     Location: null
-02:45:05.917  
-🔍 Processing lead 24: مشرف البناء
-02:45:05.918     Location: {lat: 24.657503, lng: 46.503521, map_link: 'https://maps.google.com/?q=24.657503,46.503521'}
-02:45:05.918     ✓ Has valid location, importing...
-02:45:05.918  📍 addLeadPin called with: 24.657503 46.503521
-02:45:05.918  ✅ Pin added to array, total pins: 19
-02:45:05.920  ✅ Pin rendered on map
-02:45:05.921  📝 openForm called for pin ID: 1777679105918
-02:45:05.921  ✅ Pin found: {id: 1777679105918, lat: 24.657503, lng: 46.503521, index: 19, priority: 'Normal', …}
-02:45:05.921  ✅ formModal element found
-02:45:05.925  ✅ Form modal displayed
-02:45:05.925  ✅ Opening form for pin: 1777679105918
-02:45:05.925     📍 Pin created with ID: 1777679105918
-02:45:05.926     📷 Added 2 images
-02:45:05.927     ✓ Successfully imported: مشرف البناء
-02:45:05.927  
-🔍 Processing lead 25: سعيد
-02:45:05.927     Location: {lat: 24.658468, lng: 46.505039, map_link: 'https://maps.google.com/?q=24.658468,46.505039'}
-02:45:05.928     ✓ Has valid location, importing...
-02:45:05.928  📍 addLeadPin called with: 24.658468 46.505039
-02:45:05.928  ✅ Pin added to array, total pins: 20
-02:45:05.931  ✅ Pin rendered on map
-02:45:05.931  📝 openForm called for pin ID: 1777679105928
-02:45:05.931  ✅ Pin found: {id: 1777679105928, lat: 24.658468, lng: 46.505039, index: 20, priority: 'Normal', …}
-02:45:05.931  ✅ formModal element found
-02:45:05.934  ✅ Form modal displayed
-02:45:05.934  ✅ Opening form for pin: 1777679105928
-02:45:05.935     📍 Pin created with ID: 1777679105928
-02:45:05.935     📷 Added 2 images
-02:45:05.935     ✓ Successfully imported: سعيد
-02:45:05.936  
-🔍 Processing lead 26: المشرف
-02:45:05.936     Location: {lat: 24.657431, lng: 46.506706, map_link: 'https://maps.google.com/?q=24.657431,46.506706'}
-02:45:05.936     ✓ Has valid location, importing...
-02:45:05.936  📍 addLeadPin called with: 24.657431 46.506706
-02:45:05.936  ✅ Pin added to array, total pins: 21
-02:45:05.938  ✅ Pin rendered on map
-02:45:05.938  📝 openForm called for pin ID: 1777679105936
-02:45:05.939  ✅ Pin found: {id: 1777679105936, lat: 24.657431, lng: 46.506706, index: 21, priority: 'Normal', …}
-02:45:05.939  ✅ formModal element found
-02:45:05.941  ✅ Form modal displayed
-02:45:05.941  ✅ Opening form for pin: 1777679105936
-02:45:05.942     📍 Pin created with ID: 1777679105936
-02:45:05.942     📷 Added 2 images
-02:45:05.943     ✓ Successfully imported: المشرف
-02:45:05.943  
-🔍 Processing lead 27: ابو ضياء
-02:45:05.943     Location: {lat: 24.653748, lng: 46.50338, map_link: 'https://maps.google.com/?q=24.653748,46.503380'}
-02:45:05.943     ✓ Has valid location, importing...
-02:45:05.943  📍 addLeadPin called with: 24.653748 46.50338
-02:45:05.943  ✅ Pin added to array, total pins: 22
-02:45:05.945  ✅ Pin rendered on map
-02:45:05.945  📝 openForm called for pin ID: 1777679105943
-02:45:05.945  ✅ Pin found: {id: 1777679105943, lat: 24.653748, lng: 46.50338, index: 22, priority: 'Normal', …}
-02:45:05.946  ✅ formModal element found
-02:45:05.949  ✅ Form modal displayed
-02:45:05.949  ✅ Opening form for pin: 1777679105943
-02:45:05.950     📍 Pin created with ID: 1777679105943
-02:45:05.950     📷 Added 2 images
-02:45:05.951     ✓ Successfully imported: ابو ضياء
-02:45:05.951  
-🔍 Processing lead 28: تركي حاجي طايل المطيري
-02:45:05.951     Location: {lat: 24.651051, lng: 46.502502, map_link: 'https://maps.google.com/?q=24.651051,46.502502'}
-02:45:05.951     ✓ Has valid location, importing...
-02:45:05.951  📍 addLeadPin called with: 24.651051 46.502502
-02:45:05.952  ✅ Pin added to array, total pins: 23
-02:45:05.953  ✅ Pin rendered on map
-02:45:05.953  📝 openForm called for pin ID: 1777679105952
-02:45:05.954  ✅ Pin found: {id: 1777679105952, lat: 24.651051, lng: 46.502502, index: 23, priority: 'Normal', …}
-02:45:05.954  ✅ formModal element found
-02:45:05.957  ✅ Form modal displayed
-02:45:05.957  ✅ Opening form for pin: 1777679105952
-02:45:05.958     📍 Pin created with ID: 1777679105952
-02:45:05.958     📷 Added 2 images
-02:45:05.958     ✓ Successfully imported: تركي حاجي طايل المطيري
-02:45:05.959  
-🔍 Processing lead 29: ابو محمد المشرف
-02:45:05.959     Location: {lat: 24.650066, lng: 46.495956, map_link: 'https://maps.google.com/?q=24.650066,46.495956'}
-02:45:05.959     ✓ Has valid location, importing...
-02:45:05.959  📍 addLeadPin called with: 24.650066 46.495956
-02:45:05.959  ✅ Pin added to array, total pins: 24
-02:45:05.960  ✅ Pin rendered on map
-02:45:05.961  📝 openForm called for pin ID: 1777679105959
-02:45:05.961  ✅ Pin found: {id: 1777679105959, lat: 24.650066, lng: 46.495956, index: 24, priority: 'Normal', …}
-02:45:05.961  ✅ formModal element found
-02:45:05.965  ✅ Form modal displayed
-02:45:05.965  ✅ Opening form for pin: 1777679105959
-02:45:05.965     📍 Pin created with ID: 1777679105959
-02:45:05.966     ✓ Successfully imported: ابو محمد المشرف
-02:45:05.966  
-🔍 Processing lead 30: مالك سعودي
-02:45:05.966     Location: {lat: 24.641029, lng: 46.479866, map_link: 'https://maps.google.com/?q=24.641029,46.479866'}
-02:45:05.966     ✓ Has valid location, importing...
-02:45:05.966  📍 addLeadPin called with: 24.641029 46.479866
-02:45:05.967  ✅ Pin added to array, total pins: 25
-02:45:05.968  ✅ Pin rendered on map
-02:45:05.968  📝 openForm called for pin ID: 1777679105967
-02:45:05.968  ✅ Pin found: {id: 1777679105967, lat: 24.641029, lng: 46.479866, index: 25, priority: 'Normal', …}
-02:45:05.968  ✅ formModal element found
-02:45:05.972  ✅ Form modal displayed
-02:45:05.972  ✅ Opening form for pin: 1777679105967
-02:45:05.972     📍 Pin created with ID: 1777679105967
-02:45:05.973     ✓ Successfully imported: مالك سعودي
-02:45:05.973  
-🔍 Processing lead 31: فهد المطيري
-02:45:05.973     Location: {lat: 24.625542, lng: 46.472294, map_link: 'https://maps.google.com/?q=24.625542,46.472294'}
-02:45:05.973     ✓ Has valid location, importing...
-02:45:05.973  📍 addLeadPin called with: 24.625542 46.472294
-02:45:05.974  ✅ Pin added to array, total pins: 26
-02:45:05.975  ✅ Pin rendered on map
-02:45:05.975  📝 openForm called for pin ID: 1777679105974
-02:45:05.976  ✅ Pin found: {id: 1777679105974, lat: 24.625542, lng: 46.472294, index: 26, priority: 'Normal', …}
-02:45:05.976  ✅ formModal element found
-02:45:05.980  ✅ Form modal displayed
-02:45:05.980  ✅ Opening form for pin: 1777679105974
-02:45:05.980     📍 Pin created with ID: 1777679105974
-02:45:05.981     📷 Added 2 images
-02:45:05.981     ✓ Successfully imported: فهد المطيري
-02:45:05.982  
-🔍 Processing lead 32: مالك سعودي - Critical
-02:45:05.982     Location: {lat: 24.624737, lng: 46.47789, map_link: 'https://maps.google.com/?q=24.624737,46.477890'}
-02:45:05.982     ✓ Has valid location, importing...
-02:45:05.982  📍 addLeadPin called with: 24.624737 46.47789
-02:45:05.982  ✅ Pin added to array, total pins: 27
-02:45:05.983  ✅ Pin rendered on map
-02:45:05.984  📝 openForm called for pin ID: 1777679105982
-02:45:05.984  ✅ Pin found: {id: 1777679105982, lat: 24.624737, lng: 46.47789, index: 27, priority: 'Normal', …}
-02:45:05.984  ✅ formModal element found
-02:45:05.986  ✅ Form modal displayed
-02:45:05.987  ✅ Opening form for pin: 1777679105982
-02:45:05.987     📍 Pin created with ID: 1777679105982
-02:45:05.987     ✓ Successfully imported: مالك سعودي - Critical
-02:45:05.988  
-🔍 Processing lead 33: محمد الحارس
-02:45:05.988     Location: {lat: 24.595987, lng: 46.648064, map_link: 'https://maps.google.com/?q=24.595987,46.648064'}
-02:45:05.988     ✓ Has valid location, importing...
-02:45:05.988  📍 addLeadPin called with: 24.595987 46.648064
-02:45:05.988  ✅ Pin added to array, total pins: 28
-02:45:05.990  ✅ Pin rendered on map
-02:45:05.990  📝 openForm called for pin ID: 1777679105988
-02:45:05.990  ✅ Pin found: {id: 1777679105988, lat: 24.595987, lng: 46.648064, index: 28, priority: 'Normal', …}
-02:45:05.990  ✅ formModal element found
-02:45:05.994  ✅ Form modal displayed
-02:45:05.994  ✅ Opening form for pin: 1777679105988
-02:45:05.995     📍 Pin created with ID: 1777679105988
-02:45:05.996     ✓ Successfully imported: محمد الحارس
-02:45:05.996  
-🔍 Processing lead 34: ابو رواد
-02:45:05.996     Location: {lat: 24.6696, lng: 46.551949, map_link: 'https://maps.google.com/?q=24.669600,46.551949'}
-02:45:05.996     ✓ Has valid location, importing...
-02:45:05.997  📍 addLeadPin called with: 24.6696 46.551949
-02:45:05.997  ✅ Pin added to array, total pins: 29
-02:45:05.998  ✅ Pin rendered on map
-02:45:05.999  📝 openForm called for pin ID: 1777679105997
-02:45:05.999  ✅ Pin found: {id: 1777679105997, lat: 24.6696, lng: 46.551949, index: 29, priority: 'Normal', …}
-02:45:05.999  ✅ formModal element found
-02:45:06.002  ✅ Form modal displayed
-02:45:06.002  ✅ Opening form for pin: 1777679105997
-02:45:06.002     📍 Pin created with ID: 1777679105997
-02:45:06.002     📷 Added 2 images
-02:45:06.003     ✓ Successfully imported: ابو رواد
-02:45:06.004  
-🔍 Processing lead 35: ابو هاشم
-02:45:06.004     Location: {lat: 24.668224, lng: 46.551239, map_link: 'https://maps.google.com/?q=24.668224,46.551239'}
-02:45:06.004     ✓ Has valid location, importing...
-02:45:06.004  📍 addLeadPin called with: 24.668224 46.551239
-02:45:06.004  ✅ Pin added to array, total pins: 30
-02:45:06.006  ✅ Pin rendered on map
-02:45:06.006  📝 openForm called for pin ID: 1777679106004
-02:45:06.006  ✅ Pin found: {id: 1777679106004, lat: 24.668224, lng: 46.551239, index: 30, priority: 'Normal', …}
-02:45:06.006  ✅ formModal element found
-02:45:06.010  ✅ Form modal displayed
-02:45:06.010  ✅ Opening form for pin: 1777679106004
-02:45:06.010     📍 Pin created with ID: 1777679106004
-02:45:06.011     📷 Added 2 images
-02:45:06.012     ✓ Successfully imported: ابو هاشم
-02:45:06.012  
-🔍 Processing lead 36: Gulshare
-02:45:06.012     Location: {lat: 24.661764, lng: 46.517429, map_link: 'https://maps.google.com/?q=24.661764,46.517429'}
-02:45:06.012     ✓ Has valid location, importing...
-02:45:06.013  📍 addLeadPin called with: 24.661764 46.517429
-02:45:06.013  ✅ Pin added to array, total pins: 31
-02:45:06.015  ✅ Pin rendered on map
-02:45:06.015  📝 openForm called for pin ID: 1777679106013
-02:45:06.015  ✅ Pin found: {id: 1777679106013, lat: 24.661764, lng: 46.517429, index: 31, priority: 'Normal', …}
-02:45:06.015  ✅ formModal element found
-02:45:06.019  ✅ Form modal displayed
-02:45:06.020  ✅ Opening form for pin: 1777679106013
-02:45:06.020     📍 Pin created with ID: 1777679106013
-02:45:06.020     📷 Added 2 images
-02:45:06.021     ✓ Successfully imported: Gulshare
-02:45:06.021  
-🔍 Processing lead 37: ايو ناصر
-02:45:06.021     Location: {lat: 24.661448, lng: 46.515865, map_link: 'https://maps.google.com/?q=24.661448,46.515865'}
-02:45:06.022     ✓ Has valid location, importing...
-02:45:06.022  📍 addLeadPin called with: 24.661448 46.515865
-02:45:06.022  ✅ Pin added to array, total pins: 32
-02:45:06.024  ✅ Pin rendered on map
-02:45:06.024  📝 openForm called for pin ID: 1777679106022
-02:45:06.024  ✅ Pin found: {id: 1777679106022, lat: 24.661448, lng: 46.515865, index: 32, priority: 'Normal', …}
-02:45:06.024  ✅ formModal element found
-02:45:06.028  ✅ Form modal displayed
-02:45:06.029  ✅ Opening form for pin: 1777679106022
-02:45:06.029     📍 Pin created with ID: 1777679106022
-02:45:06.029     📷 Added 4 images
-02:45:06.030     ✓ Successfully imported: ايو ناصر
-02:45:06.030  
-🔍 Processing lead 38: الحارس
-02:45:06.031     Location: {lat: 24.662884, lng: 46.516026, map_link: 'https://maps.google.com/?q=24.662884,46.516026'}
-02:45:06.031     ✓ Has valid location, importing...
-02:45:06.031  📍 addLeadPin called with: 24.662884 46.516026
-02:45:06.031  ✅ Pin added to array, total pins: 33
-02:45:06.033  ✅ Pin rendered on map
-02:45:06.033  📝 openForm called for pin ID: 1777679106031
-02:45:06.033  ✅ Pin found: {id: 1777679106031, lat: 24.662884, lng: 46.516026, index: 33, priority: 'Normal', …}
-02:45:06.034  ✅ formModal element found
-02:45:06.037  ✅ Form modal displayed
-02:45:06.038  ✅ Opening form for pin: 1777679106031
-02:45:06.038     📍 Pin created with ID: 1777679106031
-02:45:06.038     📷 Added 2 images
-02:45:06.039     ✓ Successfully imported: الحارس
-02:45:06.039  
-🔍 Processing lead 39: Contact
-02:45:06.039     Location: {lat: 24.662741, lng: 46.516342, map_link: 'https://maps.google.com/?q=24.662741,46.516342'}
-02:45:06.039     ✓ Has valid location, importing...
-02:45:06.039  📍 addLeadPin called with: 24.662741 46.516342
-02:45:06.040  ✅ Pin added to array, total pins: 34
-02:45:06.041  ✅ Pin rendered on map
-02:45:06.041  📝 openForm called for pin ID: 1777679106040
-02:45:06.041  ✅ Pin found: {id: 1777679106040, lat: 24.662741, lng: 46.516342, index: 34, priority: 'Normal', …}
-02:45:06.041  ✅ formModal element found
-02:45:06.045  ✅ Form modal displayed
-02:45:06.046  ✅ Opening form for pin: 1777679106040
-02:45:06.046     📍 Pin created with ID: 1777679106040
-02:45:06.047     ✓ Successfully imported: Contact
-02:45:06.047  
-🔍 Processing lead 40: جابر
-02:45:06.047     Location: {lat: 24.659094, lng: 46.511547, map_link: 'https://maps.google.com/?q=24.659094,46.511547'}
-02:45:06.048     ✓ Has valid location, importing...
-02:45:06.048  📍 addLeadPin called with: 24.659094 46.511547
-02:45:06.048  ✅ Pin added to array, total pins: 35
-02:45:06.049  ✅ Pin rendered on map
-02:45:06.050  📝 openForm called for pin ID: 1777679106048
-02:45:06.050  ✅ Pin found: {id: 1777679106048, lat: 24.659094, lng: 46.511547, index: 35, priority: 'Normal', …}
-02:45:06.050  ✅ formModal element found
-02:45:06.054  ✅ Form modal displayed
-02:45:06.054  ✅ Opening form for pin: 1777679106048
-02:45:06.055     📍 Pin created with ID: 1777679106048
-02:45:06.055     📷 Added 2 images
-02:45:06.055     ✓ Successfully imported: جابر
-02:45:06.056  
-🔍 Processing lead 41: كهربائي
-02:45:06.056     Location: {lat: 24.639338, lng: 46.502724, map_link: 'https://maps.google.com/?q=24.639338,46.502724'}
-02:45:06.056     ✓ Has valid location, importing...
-02:45:06.056  📍 addLeadPin called with: 24.639338 46.502724
-02:45:06.057  ✅ Pin added to array, total pins: 36
-02:45:06.058  ✅ Pin rendered on map
-02:45:06.059  📝 openForm called for pin ID: 1777679106057
-02:45:06.059  ✅ Pin found: {id: 1777679106057, lat: 24.639338, lng: 46.502724, index: 36, priority: 'Normal', …}
-02:45:06.059  ✅ formModal element found
-02:45:06.063  ✅ Form modal displayed
-02:45:06.064  ✅ Opening form for pin: 1777679106057
-02:45:06.064     📍 Pin created with ID: 1777679106057
-02:45:06.064     📷 Added 1 images
-02:45:06.065     ✓ Successfully imported: كهربائي
-02:45:06.065  
-🔍 Processing lead 42: المشرف
-02:45:06.065     Location: {lat: 24.666468, lng: 46.539658, map_link: 'https://maps.google.com/?q=24.666468,46.539658'}
-02:45:06.066     ✓ Has valid location, importing...
-02:45:06.066  📍 addLeadPin called with: 24.666468 46.539658
-02:45:06.066  ✅ Pin added to array, total pins: 37
-02:45:06.068  ✅ Pin rendered on map
-02:45:06.068  📝 openForm called for pin ID: 1777679106066
-02:45:06.068  ✅ Pin found: {id: 1777679106066, lat: 24.666468, lng: 46.539658, index: 37, priority: 'Normal', …}
-02:45:06.068  ✅ formModal element found
-02:45:06.072  ✅ Form modal displayed
-02:45:06.073  ✅ Opening form for pin: 1777679106066
-02:45:06.073     📍 Pin created with ID: 1777679106066
-02:45:06.073     📷 Added 2 images
-02:45:06.074     ✓ Successfully imported: المشرف
-02:45:06.074  
-🔍 Processing lead 43: ناصر
-02:45:06.075     Location: {lat: 24.660891, lng: 46.535324, map_link: 'https://maps.google.com/?q=24.660891,46.535324'}
-02:45:06.075     ✓ Has valid location, importing...
-02:45:06.075  📍 addLeadPin called with: 24.660891 46.535324
-02:45:06.075  ✅ Pin added to array, total pins: 38
-02:45:06.077  ✅ Pin rendered on map
-02:45:06.077  📝 openForm called for pin ID: 1777679106075
-02:45:06.077  ✅ Pin found: {id: 1777679106075, lat: 24.660891, lng: 46.535324, index: 38, priority: 'Normal', …}
-02:45:06.078  ✅ formModal element found
-02:45:06.081  ✅ Form modal displayed
-02:45:06.082  ✅ Opening form for pin: 1777679106075
-02:45:06.082     📍 Pin created with ID: 1777679106075
-02:45:06.082     📷 Added 2 images
-02:45:06.083     ✓ Successfully imported: ناصر
-02:45:06.083  
-🔍 Processing lead 44: المقاول
-02:45:06.083     Location: {lat: 24.660515, lng: 46.534931, map_link: 'https://maps.google.com/?q=24.660515,46.534931'}
-02:45:06.083     ✓ Has valid location, importing...
-02:45:06.084  📍 addLeadPin called with: 24.660515 46.534931
-02:45:06.084  ✅ Pin added to array, total pins: 39
-02:45:06.086  ✅ Pin rendered on map
-02:45:06.086  📝 openForm called for pin ID: 1777679106084
-02:45:06.086  ✅ Pin found: {id: 1777679106084, lat: 24.660515, lng: 46.534931, index: 39, priority: 'Normal', …}
-02:45:06.086  ✅ formModal element found
-02:45:06.090  ✅ Form modal displayed
-02:45:06.090  ✅ Opening form for pin: 1777679106084
-02:45:06.090     📍 Pin created with ID: 1777679106084
-02:45:06.091     ✓ Successfully imported: المقاول
-02:45:06.091  
-🔍 Processing lead 45: ابو قاسم
-02:45:06.091     Location: {lat: 24.661896, lng: 46.524113, map_link: 'https://maps.google.com/?q=24.661896,46.524113'}
-02:45:06.092     ✓ Has valid location, importing...
-02:45:06.092  📍 addLeadPin called with: 24.661896 46.524113
-02:45:06.092  ✅ Pin added to array, total pins: 40
-02:45:06.094  ✅ Pin rendered on map
-02:45:06.094  📝 openForm called for pin ID: 1777679106092
-02:45:06.094  ✅ Pin found: {id: 1777679106092, lat: 24.661896, lng: 46.524113, index: 40, priority: 'Normal', …}
-02:45:06.094  ✅ formModal element found
-02:45:06.098  ✅ Form modal displayed
-02:45:06.098  ✅ Opening form for pin: 1777679106092
-02:45:06.099     📍 Pin created with ID: 1777679106092
-02:45:06.099     ✓ Successfully imported: ابو قاسم
-02:45:06.100  
-🔍 Processing lead 46: فيلا للمراجعة
-02:45:06.100     Location: {lat: 24.662733, lng: 46.535595, map_link: 'https://maps.google.com/?q=24.662733,46.535595'}
-02:45:06.100     ✓ Has valid location, importing...
-02:45:06.100  📍 addLeadPin called with: 24.662733 46.535595
-02:45:06.100  ✅ Pin added to array, total pins: 41
-02:45:06.101  ✅ Pin rendered on map
-02:45:06.102  📝 openForm called for pin ID: 1777679106100
-02:45:06.102  ✅ Pin found: {id: 1777679106100, lat: 24.662733, lng: 46.535595, index: 41, priority: 'Normal', …}
-02:45:06.102  ✅ formModal element found
-02:45:06.106  ✅ Form modal displayed
-02:45:06.106  ✅ Opening form for pin: 1777679106100
-02:45:06.106     📍 Pin created with ID: 1777679106100
-02:45:06.106     📷 Added 2 images
-02:45:06.107     ✓ Successfully imported: فيلا للمراجعة
-02:45:06.108  
-🔍 Processing lead 47: المشرف
-02:45:06.108     Location: {lat: 24.611107, lng: 46.518169, map_link: 'https://maps.google.com/?q=24.611107,46.518169'}
-02:45:06.108     ✓ Has valid location, importing...
-02:45:06.108  📍 addLeadPin called with: 24.611107 46.518169
-02:45:06.108  ✅ Pin added to array, total pins: 42
-02:45:06.110  ✅ Pin rendered on map
-02:45:06.110  📝 openForm called for pin ID: 1777679106108
-02:45:06.110  ✅ Pin found: {id: 1777679106108, lat: 24.611107, lng: 46.518169, index: 42, priority: 'Normal', …}
-02:45:06.110  ✅ formModal element found
-02:45:06.113  ✅ Form modal displayed
-02:45:06.113  ✅ Opening form for pin: 1777679106108
-02:45:06.113     📍 Pin created with ID: 1777679106108
-02:45:06.114     ✓ Successfully imported: المشرف
-02:45:06.114  
-🔍 Processing lead 48: ابو ركان
-02:45:06.114     Location: null
-02:45:06.114  
-🔍 Processing lead 49: الحارس
-02:45:06.115     Location: {lat: 24.656313, lng: 46.507298, map_link: 'https://maps.google.com/?q=24.656313,46.507298'}
-02:45:06.115     ✓ Has valid location, importing...
-02:45:06.115  📍 addLeadPin called with: 24.656313 46.507298
-02:45:06.115  ✅ Pin added to array, total pins: 43
-02:45:06.116  ✅ Pin rendered on map
-02:45:06.117  📝 openForm called for pin ID: 1777679106115
-02:45:06.117  ✅ Pin found: {id: 1777679106115, lat: 24.656313, lng: 46.507298, index: 43, priority: 'Normal', …}
-02:45:06.117  ✅ formModal element found
-02:45:06.120  ✅ Form modal displayed
-02:45:06.120  ✅ Opening form for pin: 1777679106115
-02:45:06.120     📍 Pin created with ID: 1777679106115
-02:45:06.121     ✓ Successfully imported: الحارس
-02:45:06.121 (index):1304 
-🔍 Processing lead 50: المالك
-02:45:06.121 (index):1305    Location: {lat: 24.655399, lng: 46.506657, map_link: 'https://maps.google.com/?q=24.655399,46.506657'}
-02:45:06.122 (index):1308    ✓ Has valid location, importing...
-02:45:06.122 leads.js:203 📍 addLeadPin called with: 24.655399 46.506657
-02:45:06.122 leads.js:220 ✅ Pin added to array, total pins: 44
-02:45:06.124 leads.js:223 ✅ Pin rendered on map
-02:45:06.124 leads.js:415 📝 openForm called for pin ID: 1777679106122
-02:45:06.125 leads.js:423 ✅ Pin found: {id: 1777679106122, lat: 24.655399, lng: 46.506657, index: 44, priority: 'Normal', …}
-02:45:06.125 leads.js:432 ✅ formModal element found
-02:45:06.130 leads.js:450 ✅ Form modal displayed
-02:45:06.130 leads.js:237 ✅ Opening form for pin: 1777679106122
-02:45:06.131 (index):1317    📍 Pin created with ID: 1777679106122
-02:45:06.131 (index):1338    📷 Added 2 images
-02:45:06.132 (index):1357    ✓ Successfully imported: المالك
-02:45:06.132 (index):1304 
-🔍 Processing lead 51: علي الشهري
-02:45:06.132 (index):1305    Location: {lat: 24.654526, lng: 46.503418, map_link: 'https://maps.google.com/?q=24.654526,46.503418'}
-02:45:06.133 (index):1308    ✓ Has valid location, importing...
-02:45:06.133 leads.js:203 📍 addLeadPin called with: 24.654526 46.503418
-02:45:06.133 leads.js:220 ✅ Pin added to array, total pins: 45
-02:45:06.135 leads.js:223 ✅ Pin rendered on map
-02:45:06.136 leads.js:415 📝 openForm called for pin ID: 1777679106133
-02:45:06.136 leads.js:423 ✅ Pin found: {id: 1777679106133, lat: 24.654526, lng: 46.503418, index: 45, priority: 'Normal', …}
-02:45:06.136 leads.js:432 ✅ formModal element found
-02:45:06.140 leads.js:450 ✅ Form modal displayed
-02:45:06.141 leads.js:237 ✅ Opening form for pin: 1777679106133
-02:45:06.141 (index):1317    📍 Pin created with ID: 1777679106133
-02:45:06.141 (index):1338    📷 Added 4 images
-02:45:06.142 (index):1357    ✓ Successfully imported: علي الشهري
-02:45:06.142 (index):1304 
-🔍 Processing lead 52: بدر
-02:45:06.142 (index):1305    Location: {lat: 24.656929, lng: 46.507172, map_link: 'https://maps.google.com/?q=24.656929,46.507172'}
-02:45:06.143 (index):1308    ✓ Has valid location, importing...
-02:45:06.143 leads.js:203 📍 addLeadPin called with: 24.656929 46.507172
-02:45:06.143 leads.js:220 ✅ Pin added to array, total pins: 46
-02:45:06.145 leads.js:223 ✅ Pin rendered on map
-02:45:06.145 leads.js:415 📝 openForm called for pin ID: 1777679106143
-02:45:06.146 leads.js:423 ✅ Pin found: {id: 1777679106143, lat: 24.656929, lng: 46.507172, index: 46, priority: 'Normal', …}
-02:45:06.146 leads.js:432 ✅ formModal element found
-02:45:06.150 leads.js:450 ✅ Form modal displayed
-02:45:06.150 leads.js:237 ✅ Opening form for pin: 1777679106143
-02:45:06.151 (index):1317    📍 Pin created with ID: 1777679106143
-02:45:06.151 (index):1338    📷 Added 4 images
-02:45:06.152 (index):1357    ✓ Successfully imported: بدر
-02:45:06.152 (index):1304 
-🔍 Processing lead 53: عصام
-02:45:06.152 (index):1305    Location: null
-02:45:06.153 (index):1304 
-🔍 Processing lead 54: Contact
-02:45:06.153 (index):1305    Location: {lat: 24.654245, lng: 46.507656, map_link: 'https://maps.google.com/?q=24.654245,46.507656'}
-02:45:06.153 (index):1308    ✓ Has valid location, importing...
-02:45:06.153 leads.js:203 📍 addLeadPin called with: 24.654245 46.507656
-02:45:06.154 leads.js:220 ✅ Pin added to array, total pins: 47
-02:45:06.156 leads.js:223 ✅ Pin rendered on map
-02:45:06.156 leads.js:415 📝 openForm called for pin ID: 1777679106154
-02:45:06.156 leads.js:423 ✅ Pin found: {id: 1777679106154, lat: 24.654245, lng: 46.507656, index: 47, priority: 'Normal', …}
-02:45:06.157 leads.js:432 ✅ formModal element found
-02:45:06.161  ✅ Form modal displayed
-02:45:06.161  ✅ Opening form for pin: 1777679106154
-02:45:06.161     📍 Pin created with ID: 1777679106154
-02:45:06.161     📷 Added 2 images
-02:45:06.162     ✓ Successfully imported: Contact
-02:45:06.163  
-🔍 Processing lead 55: عبد المجيد
-02:45:06.163     Location: {lat: 24.657608, lng: 46.499409, map_link: 'https://maps.google.com/?q=24.657608,46.499409'}
-02:45:06.163     ✓ Has valid location, importing...
-02:45:06.163  📍 addLeadPin called with: 24.657608 46.499409
-02:45:06.164  ✅ Pin added to array, total pins: 48
-02:45:06.166  ✅ Pin rendered on map
-02:45:06.167  📝 openForm called for pin ID: 1777679106164
-02:45:06.167  ✅ Pin found: {id: 1777679106164, lat: 24.657608, lng: 46.499409, index: 48, priority: 'Normal', …}
-02:45:06.167  ✅ formModal element found
-02:45:06.173  ✅ Form modal displayed
-02:45:06.173  ✅ Opening form for pin: 1777679106164
-02:45:06.173     📍 Pin created with ID: 1777679106164
-02:45:06.174     📷 Added 2 images
-02:45:06.175     ✓ Successfully imported: عبد المجيد
-02:45:06.175  
-🔍 Processing lead 56: ابو عبد العزيز
-02:45:06.175     Location: {lat: 24.659138, lng: 46.501007, map_link: 'https://maps.google.com/?q=24.659138,46.501007'}
-02:45:06.176     ✓ Has valid location, importing...
-02:45:06.176  📍 addLeadPin called with: 24.659138 46.501007
-02:45:06.176  ✅ Pin added to array, total pins: 49
-02:45:06.178  ✅ Pin rendered on map
-02:45:06.178  📝 openForm called for pin ID: 1777679106176
-02:45:06.178  ✅ Pin found: {id: 1777679106176, lat: 24.659138, lng: 46.501007, index: 49, priority: 'Normal', …}
-02:45:06.179  ✅ formModal element found
-02:45:06.186  ✅ Form modal displayed
-02:45:06.186  ✅ Opening form for pin: 1777679106176
-02:45:06.186     📍 Pin created with ID: 1777679106176
-02:45:06.186     📷 Added 2 images
-02:45:06.188     ✓ Successfully imported: ابو عبد العزيز
-02:45:06.188  
-🔍 Processing lead 57: معلم بلاط
-02:45:06.189     Location: null
-02:45:06.189  
-🔍 Processing lead 58: Abou yazid
-02:45:06.190     Location: {lat: 24.648586, lng: 46.500298, map_link: 'https://maps.google.com/?q=24.648586,46.500298'}
-02:45:06.190     ✓ Has valid location, importing...
-02:45:06.191  📍 addLeadPin called with: 24.648586 46.500298
-02:45:06.191  ✅ Pin added to array, total pins: 50
-02:45:06.193  ✅ Pin rendered on map
-02:45:06.193  📝 openForm called for pin ID: 1777679106191
-02:45:06.193  ✅ Pin found: {id: 1777679106191, lat: 24.648586, lng: 46.500298, index: 50, priority: 'Normal', …}
-02:45:06.194  ✅ formModal element found
-02:45:06.198  ✅ Form modal displayed
-02:45:06.198  ✅ Opening form for pin: 1777679106191
-02:45:06.198     📍 Pin created with ID: 1777679106191
-02:45:06.199     ✓ Successfully imported: Abou yazid
-02:45:06.199  
-🔍 Processing lead 59: Photos
-02:45:06.199     Location: null
-02:45:06.200  
-🔍 Processing lead 60: خالد العتيبي
-02:45:06.200     Location: {lat: 24.647429, lng: 46.48925, map_link: 'https://maps.google.com/?q=24.647429,46.489250'}
-02:45:06.200     ✓ Has valid location, importing...
-02:45:06.200  📍 addLeadPin called with: 24.647429 46.48925
-02:45:06.200  ✅ Pin added to array, total pins: 51
-02:45:06.202  ✅ Pin rendered on map
-02:45:06.202  📝 openForm called for pin ID: 1777679106200
-02:45:06.203  ✅ Pin found: {id: 1777679106200, lat: 24.647429, lng: 46.48925, index: 51, priority: 'Normal', …}
-02:45:06.203  ✅ formModal element found
-02:45:06.207  ✅ Form modal displayed
-02:45:06.208  ✅ Opening form for pin: 1777679106200
-02:45:06.208     📍 Pin created with ID: 1777679106200
-02:45:06.208     📷 Added 4 images
-02:45:06.209     ✓ Successfully imported: خالد العتيبي
-02:45:06.209  
-🔍 Processing lead 61: محمد عبد السلام
-02:45:06.209     Location: {lat: 24.653095, lng: 46.493458, map_link: 'https://maps.google.com/?q=24.653095,46.493458'}
-02:45:06.209     ✓ Has valid location, importing...
-02:45:06.210  📍 addLeadPin called with: 24.653095 46.493458
-02:45:06.210  ✅ Pin added to array, total pins: 52
-02:45:06.211  ✅ Pin rendered on map
-02:45:06.212  📝 openForm called for pin ID: 1777679106210
-02:45:06.212  ✅ Pin found: {id: 1777679106210, lat: 24.653095, lng: 46.493458, index: 52, priority: 'Normal', …}
-02:45:06.212  ✅ formModal element found
-02:45:06.216  ✅ Form modal displayed
-02:45:06.217  ✅ Opening form for pin: 1777679106210
-02:45:06.217     📍 Pin created with ID: 1777679106210
-02:45:06.218     ✓ Successfully imported: محمد عبد السلام
-02:45:06.218  
-🔍 Processing lead 62: الحارس
-02:45:06.218     Location: {lat: 24.653524, lng: 46.494537, map_link: 'https://maps.google.com/?q=24.653524,46.494537'}
-02:45:06.219     ✓ Has valid location, importing...
-02:45:06.219  📍 addLeadPin called with: 24.653524 46.494537
-02:45:06.219  ✅ Pin added to array, total pins: 53
-02:45:06.221  ✅ Pin rendered on map
-02:45:06.221  📝 openForm called for pin ID: 1777679106219
-02:45:06.221  ✅ Pin found: {id: 1777679106219, lat: 24.653524, lng: 46.494537, index: 53, priority: 'Normal', …}
-02:45:06.221  ✅ formModal element found
-02:45:06.227  ✅ Form modal displayed
-02:45:06.229  ✅ Opening form for pin: 1777679106219
-02:45:06.229     📍 Pin created with ID: 1777679106219
-02:45:06.230     ✓ Successfully imported: الحارس
-02:45:06.231  
-🔍 Processing lead 63: حبيب خان
-02:45:06.231     Location: null
-02:45:06.231  
-🔍 Processing lead 64: Abo abdel aziz
-02:45:06.231     Location: {lat: 24.640226, lng: 46.477318, map_link: 'https://maps.google.com/?q=24.640226,46.477318'}
-02:45:06.232     ✓ Has valid location, importing...
-02:45:06.232  📍 addLeadPin called with: 24.640226 46.477318
-02:45:06.232  ✅ Pin added to array, total pins: 54
-02:45:06.234  ✅ Pin rendered on map
-02:45:06.234  📝 openForm called for pin ID: 1777679106232
-02:45:06.234  ✅ Pin found: {id: 1777679106232, lat: 24.640226, lng: 46.477318, index: 54, priority: 'Normal', …}
-02:45:06.235  ✅ formModal element found
-02:45:06.239  ✅ Form modal displayed
-02:45:06.239  ✅ Opening form for pin: 1777679106232
-02:45:06.240     📍 Pin created with ID: 1777679106232
-02:45:06.241     ✓ Successfully imported: Abo abdel aziz
-02:45:06.241  
-🔍 Processing lead 65: الحارس
-02:45:06.241     Location: {lat: 24.625469, lng: 46.474316, map_link: 'https://maps.google.com/?q=24.625469,46.474316'}
-02:45:06.242     ✓ Has valid location, importing...
-02:45:06.242  📍 addLeadPin called with: 24.625469 46.474316
-02:45:06.242  ✅ Pin added to array, total pins: 55
-02:45:06.244  ✅ Pin rendered on map
-02:45:06.244  📝 openForm called for pin ID: 1777679106242
-02:45:06.245  ✅ Pin found: {id: 1777679106242, lat: 24.625469, lng: 46.474316, index: 55, priority: 'Normal', …}
-02:45:06.245  ✅ formModal element found
-02:45:06.269  ✅ Form modal displayed
-02:45:06.269  ✅ Opening form for pin: 1777679106242
-02:45:06.270     📍 Pin created with ID: 1777679106242
-02:45:06.271     ✓ Successfully imported: الحارس
-02:45:06.309  
-🔍 Processing lead 66: المهديه
-02:45:06.309     Location: {lat: 24.674099, lng: 46.566933, map_link: 'https://maps.google.com/?q=24.674099,46.566933'}
-02:45:06.309     ✓ Has valid location, importing...
-02:45:06.309  📍 addLeadPin called with: 24.674099 46.566933
-02:45:06.309  ✅ Pin added to array, total pins: 56
-02:45:06.311  ✅ Pin rendered on map
-02:45:06.311  📝 openForm called for pin ID: 1777679106309
-02:45:06.311  ✅ Pin found: {id: 1777679106309, lat: 24.674099, lng: 46.566933, index: 56, priority: 'Normal', …}
-02:45:06.311  ✅ formModal element found
-02:45:06.344  ✅ Form modal displayed
-02:45:06.344  ✅ Opening form for pin: 1777679106309
-02:45:06.344     📍 Pin created with ID: 1777679106309
-02:45:06.344     📷 Added 1 images
-02:45:06.345     ✓ Successfully imported: المهديه
-02:45:06.345  
-🔍 Processing lead 67: نجيب
-02:45:06.345     Location: {lat: 24.670097, lng: 46.573433, map_link: 'https://maps.google.com/?q=24.670097,46.573433'}
-02:45:06.345     ✓ Has valid location, importing...
-02:45:06.346  📍 addLeadPin called with: 24.670097 46.573433
-02:45:06.346  ✅ Pin added to array, total pins: 57
-02:45:06.348  ✅ Pin rendered on map
-02:45:06.349  📝 openForm called for pin ID: 1777679106346
-02:45:06.352  ✅ Pin found: {id: 1777679106346, lat: 24.670097, lng: 46.573433, index: 57, priority: 'Normal', …}
-02:45:06.352  ✅ formModal element found
-02:45:06.359  ✅ Form modal displayed
-02:45:06.359  ✅ Opening form for pin: 1777679106346
-02:45:06.360     📍 Pin created with ID: 1777679106346
-02:45:06.699     ✓ Successfully imported: نجيب
-02:45:06.700  
-🔍 Processing lead 68: سميولى
-02:45:06.701     Location: {lat: 24.670044, lng: 46.572132, map_link: 'https://maps.google.com/?q=24.670044,46.572132'}
-02:45:06.701     ✓ Has valid location, importing...
-02:45:06.701  📍 addLeadPin called with: 24.670044 46.572132
-02:45:06.701  ✅ Pin added to array, total pins: 58
-02:45:06.703  ✅ Pin rendered on map
-02:45:06.703  📝 openForm called for pin ID: 1777679106701
-02:45:06.703  ✅ Pin found: {id: 1777679106701, lat: 24.670044, lng: 46.572132, index: 58, priority: 'Normal', …}
-02:45:06.704  ✅ formModal element found
-02:45:06.709  ✅ Form modal displayed
-02:45:06.709  ✅ Opening form for pin: 1777679106701
-02:45:06.709     📍 Pin created with ID: 1777679106701
-02:45:06.710     ✓ Successfully imported: سميولى
-02:45:06.711  
-🔍 Processing lead 69: مقاول
-02:45:06.711     Location: {lat: 24.670164, lng: 46.571926, map_link: 'https://maps.google.com/?q=24.670164,46.571926'}
-02:45:06.711     ✓ Has valid location, importing...
-02:45:06.774  📍 addLeadPin called with: 24.670164 46.571926
-02:45:06.775  ✅ Pin added to array, total pins: 59
-02:45:06.910  ✅ Pin rendered on map
-02:45:06.911  📝 openForm called for pin ID: 1777679106775
-02:45:06.911  ✅ Pin found: {id: 1777679106775, lat: 24.670164, lng: 46.571926, index: 59, priority: 'Normal', …}
-02:45:06.913  ✅ formModal element found
-02:45:06.952  ✅ Form modal displayed
-02:45:06.953  ✅ Opening form for pin: 1777679106775
-02:45:06.954     📍 Pin created with ID: 1777679106775
-02:45:06.959     ✓ Successfully imported: مقاول
-02:45:06.962  
-🔍 Processing lead 70: محمد حسني
-02:45:06.963     Location: {lat: 24.670546, lng: 46.569843, map_link: 'https://maps.google.com/?q=24.670546,46.569843'}
-02:45:06.963     ✓ Has valid location, importing...
-02:45:06.964  📍 addLeadPin called with: 24.670546 46.569843
-02:45:06.965  ✅ Pin added to array, total pins: 60
-02:45:06.977  ✅ Pin rendered on map
-02:45:06.978  📝 openForm called for pin ID: 1777679106965
-02:45:06.979  ✅ Pin found: {id: 1777679106965, lat: 24.670546, lng: 46.569843, index: 60, priority: 'Normal', …}
-02:45:06.981  ✅ formModal element found
-02:45:06.996  ✅ Form modal displayed
-02:45:06.998  ✅ Opening form for pin: 1777679106965
-02:45:06.999     📍 Pin created with ID: 1777679106965
-02:45:06.999     📷 Added 1 images
-02:45:07.006     ✓ Successfully imported: محمد حسني
-02:45:07.009  
-🔍 Processing lead 71: ابو محمد
-02:45:07.010     Location: {lat: 24.655325, lng: 46.580109, map_link: 'https://maps.google.com/?q=24.655325,46.580109'}
-02:45:07.011     ✓ Has valid location, importing...
-02:45:07.011  📍 addLeadPin called with: 24.655325 46.580109
-02:45:07.012  ✅ Pin added to array, total pins: 61
-02:45:07.021  ✅ Pin rendered on map
-02:45:07.022  📝 openForm called for pin ID: 1777679107012
-02:45:07.025  ✅ Pin found: {id: 1777679107012, lat: 24.655325, lng: 46.580109, index: 61, priority: 'Normal', …}
-02:45:07.026  ✅ formModal element found
-02:45:07.062  ✅ Form modal displayed
-02:45:07.062  ✅ Opening form for pin: 1777679107012
-02:45:07.062     📍 Pin created with ID: 1777679107012
-02:45:07.067     ✓ Successfully imported: ابو محمد
-02:45:07.069  
-🔍 Processing lead 72: ابو عمر
-02:45:07.076     Location: {lat: 24.657948, lng: 46.573376, map_link: 'https://maps.google.com/?q=24.657948,46.573376'}
-02:45:07.077     ✓ Has valid location, importing...
-02:45:07.078  📍 addLeadPin called with: 24.657948 46.573376
-02:45:07.078  ✅ Pin added to array, total pins: 62
-02:45:07.083  ✅ Pin rendered on map
-02:45:07.084  📝 openForm called for pin ID: 1777679107078
-02:45:07.084  ✅ Pin found: {id: 1777679107078, lat: 24.657948, lng: 46.573376, index: 62, priority: 'Normal', …}
-02:45:07.085  ✅ formModal element found
-02:45:07.092  ✅ Form modal displayed
-02:45:07.092  ✅ Opening form for pin: 1777679107078
-02:45:07.095     📍 Pin created with ID: 1777679107078
-02:45:07.095     📷 Added 1 images
-02:45:07.097     ✓ Successfully imported: ابو عمر
-02:45:07.098  
-🔍 Processing lead 73: ابو خالد
-02:45:07.098     Location: {lat: 24.539282, lng: 46.654461, map_link: 'https://maps.google.com/?q=24.539282,46.654461'}
-02:45:07.098     ✓ Has valid location, importing...
-02:45:07.099  📍 addLeadPin called with: 24.539282 46.654461
-02:45:07.099  ✅ Pin added to array, total pins: 63
-02:45:07.102  ✅ Pin rendered on map
-02:45:07.103  📝 openForm called for pin ID: 1777679107099
-02:45:07.103  ✅ Pin found: {id: 1777679107099, lat: 24.539282, lng: 46.654461, index: 63, priority: 'Normal', …}
-02:45:07.104  ✅ formModal element found
-02:45:07.110  ✅ Form modal displayed
-02:45:07.111  ✅ Opening form for pin: 1777679107099
-02:45:07.111     📍 Pin created with ID: 1777679107099
-02:45:07.112     ✓ Successfully imported: ابو خالد
-02:45:07.112  
-🔍 Processing lead 74: ابو عبد الله
-02:45:07.112     Location: {lat: 24.52964, lng: 46.64732, map_link: 'https://maps.google.com/?q=24.529640,46.647320'}
-02:45:07.113     ✓ Has valid location, importing...
-02:45:07.113  📍 addLeadPin called with: 24.52964 46.64732
-02:45:07.113  ✅ Pin added to array, total pins: 64
-02:45:07.116  ✅ Pin rendered on map
-02:45:07.117  📝 openForm called for pin ID: 1777679107113
-02:45:07.117  ✅ Pin found: {id: 1777679107113, lat: 24.52964, lng: 46.64732, index: 64, priority: 'Normal', …}
-02:45:07.117  ✅ formModal element found
-02:45:07.123  ✅ Form modal displayed
-02:45:07.123  ✅ Opening form for pin: 1777679107113
-02:45:07.123     📍 Pin created with ID: 1777679107113
-02:45:07.124     ✓ Successfully imported: ابو عبد الله
-02:45:07.124  
-🔍 Processing lead 75: تيسير
-02:45:07.125     Location: {lat: 24.528856, lng: 46.647881, map_link: 'https://maps.google.com/?q=24.528856,46.647881'}
-02:45:07.125     ✓ Has valid location, importing...
-02:45:07.125  📍 addLeadPin called with: 24.528856 46.647881
-02:45:07.125  ✅ Pin added to array, total pins: 65
-02:45:07.127  ✅ Pin rendered on map
-02:45:07.128  📝 openForm called for pin ID: 1777679107125
-02:45:07.128  ✅ Pin found: {id: 1777679107125, lat: 24.528856, lng: 46.647881, index: 65, priority: 'Normal', …}
-02:45:07.128  ✅ formModal element found
-02:45:07.134  ✅ Form modal displayed
-02:45:07.134  ✅ Opening form for pin: 1777679107125
-02:45:07.134     📍 Pin created with ID: 1777679107125
-02:45:07.135     ✓ Successfully imported: تيسير
-02:45:07.135  
-🔍 Processing lead 76: عابد
-02:45:07.136     Location: null
-02:45:07.136  
-🔍 Processing lead 77: خالد
-02:45:07.136     Location: {lat: 24.527735, lng: 46.644562, map_link: 'https://maps.google.com/?q=24.527735,46.644562'}
-02:45:07.136     ✓ Has valid location, importing...
-02:45:07.137  📍 addLeadPin called with: 24.527735 46.644562
-02:45:07.137  ✅ Pin added to array, total pins: 66
-02:45:07.139  ✅ Pin rendered on map
-02:45:07.139  📝 openForm called for pin ID: 1777679107137
-02:45:07.139  ✅ Pin found: {id: 1777679107137, lat: 24.527735, lng: 46.644562, index: 66, priority: 'Normal', …}
-02:45:07.140  ✅ formModal element found
-02:45:07.144  ✅ Form modal displayed
-02:45:07.144  ✅ Opening form for pin: 1777679107137
-02:45:07.145     📍 Pin created with ID: 1777679107137
-02:45:07.146     ✓ Successfully imported: خالد
-02:45:07.146  
-🔍 Processing lead 78: محمد على
-02:45:07.146     Location: {lat: 24.532948, lng: 46.64357, map_link: 'https://maps.google.com/?q=24.532948,46.643570'}
-02:45:07.146     ✓ Has valid location, importing...
-02:45:07.146  📍 addLeadPin called with: 24.532948 46.64357
-02:45:07.146  ✅ Pin added to array, total pins: 67
-02:45:07.149  ✅ Pin rendered on map
-02:45:07.149  📝 openForm called for pin ID: 1777679107146
-02:45:07.149  ✅ Pin found: {id: 1777679107146, lat: 24.532948, lng: 46.64357, index: 67, priority: 'Normal', …}
-02:45:07.149  ✅ formModal element found
-02:45:07.154  ✅ Form modal displayed
-02:45:07.154  ✅ Opening form for pin: 1777679107146
-02:45:07.154     📍 Pin created with ID: 1777679107146
-02:45:07.155     ✓ Successfully imported: محمد على
-02:45:07.155  
-🔍 Processing lead 79: ابو محمد
-02:45:07.156     Location: {lat: 24.536951, lng: 46.648224, map_link: 'https://maps.google.com/?q=24.536951,46.648224'}
-02:45:07.156     ✓ Has valid location, importing...
-02:45:07.156  📍 addLeadPin called with: 24.536951 46.648224
-02:45:07.156  ✅ Pin added to array, total pins: 68
-02:45:07.159  ✅ Pin rendered on map
-02:45:07.159  📝 openForm called for pin ID: 1777679107156
-02:45:07.159  ✅ Pin found: {id: 1777679107156, lat: 24.536951, lng: 46.648224, index: 68, priority: 'Normal', …}
-02:45:07.160  ✅ formModal element found
-02:45:07.164  ✅ Form modal displayed
-02:45:07.164  ✅ Opening form for pin: 1777679107156
-02:45:07.164     📍 Pin created with ID: 1777679107156
-02:45:07.165     ✓ Successfully imported: ابو محمد
-02:45:07.165  
-🔍 Processing lead 80: فيصل
-02:45:07.165     Location: {lat: 24.53462, lng: 46.647709, map_link: 'https://maps.google.com/?q=24.534620,46.647709'}
-02:45:07.166     ✓ Has valid location, importing...
-02:45:07.166  📍 addLeadPin called with: 24.53462 46.647709
-02:45:07.166  ✅ Pin added to array, total pins: 69
-02:45:07.168  ✅ Pin rendered on map
-02:45:07.168  📝 openForm called for pin ID: 1777679107166
-02:45:07.168  ✅ Pin found: {id: 1777679107166, lat: 24.53462, lng: 46.647709, index: 69, priority: 'Normal', …}
-02:45:07.168  ✅ formModal element found
-02:45:07.173  ✅ Form modal displayed
-02:45:07.173  ✅ Opening form for pin: 1777679107166
-02:45:07.173     📍 Pin created with ID: 1777679107166
-02:45:07.174     ✓ Successfully imported: فيصل
-02:45:07.174  
-🔍 Processing lead 81: حارس باكستاني
-02:45:07.174     Location: {lat: 24.530844, lng: 46.653046, map_link: 'https://maps.google.com/?q=24.530844,46.653046'}
-02:45:07.174     ✓ Has valid location, importing...
-02:45:07.174  📍 addLeadPin called with: 24.530844 46.653046
-02:45:07.174  ✅ Pin added to array, total pins: 70
-02:45:07.176  ✅ Pin rendered on map
-02:45:07.176  📝 openForm called for pin ID: 1777679107174
-02:45:07.177  ✅ Pin found: {id: 1777679107174, lat: 24.530844, lng: 46.653046, index: 70, priority: 'Normal', …}
-02:45:07.177  ✅ formModal element found
-02:45:07.181  ✅ Form modal displayed
-02:45:07.181  ✅ Opening form for pin: 1777679107174
-02:45:07.181     📍 Pin created with ID: 1777679107174
-02:45:07.182     ✓ Successfully imported: حارس باكستاني
-02:45:07.183  
-🔍 Processing lead 82: حبيب الله
-02:45:07.183     Location: {lat: 24.54039, lng: 46.640011, map_link: 'https://maps.google.com/?q=24.540390,46.640011'}
-02:45:07.183     ✓ Has valid location, importing...
-02:45:07.183  📍 addLeadPin called with: 24.54039 46.640011
-02:45:07.183  ✅ Pin added to array, total pins: 71
-02:45:07.185  ✅ Pin rendered on map
-02:45:07.185  📝 openForm called for pin ID: 1777679107183
-02:45:07.186  ✅ Pin found: {id: 1777679107183, lat: 24.54039, lng: 46.640011, index: 71, priority: 'Normal', …}
-02:45:07.186  ✅ formModal element found
-02:45:07.190  ✅ Form modal displayed
-02:45:07.190  ✅ Opening form for pin: 1777679107183
-02:45:07.190     📍 Pin created with ID: 1777679107183
-02:45:07.191     ✓ Successfully imported: حبيب الله
-02:45:07.191  
-🔍 Processing lead 83: ابو خالد
-02:45:07.192     Location: {lat: 24.541046, lng: 46.655315, map_link: 'https://maps.google.com/?q=24.541046,46.655315'}
-02:45:07.192     ✓ Has valid location, importing...
-02:45:07.192  📍 addLeadPin called with: 24.541046 46.655315
-02:45:07.192  ✅ Pin added to array, total pins: 72
-02:45:07.195  ✅ Pin rendered on map
-02:45:07.195  📝 openForm called for pin ID: 1777679107192
-02:45:07.195  ✅ Pin found: {id: 1777679107192, lat: 24.541046, lng: 46.655315, index: 72, priority: 'Normal', …}
-02:45:07.195  ✅ formModal element found
-02:45:07.199  ✅ Form modal displayed
-02:45:07.200  ✅ Opening form for pin: 1777679107192
-02:45:07.200     📍 Pin created with ID: 1777679107192
-02:45:07.201     ✓ Successfully imported: ابو خالد
-02:45:07.201  
-🔍 Processing lead 84: سعيد
-02:45:07.201     Location: {lat: 24.506124, lng: 46.646637, map_link: 'https://maps.google.com/?q=24.506124,46.646637'}
-02:45:07.201     ✓ Has valid location, importing...
-02:45:07.201  📍 addLeadPin called with: 24.506124 46.646637
-02:45:07.202  ✅ Pin added to array, total pins: 73
-02:45:07.203  ✅ Pin rendered on map
-02:45:07.204  📝 openForm called for pin ID: 1777679107202
-02:45:07.204  ✅ Pin found: {id: 1777679107202, lat: 24.506124, lng: 46.646637, index: 73, priority: 'Normal', …}
-02:45:07.204  ✅ formModal element found
-02:45:07.209  ✅ Form modal displayed
-02:45:07.209  ✅ Opening form for pin: 1777679107202
-02:45:07.209     📍 Pin created with ID: 1777679107202
-02:45:07.210     ✓ Successfully imported: سعيد
-02:45:07.210  
-🔍 Processing lead 85: ايو عبدالله
-02:45:07.210     Location: {lat: 24.494658, lng: 46.656292, map_link: 'https://maps.google.com/?q=24.494658,46.656292'}
-02:45:07.211     ✓ Has valid location, importing...
-02:45:07.211  📍 addLeadPin called with: 24.494658 46.656292
-02:45:07.211  ✅ Pin added to array, total pins: 74
-02:45:07.213  ✅ Pin rendered on map
-02:45:07.213  📝 openForm called for pin ID: 1777679107211
-02:45:07.213  ✅ Pin found: {id: 1777679107211, lat: 24.494658, lng: 46.656292, index: 74, priority: 'Normal', …}
-02:45:07.213  ✅ formModal element found
-02:45:07.218  ✅ Form modal displayed
-02:45:07.218  ✅ Opening form for pin: 1777679107211
-02:45:07.218     📍 Pin created with ID: 1777679107211
-02:45:07.219     ✓ Successfully imported: ايو عبدالله
-02:45:07.219  
-🔍 Processing lead 86: ابو رواد - متابعة
-02:45:07.219     Location: null
-02:45:07.220  
-🔍 Processing lead 87: المالك
-02:45:07.220     Location: {lat: 24.587017, lng: 46.577366, map_link: 'https://maps.google.com/?q=24.587017,46.577366'}
-02:45:07.220     ✓ Has valid location, importing...
-02:45:07.220  📍 addLeadPin called with: 24.587017 46.577366
-02:45:07.221  ✅ Pin added to array, total pins: 75
-02:45:07.222  ✅ Pin rendered on map
-02:45:07.223  📝 openForm called for pin ID: 1777679107221
-02:45:07.223  ✅ Pin found: {id: 1777679107221, lat: 24.587017, lng: 46.577366, index: 75, priority: 'Normal', …}
-02:45:07.223  ✅ formModal element found
-02:45:07.228  ✅ Form modal displayed
-02:45:07.228  ✅ Opening form for pin: 1777679107221
-02:45:07.228     📍 Pin created with ID: 1777679107221
-02:45:07.229     ✓ Successfully imported: المالك
-02:45:07.229  
-🔍 Processing lead 88: مهندس محمد
-02:45:07.229     Location: {lat: 24.569538, lng: 46.555378, map_link: 'https://maps.google.com/?q=24.569538,46.555378'}
-02:45:07.230     ✓ Has valid location, importing...
-02:45:07.230  📍 addLeadPin called with: 24.569538 46.555378
-02:45:07.230  ✅ Pin added to array, total pins: 76
-02:45:07.232  ✅ Pin rendered on map
-02:45:07.232  📝 openForm called for pin ID: 1777679107230
-02:45:07.232  ✅ Pin found: {id: 1777679107230, lat: 24.569538, lng: 46.555378, index: 76, priority: 'Normal', …}
-02:45:07.232  ✅ formModal element found
-02:45:07.240  ✅ Form modal displayed
-02:45:07.240  ✅ Opening form for pin: 1777679107230
-02:45:07.240     📍 Pin created with ID: 1777679107230
-02:45:07.240     📷 Added 1 images
-02:45:07.241     ✓ Successfully imported: مهندس محمد
-02:45:07.242  
-🔍 Processing lead 89: المقاول مصري
-02:45:07.242     Location: {lat: 24.567919, lng: 46.555065, map_link: 'https://maps.google.com/?q=24.567919,46.555065'}
-02:45:07.242     ✓ Has valid location, importing...
-02:45:07.242  📍 addLeadPin called with: 24.567919 46.555065
-02:45:07.243  ✅ Pin added to array, total pins: 77
-02:45:07.244  ✅ Pin rendered on map
-02:45:07.245  📝 openForm called for pin ID: 1777679107243
-02:45:07.245  ✅ Pin found: {id: 1777679107243, lat: 24.567919, lng: 46.555065, index: 77, priority: 'Normal', …}
-02:45:07.245  ✅ formModal element found
-02:45:07.249  ✅ Form modal displayed
-02:45:07.250  ✅ Opening form for pin: 1777679107243
-02:45:07.250     📍 Pin created with ID: 1777679107243
-02:45:07.251     ✓ Successfully imported: المقاول مصري
-02:45:07.251  
-🔍 Processing lead 90: محمود
-02:45:07.251     Location: {lat: 24.568584, lng: 46.559849, map_link: 'https://maps.google.com/?q=24.568584,46.559849'}
-02:45:07.251     ✓ Has valid location, importing...
-02:45:07.251  📍 addLeadPin called with: 24.568584 46.559849
-02:45:07.252  ✅ Pin added to array, total pins: 78
-02:45:07.253  ✅ Pin rendered on map
-02:45:07.254  📝 openForm called for pin ID: 1777679107252
-02:45:07.254  ✅ Pin found: {id: 1777679107252, lat: 24.568584, lng: 46.559849, index: 78, priority: 'Normal', …}
-02:45:07.254  ✅ formModal element found
-02:45:07.259  ✅ Form modal displayed
-02:45:07.260  ✅ Opening form for pin: 1777679107252
-02:45:07.260     📍 Pin created with ID: 1777679107252
-02:45:07.261     ✓ Successfully imported: محمود
-02:45:07.262  
-🔍 Processing lead 91: الحارس
-02:45:07.262     Location: null
-02:45:07.262  
-🔍 Processing lead 92: ابو احمد
-02:45:07.262     Location: {lat: 24.566975, lng: 46.575436, map_link: 'https://maps.google.com/?q=24.566975,46.575436'}
-02:45:07.263     ✓ Has valid location, importing...
-02:45:07.263  📍 addLeadPin called with: 24.566975 46.575436
-02:45:07.263  ✅ Pin added to array, total pins: 79
-02:45:07.265  ✅ Pin rendered on map
-02:45:07.265  📝 openForm called for pin ID: 1777679107263
-02:45:07.266  ✅ Pin found: {id: 1777679107263, lat: 24.566975, lng: 46.575436, index: 79, priority: 'Normal', …}
-02:45:07.266 leads.js:432 ✅ formModal element found
-02:45:07.270 leads.js:450 ✅ Form modal displayed
-02:45:07.271 leads.js:237 ✅ Opening form for pin: 1777679107263
-02:45:07.271 (index):1317    📍 Pin created with ID: 1777679107263
-02:45:07.272 (index):1357    ✓ Successfully imported: ابو احمد
-02:45:07.272 (index):1304 
-🔍 Processing lead 93: محمد
-02:45:07.272 (index):1305    Location: {lat: 24.55916, lng: 46.568546, map_link: 'https://maps.google.com/?q=24.559160,46.568546'}
-02:45:07.273 (index):1308    ✓ Has valid location, importing...
-02:45:07.273 leads.js:203 📍 addLeadPin called with: 24.55916 46.568546
-02:45:07.273 leads.js:220 ✅ Pin added to array, total pins: 80
-02:45:07.276 leads.js:223 ✅ Pin rendered on map
-02:45:07.276 leads.js:415 📝 openForm called for pin ID: 1777679107273
-02:45:07.276 leads.js:423 ✅ Pin found: {id: 1777679107273, lat: 24.55916, lng: 46.568546, index: 80, priority: 'Normal', …}
-02:45:07.277 leads.js:432 ✅ formModal element found
-02:45:07.281 leads.js:450 ✅ Form modal displayed
-02:45:07.281 leads.js:237 ✅ Opening form for pin: 1777679107273
-02:45:07.282 (index):1317    📍 Pin created with ID: 1777679107273
-02:45:07.283 (index):1357    ✓ Successfully imported: محمد
-02:45:07.283 (index):1304 
-🔍 Processing lead 94: ابو نصر
-02:45:07.284 (index):1305    Location: {lat: 24.561161, lng: 46.572273, map_link: 'https://maps.google.com/?q=24.561161,46.572273'}
-02:45:07.284 (index):1308    ✓ Has valid location, importing...
-02:45:07.284 leads.js:203 📍 addLeadPin called with: 24.561161 46.572273
-02:45:07.284 leads.js:220 ✅ Pin added to array, total pins: 81
-02:45:07.286 leads.js:223 ✅ Pin rendered on map
-02:45:07.286 leads.js:415 📝 openForm called for pin ID: 1777679107284
-02:45:07.286 leads.js:423 ✅ Pin found: {id: 1777679107284, lat: 24.561161, lng: 46.572273, index: 81, priority: 'Normal', …}
-02:45:07.286 leads.js:432 ✅ formModal element found
-02:45:07.291 leads.js:450 ✅ Form modal displayed
-02:45:07.291 leads.js:237 ✅ Opening form for pin: 1777679107284
-02:45:07.291 (index):1317    📍 Pin created with ID: 1777679107284
-02:45:07.292 (index):1357    ✓ Successfully imported: ابو نصر
-02:45:07.292 (index):1304 
-🔍 Processing lead 95: ابو عبدالله
-02:45:07.292 (index):1305    Location: {lat: 24.557753, lng: 46.584087, map_link: 'https://maps.google.com/?q=24.557753,46.584087'}
-02:45:07.293 (index):1308    ✓ Has valid location, importing...
-02:45:07.293 leads.js:203 📍 addLeadPin called with: 24.557753 46.584087
-02:45:07.293 leads.js:220 ✅ Pin added to array, total pins: 82
-02:45:07.295 leads.js:223 ✅ Pin rendered on map
-02:45:07.295 leads.js:415 📝 openForm called for pin ID: 1777679107293
-02:45:07.295 leads.js:423 ✅ Pin found: {id: 1777679107293, lat: 24.557753, lng: 46.584087, index: 82, priority: 'Normal', …}
-02:45:07.296 leads.js:432 ✅ formModal element found
-02:45:07.300 leads.js:450 ✅ Form modal displayed
-02:45:07.300 leads.js:237 ✅ Opening form for pin: 1777679107293
-02:45:07.300 (index):1317    📍 Pin created with ID: 1777679107293
-02:45:07.301 (index):1357    ✓ Successfully imported: ابو عبدالله
-02:45:07.301 (index):1304 
-🔍 Processing lead 96: عماد
-02:45:07.301 (index):1305    Location: {lat: 24.568884, lng: 46.580578, map_link: 'https://maps.google.com/?q=24.568884,46.580578'}
-02:45:07.302 (index):1308    ✓ Has valid location, importing...
-02:45:07.302 leads.js:203 📍 addLeadPin called with: 24.568884 46.580578
-02:45:07.302 leads.js:220 ✅ Pin added to array, total pins: 83
-02:45:07.304 leads.js:223 ✅ Pin rendered on map
-02:45:07.304 leads.js:415 📝 openForm called for pin ID: 1777679107302
-02:45:07.304 leads.js:423 ✅ Pin found: {id: 1777679107302, lat: 24.568884, lng: 46.580578, index: 83, priority: 'Normal', …}
-02:45:07.304 leads.js:432 ✅ formModal element found
-02:45:07.309 leads.js:450 ✅ Form modal displayed
-02:45:07.309 leads.js:237 ✅ Opening form for pin: 1777679107302
-02:45:07.309 (index):1317    📍 Pin created with ID: 1777679107302
-02:45:07.310 (index):1357    ✓ Successfully imported: عماد
-02:45:07.310 (index):1304 
-🔍 Processing lead 97: ابو عقيل
-02:45:07.311 (index):1305    Location: {lat: 24.56554, lng: 46.583244, map_link: 'https://maps.google.com/?q=24.565540,46.583244'}
-02:45:07.311 (index):1308    ✓ Has valid location, importing...
-02:45:07.311 leads.js:203 📍 addLeadPin called with: 24.56554 46.583244
-02:45:07.312 leads.js:220 ✅ Pin added to array, total pins: 84
-02:45:07.314 leads.js:223 ✅ Pin rendered on map
-02:45:07.314 leads.js:415 📝 openForm called for pin ID: 1777679107312
-02:45:07.314 leads.js:423 ✅ Pin found: {id: 1777679107312, lat: 24.56554, lng: 46.583244, index: 84, priority: 'Normal', …}
-02:45:07.314 leads.js:432 ✅ formModal element found
-02:45:07.319 leads.js:450 ✅ Form modal displayed
-02:45:07.319 leads.js:237 ✅ Opening form for pin: 1777679107312
-02:45:07.319 (index):1317    📍 Pin created with ID: 1777679107312
-02:45:07.319 (index):1338    📷 Added 2 images
-02:45:07.320 (index):1357    ✓ Successfully imported: ابو عقيل
-02:45:07.320 (index):1304 
-🔍 Processing lead 98: معلم بناء
-02:45:07.321 (index):1305    Location: null
-02:45:07.321 (index):1304 
-🔍 Processing lead 99: ابو مفلح
-02:45:07.321 (index):1305    Location: {lat: 24.575842, lng: 46.551792, map_link: 'https://maps.google.com/?q=24.575842,46.551792'}
-02:45:07.321 (index):1308    ✓ Has valid location, importing...
-02:45:07.321 leads.js:203 📍 addLeadPin called with: 24.575842 46.551792
-02:45:07.321 leads.js:220 ✅ Pin added to array, total pins: 85
-02:45:07.323 leads.js:223 ✅ Pin rendered on map
-02:45:07.323 leads.js:415 📝 openForm called for pin ID: 1777679107321
-02:45:07.323 leads.js:423 ✅ Pin found: {id: 1777679107321, lat: 24.575842, lng: 46.551792, index: 85, priority: 'Normal', …}
-02:45:07.324 leads.js:432 ✅ formModal element found
-02:45:07.328 leads.js:450 ✅ Form modal displayed
-02:45:07.328 leads.js:237 ✅ Opening form for pin: 1777679107321
-02:45:07.328 (index):1317    📍 Pin created with ID: 1777679107321
-02:45:07.328 (index):1338    📷 Added 2 images
-02:45:07.329 (index):1357    ✓ Successfully imported: ابو مفلح
-02:45:07.329 (index):1304 
-🔍 Processing lead 100: الاستاذ تركي
-02:45:07.329 (index):1305    Location: {lat: 24.576771, lng: 46.551796, map_link: 'https://maps.google.com/?q=24.576771,46.551796'}
-02:45:07.330 (index):1308    ✓ Has valid location, importing...
-02:45:07.330 leads.js:203 📍 addLeadPin called with: 24.576771 46.551796
-02:45:07.330 leads.js:220 ✅ Pin added to array, total pins: 86
-02:45:07.332 leads.js:223 ✅ Pin rendered on map
-02:45:07.332 leads.js:415 📝 openForm called for pin ID: 1777679107330
-02:45:07.332 leads.js:423 ✅ Pin found: {id: 1777679107330, lat: 24.576771, lng: 46.551796, index: 86, priority: 'Normal', …}
-02:45:07.332 leads.js:432 ✅ formModal element found
-02:45:07.336 leads.js:450 ✅ Form modal displayed
-02:45:07.337 leads.js:237 ✅ Opening form for pin: 1777679107330
-02:45:07.337 (index):1317    📍 Pin created with ID: 1777679107330
-02:45:07.337 (index):1338    📷 Added 2 images
-02:45:07.338 (index):1357    ✓ Successfully imported: الاستاذ تركي
-02:45:07.374 (index):1377 
+13:18:17.911     Location: null
+13:18:17.912  ⚠️ No leads with timestamps to create sessions
+13:18:17.924  
 📊 Import Summary:
-02:45:07.375 (index):1378 ✓ Successfully imported: 86 leads
-02:45:07.375 (index):1379 ✗ Skipped (no location): 14 leads
+13:18:17.924  ✓ Successfully imported: 18 leads
+13:18:17.924  ✗ Skipped (no location): 5 leads
