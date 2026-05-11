@@ -873,43 +873,104 @@ async function loadLeadsFromStorage() {
     console.log('📥 Leads will be loaded via Firestore real-time listener');
 }
 
-// Helper function to restore leads
+// Helper function to restore leads with smart diffing
 function restoreLeads(leadsData) {
-    // Clear existing pins
-    pins.forEach(pin => {
-        if (pin.marker && mapInstance) {
-            mapInstance.removeLayer(pin.marker);
-        }
-    });
-    pins.length = 0;
+    // Create a map of incoming leads by ID for fast lookup
+    const incomingLeadsMap = new Map(leadsData.map(lead => [lead.id, lead]));
+    const incomingIds = new Set(leadsData.map(lead => lead.id));
+    const existingIds = new Set(pins.map(pin => pin.id));
     
-    // Restore pins
-    leadsData.forEach(data => {
-        const pin = {
-            id: data.id,
-            lat: data.lat,
-            lng: data.lng,
-            index: data.index,
-            priority: data.priority || 'Normal',
-            status: data.status || 'Active',
-            role: data.role || 'Owner',
-            phase: data.phase || 'ST',
-            images: data.images || [],
-            data: data.data || { name: '', phone: '', notes: '' },
-            timestamp: data.timestamp,
-            date: data.date,
-            time: data.time
-        };
-        
-        pins.push(pin);
-        
-        // Render pin on map if map is ready
-        if (mapInstance) {
-            renderPin(pin);
+    // Remove pins that no longer exist
+    pins.forEach((pin, index) => {
+        if (!incomingIds.has(pin.id)) {
+            if (pin.marker && mapInstance) {
+                mapInstance.removeLayer(pin.marker);
+            }
+            pins.splice(index, 1);
         }
     });
     
-    console.log('✅ Loaded', pins.length, 'leads successfully');
+    // Update existing pins and add new ones
+    leadsData.forEach((data, index) => {
+        const existingPinIndex = pins.findIndex(p => p.id === data.id);
+        
+        if (existingPinIndex !== -1) {
+            // Update existing pin only if data changed
+            const existingPin = pins[existingPinIndex];
+            const dataChanged = 
+                existingPin.priority !== data.priority ||
+                existingPin.status !== data.status ||
+                existingPin.role !== data.role ||
+                existingPin.phase !== data.phase ||
+                JSON.stringify(existingPin.data) !== JSON.stringify(data.data) ||
+                JSON.stringify(existingPin.images) !== JSON.stringify(data.images);
+            
+            if (dataChanged) {
+                // Remove old marker
+                if (existingPin.marker && mapInstance) {
+                    mapInstance.removeLayer(existingPin.marker);
+                }
+                
+                // Update pin data
+                Object.assign(existingPin, {
+                    priority: data.priority || 'Normal',
+                    status: data.status || 'Active',
+                    role: data.role || 'Owner',
+                    phase: data.phase || 'ST',
+                    images: data.images || [],
+                    data: data.data || { name: '', phone: '', notes: '' },
+                    timestamp: data.timestamp,
+                    date: data.date,
+                    time: data.time,
+                    _syncVersion: data._syncVersion
+                });
+                
+                // Re-render only this pin
+                if (mapInstance) {
+                    renderPin(existingPin);
+                }
+            }
+        } else {
+            // Add new pin
+            const pin = {
+                id: data.id,
+                lat: data.lat,
+                lng: data.lng,
+                index: index + 1,
+                priority: data.priority || 'Normal',
+                status: data.status || 'Active',
+                role: data.role || 'Owner',
+                phase: data.phase || 'ST',
+                images: data.images || [],
+                data: data.data || { name: '', phone: '', notes: '' },
+                timestamp: data.timestamp,
+                date: data.date,
+                time: data.time,
+                _syncVersion: data._syncVersion
+            };
+            
+            pins.push(pin);
+            
+            // Render pin on map if map is ready
+            if (mapInstance) {
+                renderPin(pin);
+            }
+        }
+    });
+    
+    // Reindex all pins
+    pins.forEach((p, i) => {
+        if (p.index !== i + 1) {
+            p.index = i + 1;
+            // Only re-render if index changed
+            if (p.marker && mapInstance) {
+                mapInstance.removeLayer(p.marker);
+                renderPin(p);
+            }
+        }
+    });
+    
+    console.log('✅ Loaded', pins.length, 'leads (smart diff applied)');
     
     // Update session summary if available
     if (window.SessionSummary) {
@@ -931,8 +992,17 @@ async function initFirestoreSync() {
                 return;
             }
             
-            // Listen to leads changes
+            // Listen to leads changes with smart diffing
+            let lastLeadsSnapshot = null;
             window.FirestoreSync.listenToLeads((leads) => {
+                // Skip if data hasn't actually changed
+                const currentSnapshot = JSON.stringify(leads.map(l => ({ id: l.id, _syncVersion: l._syncVersion })));
+                if (currentSnapshot === lastLeadsSnapshot) {
+                    console.log('📥 Leads unchanged, skipping re-render');
+                    return;
+                }
+                lastLeadsSnapshot = currentSnapshot;
+                
                 console.log('📥 Leads updated from Firestore:', leads.length);
                 // Update local pins from Firestore
                 if (leads.length > 0) {
@@ -1003,8 +1073,22 @@ if (document.readyState === 'loading') {
 // ═══════════════════════════════════════════════════════════════════════
 
 const SessionSummary = {
-    // Update the session summary table
+    _updateTimeout: null,
+    
+    // Update the session summary table with debouncing
     updateTable() {
+        // Debounce updates to prevent excessive re-renders
+        if (this._updateTimeout) {
+            clearTimeout(this._updateTimeout);
+        }
+        
+        this._updateTimeout = setTimeout(() => {
+            this._performUpdate();
+        }, 100); // 100ms debounce
+    },
+    
+    // Actual update logic
+    _performUpdate() {
         const tbody = document.getElementById('session-summary-table');
         const subtitle = document.getElementById('session-summary-subtitle');
         

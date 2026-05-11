@@ -81,9 +81,11 @@
             justify-content: center !important;
             align-items: center !important;
             height: 56px !important;
+            width: 56px !important;
+            border-radius: 50% !important;
         }
         
-        .history-collapsed #history-header h2,
+        .history-collapsed #history-header > div:first-child,
         .history-collapsed #history-header > div:last-child {
             display: none !important;
         }
@@ -93,7 +95,7 @@
             display: block;
             width: 24px;
             height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/%3E%3Cpolyline points='14 2 14 8 20 8'/%3E%3C/svg%3E");
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -299,6 +301,13 @@
             .history-collapsed {
                 width: 48px !important;
                 height: 48px !important;
+                border-radius: 50% !important;
+            }
+            
+            .history-collapsed #history-header {
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 50% !important;
             }
             
             /* Right Side Buttons - Bottom Right */
