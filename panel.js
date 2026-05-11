@@ -19,7 +19,7 @@ const PanelComponent = {
     // HTML Template
     getTemplate() {
         return `
-            <div id="control-panel" class="fixed top-5 left-5 z-[1000] pointer-events-auto">
+            <div id="control-panel" class="fixed top-5 left-5 z-[800] pointer-events-auto">
                 <div id="main-panel" class="glass flex flex-col rounded-[2.8rem] shadow-[0_30px_90px_-10px_rgba(0,0,0,0.2)] w-[340px] overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] panel-expanded">
                     
                     <!-- Branding Section (Clickable Header) -->

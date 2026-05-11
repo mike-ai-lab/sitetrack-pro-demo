@@ -3,22 +3,29 @@
     position: fixed !important;
     bottom: 30px !important;
     left: 24px !important;
-    width: 64px !important;
-    height: 64px !important;
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    min-height: 56px !important;
+    max-width: 56px !important;
+    max-height: 56px !important;
     background: black !important;
     color: white !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-    z-index: 10000 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    z-index: 800 !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.3s ease !important;
     pointer-events: auto !important;
     opacity: 1 !important;
 }
-.fab:hover { transform: scale(1.05); }
+.fab:hover { 
+    transform: scale(1.05); 
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+}
 .fab:active { transform: scale(0.95); }
 
 .modal-overlay {
@@ -30,7 +37,7 @@
     background: rgba(0, 0, 0, 0.6) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
-    z-index: 10001 !important;
+    z-index: 3000 !important;
     display: none;  /* Removed !important so JS can override */
     align-items: center !important;
     justify-content: center !important;

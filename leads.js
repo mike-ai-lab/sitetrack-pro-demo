@@ -683,11 +683,11 @@ function openLeadDetails(id) {
     if (!pin) return;
     
     // Close Session Logs panel first if it's open
-    const historyPanel = document.getElementById('history-panel');
+    const historyPanel = document.getElementById('session-summary-panel');
     if (historyPanel && !historyPanel.classList.contains('hidden')) {
         window._sessionLogsPanelWasOpen = true;
-        if (window.toggleHistory) {
-            window.toggleHistory();
+        if (window.toggleSessionSummary) {
+            window.toggleSessionSummary();
         }
         // Wait for panel to close before opening modal
         setTimeout(() => {
@@ -1074,6 +1074,100 @@ if (document.readyState === 'loading') {
 
 const SessionSummary = {
     _updateTimeout: null,
+    _currentPage: 1,
+    _itemsPerPage: 20,
+    _isInitialized: false,
+    
+    // Initialize pagination controls
+    _initPagination() {
+        if (this._isInitialized) return;
+        
+        const container = document.getElementById('history-content');
+        if (!container) return;
+        
+        // Add pagination controls before the table
+        const paginationHTML = `
+            <div id="pagination-controls" class="flex items-center justify-between px-6 py-3 bg-gray-50 border-b sticky top-0 z-10">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-600">Show:</span>
+                    <select id="items-per-page" class="px-2 py-1 text-xs font-bold border border-gray-200 rounded-lg bg-white">
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">All</option>
+                    </select>
+                    <span class="text-xs text-gray-400 ml-2">per page</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="page-info" class="text-xs font-bold text-gray-600">Page 1 of 1</span>
+                    <div class="flex gap-1">
+                        <button id="prev-page" class="px-3 py-1 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            ← Prev
+                        </button>
+                        <button id="next-page" class="px-3 py-1 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const tableContainer = container.querySelector('.p-6');
+        if (tableContainer) {
+            tableContainer.insertAdjacentHTML('afterbegin', paginationHTML);
+            
+            // Setup event listeners
+            document.getElementById('items-per-page').addEventListener('change', (e) => {
+                this._itemsPerPage = e.target.value === 'all' ? Infinity : parseInt(e.target.value);
+                this._currentPage = 1;
+                this._performUpdate();
+            });
+            
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (this._currentPage > 1) {
+                    this._currentPage--;
+                    this._performUpdate();
+                    // Scroll to top of table
+                    container.scrollTop = 0;
+                }
+            });
+            
+            document.getElementById('next-page').addEventListener('click', () => {
+                const totalPages = Math.ceil(pins.length / this._itemsPerPage);
+                if (this._currentPage < totalPages) {
+                    this._currentPage++;
+                    this._performUpdate();
+                    // Scroll to top of table
+                    container.scrollTop = 0;
+                }
+            });
+            
+            this._isInitialized = true;
+        }
+    },
+    
+    // Update pagination controls
+    _updatePaginationControls() {
+        const totalPages = Math.ceil(pins.length / this._itemsPerPage);
+        const pageInfo = document.getElementById('page-info');
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        
+        if (pageInfo) {
+            const start = (this._currentPage - 1) * this._itemsPerPage + 1;
+            const end = Math.min(this._currentPage * this._itemsPerPage, pins.length);
+            pageInfo.textContent = `Showing ${start}-${end} of ${pins.length}`;
+        }
+        
+        if (prevBtn) {
+            prevBtn.disabled = this._currentPage === 1;
+        }
+        
+        if (nextBtn) {
+            nextBtn.disabled = this._currentPage >= totalPages;
+        }
+    },
     
     // Update the session summary table with debouncing
     updateTable() {
@@ -1087,12 +1181,17 @@ const SessionSummary = {
         }, 100); // 100ms debounce
     },
     
-    // Actual update logic
+    // Actual update logic with pagination
     _performUpdate() {
         const tbody = document.getElementById('session-summary-table');
         const subtitle = document.getElementById('session-summary-subtitle');
         
         if (!tbody) return;
+        
+        // Initialize pagination on first render
+        if (!this._isInitialized) {
+            this._initPagination();
+        }
         
         if (pins.length === 0) {
             tbody.innerHTML = '<tr><td colspan="11" class="text-center text-gray-400 italic py-8">No leads captured yet</td></tr>';
@@ -1104,17 +1203,25 @@ const SessionSummary = {
         const distance = window.getSessionDistance ? window.getSessionDistance() : 0;
         if (subtitle) subtitle.innerText = `${pins.length} Leads • ${distance.toFixed(2)} km`;
         
-        // Render table rows
+        // Calculate pagination
+        const startIndex = (this._currentPage - 1) * this._itemsPerPage;
+        const endIndex = Math.min(startIndex + this._itemsPerPage, pins.length);
+        const paginatedPins = pins.slice(startIndex, endIndex);
+        
+        // Update pagination controls
+        this._updatePaginationControls();
+        
+        // Render table rows (only current page)
         tbody.innerHTML = '';
-        pins.forEach((p, idx) => {
+        paginatedPins.forEach((p, idx) => {
             const tr = document.createElement('tr');
             const prio = priorities.find(pr => pr.label === p.priority);
             
-            // Image cell
+            // Image cell with lazy loading
             let imgHtml = '-';
             if (p.images && p.images.length > 0) {
                 imgHtml = `<div class="image-cell">
-                    <img src="${p.images[0]}" class="thumb-preview" onclick="window.SessionSummary.viewLeadDetails(${p.id})">
+                    <img src="${p.images[0]}" loading="lazy" class="thumb-preview" onclick="window.SessionSummary.viewLeadDetails(${p.id})">
                     ${p.images.length > 1 ? `<div class="absolute -bottom-1 -right-1 bg-black text-white text-[7px] px-1 rounded-full">+${p.images.length - 1}</div>` : ''}
                 </div>`;
             }
