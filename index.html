@@ -4039,6 +4039,173 @@
         document.addEventListener('DOMContentLoaded', () => {
             console.log('☁️ Cloud sync button initialized');
         });
+
+        // ============================================
+        // SESSION SUMMARY PANEL MANAGER
+        // ============================================
+        window.SessionSummary = {
+            currentPage: 0,
+            itemsPerPage: 10,
+            
+            updateTable() {
+                const tbody = document.getElementById('session-summary-table');
+                const subtitle = document.getElementById('session-summary-subtitle');
+                
+                if (!tbody) return;
+                
+                // Get all pins from LeadSystem
+                const pins = window.LeadSystem && window.LeadSystem.pins ? window.LeadSystem.pins : [];
+                const distance = window.getSessionDistance ? window.getSessionDistance() : 0;
+                
+                // Update subtitle
+                if (subtitle) {
+                    subtitle.innerText = `${pins.length} Leads • ${distance.toFixed(2)} km`;
+                }
+                
+                console.log(`📊 Session Summary Updated: ${pins.length} leads, ${distance.toFixed(2)} km`);
+                
+                if (pins.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="11" class="text-center text-gray-400 italic py-8">No leads captured yet</td></tr>';
+                    return;
+                }
+                
+                // Calculate pagination
+                const totalPages = Math.ceil(pins.length / this.itemsPerPage);
+                const startIdx = this.currentPage * this.itemsPerPage;
+                const endIdx = Math.min(startIdx + this.itemsPerPage, pins.length);
+                const pageItems = pins.slice(startIdx, endIdx);
+                
+                // Render table rows
+                tbody.innerHTML = pageItems.map(pin => this.renderRow(pin)).join('');
+                
+                // Add pagination if needed
+                if (totalPages > 1) {
+                    const paginationRow = document.createElement('tr');
+                    paginationRow.innerHTML = `
+                        <td colspan="11" class="text-center py-4">
+                            <div class="flex items-center justify-center gap-4">
+                                <button onclick="window.SessionSummary.prevPage()" 
+                                    ${this.currentPage === 0 ? 'disabled' : ''}
+                                    class="px-4 py-2 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                                    ← Previous
+                                </button>
+                                <span class="text-xs text-gray-600 font-bold">
+                                    Page ${this.currentPage + 1} of ${totalPages}
+                                </span>
+                                <button onclick="window.SessionSummary.nextPage()" 
+                                    ${this.currentPage >= totalPages - 1 ? 'disabled' : ''}
+                                    class="px-4 py-2 text-xs font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                                    Next →
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(paginationRow);
+                }
+            },
+            
+            renderRow(pin) {
+                const photoCount = pin.photos ? pin.photos.length : 0;
+                const photoThumb = photoCount > 0 ? pin.photos[0] : '';
+                const notes = pin.notes || '';
+                const truncatedNotes = notes.length > 50 ? notes.substring(0, 50) + '...' : notes;
+                
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-2">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" 
+                                style="background: ${pin.color || '#6366f1'}">
+                                ${pin.index || '?'}
+                            </div>
+                        </td>
+                        <td class="font-bold text-gray-400">#${pin.index || '?'}</td>
+                        <td class="py-3 px-2">
+                            ${photoCount > 0 ? `
+                                <div class="flex items-center gap-2">
+                                    <img src="${photoThumb}" class="w-8 h-8 rounded object-cover" />
+                                    <span class="text-xs text-gray-600">${photoCount}</span>
+                                </div>
+                            ` : '<span class="text-xs text-gray-400">No photos</span>'}
+                        </td>
+                        <td class="py-3 px-2">
+                            <div class="text-sm font-bold text-black">${pin.contactName || 'N/A'}</div>
+                            <div class="text-xs text-gray-500">${pin.phone || ''}</div>
+                        </td>
+                        <td class="text-sm">${pin.role || 'N/A'}</td>
+                        <td class="text-sm">${pin.phase || 'N/A'}</td>
+                        <td class="text-sm">${pin.status || 'N/A'}</td>
+                        <td class="py-3 px-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full" style="background: ${this.getPriorityColor(pin.priority)}"></span>
+                                <span class="text-sm">${pin.priority || 'Medium'}</span>
+                            </div>
+                        </td>
+                        <td class="text-xs text-gray-600 max-w-[200px]">${truncatedNotes}</td>
+                        <td class="py-3 px-2">
+                            <a href="https://www.google.com/maps?q=${pin.lat},${pin.lng}" 
+                                target="_blank" 
+                                class="text-blue-600 hover:text-blue-800 text-xs font-bold">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            },
+            
+            getPriorityColor(priority) {
+                const colors = {
+                    'High': '#ef4444',
+                    'Medium': '#f59e0b',
+                    'Low': '#10b981'
+                };
+                return colors[priority] || colors['Medium'];
+            },
+            
+            nextPage() {
+                const pins = window.LeadSystem && window.LeadSystem.pins ? window.LeadSystem.pins : [];
+                const totalPages = Math.ceil(pins.length / this.itemsPerPage);
+                if (this.currentPage < totalPages - 1) {
+                    this.currentPage++;
+                    this.updateTable();
+                }
+            },
+            
+            prevPage() {
+                if (this.currentPage > 0) {
+                    this.currentPage--;
+                    this.updateTable();
+                }
+            },
+            
+            exportPDF() {
+                alert('PDF export feature coming soon!');
+            },
+            
+            copyMarkdown() {
+                const pins = window.LeadSystem && window.LeadSystem.pins ? window.LeadSystem.pins : [];
+                if (pins.length === 0) {
+                    alert('No leads to copy');
+                    return;
+                }
+                
+                let markdown = '| # | Contact | Role | Phase | Status | Priority | Notes |\n';
+                markdown += '|---|---------|------|-------|--------|----------|-------|\n';
+                
+                pins.forEach(pin => {
+                    markdown += `| ${pin.index} | ${pin.contactName || 'N/A'} | ${pin.role || 'N/A'} | ${pin.phase || 'N/A'} | ${pin.status || 'N/A'} | ${pin.priority || 'Medium'} | ${pin.notes || ''} |\n`;
+                });
+                
+                navigator.clipboard.writeText(markdown).then(() => {
+                    alert('Markdown table copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy to clipboard');
+                });
+            }
+        };
+
+        // Expose session distance getter
+        window.getSessionDistance = () => sessionDistance || 0;
     </script>
 </body>
 </html>
