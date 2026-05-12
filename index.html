@@ -1278,22 +1278,26 @@
             const btnWrapper = btn.parentElement;
             
             if (panel.classList.contains('hidden')) {
-                // Show panel expanded
+                // Show panel COLLAPSED (not expanded) by default
                 panel.classList.remove('hidden');
-                panel.classList.remove('collapsed');
+                panel.classList.add('collapsed');
                 btnWrapper.classList.add('hidden');
-                sessionSummaryExpanded = true;
+                sessionSummaryExpanded = false; // Start collapsed
             } else {
                 if (sessionSummaryExpanded) {
                     // Collapse panel to circle
                     panel.classList.add('collapsed');
                     sessionSummaryExpanded = false;
+                } else if (panel.classList.contains('collapsed')) {
+                    // Expand panel from collapsed state
+                    panel.classList.remove('collapsed');
+                    sessionSummaryExpanded = true;
                 } else {
                     // Hide panel completely and show button
                     panel.classList.add('hidden');
                     panel.classList.remove('collapsed');
                     btnWrapper.classList.remove('hidden');
-                    sessionSummaryExpanded = true; // Reset for next time
+                    sessionSummaryExpanded = false; // Reset for next time
                 }
             }
         }

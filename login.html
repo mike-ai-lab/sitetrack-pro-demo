@@ -12,15 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Poppins:wght@900&display=swap');
-    
-    html, body {
-      height: 100%;
-      height: 100dvh; /* Dynamic viewport height for mobile */
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
     
     * {
       font-family: 'Inter', sans-serif;
@@ -28,11 +20,11 @@
     
     body {
       background: #050505;
+      min-height: 100vh;
+      overflow-y: auto;
     }
     
     .stroke-text {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 900;
       -webkit-text-stroke: 1px rgba(255,255,255,0.3);
       -webkit-text-fill-color: transparent;
       paint-order: stroke fill;
@@ -41,16 +33,6 @@
     .glass-panel {
       background: #0c0c0e;
       border: 1px solid rgba(255, 255, 255, 0.05);
-      max-height: calc(100vh - 2rem);
-      max-height: calc(100dvh - 2rem); /* Dynamic viewport for mobile */
-      overflow-y: auto;
-      /* Hide scrollbar but keep functionality */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
-    }
-    
-    .glass-panel::-webkit-scrollbar {
-      display: none; /* Chrome/Safari/Opera */
     }
     
     .btn-primary {
@@ -92,7 +74,7 @@
     }
   </style>
 </head>
-<body class="flex items-center justify-center relative" style="padding: 1rem;">
+<body class="flex items-center justify-center p-4 relative min-h-screen">
   
   <!-- Background Effects -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -100,7 +82,7 @@
     <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pulse-glow" style="animation-delay: 1.5s;"></div>
   </div>
   
-  <div class="glass-panel rounded-[40px] shadow-2xl p-8 w-full max-w-lg relative z-10">
+  <div class="glass-panel rounded-[40px] shadow-2xl p-8 w-full max-w-lg relative z-10 my-8">
     <!-- Logo & Title -->
     <div class="text-center mb-8">
       <div class="w-16 h-16 mx-auto mb-4 bg-emerald-500/10 rounded-2xl flex items-center justify-center">
